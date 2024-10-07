@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
 
-const PORT = 8000;
+const PORT = 5000;
 const app = express();
 
 app.use(express.json());
