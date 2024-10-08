@@ -3,13 +3,13 @@ const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
 
-const PORT = 5000;
+const PORT = 8000;
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-console.log('Router is being mounted');
+// console.log('Router is being mounted');
 app.use('/api', dataRoutes); // Use the imported router
 
 // Health check endpoint

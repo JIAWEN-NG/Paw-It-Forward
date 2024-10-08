@@ -7,8 +7,7 @@ const userController = require('../contollers/userController'); // Import the co
 const app = express();
 app.use(cors());
 
-console.log('dataRoutes.js is loaded'); 
-console.log('dataRoutes.js is loaded and /users route is defined');
+
 
 
 // Define the route and link it to the controller function
