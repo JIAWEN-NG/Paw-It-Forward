@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <h1>User List</h1>
     <div v-if="loading">Loading...</div>
@@ -15,7 +15,8 @@
 
 <script>
 // Import the getAllUsers function from the service file
-import { getAllUsers } from '../services/userService.js'; // Adjust the path if necessary
+// import { getAllUsers } from '../services/userService.js'; // Adjust the path if necessary
+import axios from 'axios';
 
 export default {
   data() {
@@ -49,4 +50,41 @@ export default {
 .error {
   color: red;
 }
+</style> -->
+<template>
+  <div>
+    <h1>User List</h1>
+    <ul>
+      <li v-for="user in users" :key="user.id">{{ user.name }}</li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      users: [], // Array to store users
+    };
+  },
+  methods: {
+    async fetchUsers() {
+      try {
+        // Make the API call using Axios
+        const response = await this.$axios.get('/api/users'); // Adjust the endpoint based on your API
+        this.users = response.data; // Store the response data in the users array
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    },
+  },
+  mounted() {
+    // Call fetchUsers when the component is mounted
+    this.fetchUsers();
+  },
+};
+</script>
+
+<style scoped>
+/* Add any styling if needed */
 </style>

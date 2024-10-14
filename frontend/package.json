@@ -2,7 +2,6 @@
   "name": "",
   "version": "",
   "private": true,
-  
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,11 +9,14 @@
     "start": "vue-cli-service serve"
   },
   "dependencies": {
+    "@vueuse/motion": "^2.2.6",
     "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
     "firebase": "^10.14.0",
     "firebase-admin": "^12.6.0",
     "vue": "^3.2.13",
+    "vue-router": "^4.4.5",
     "vuefire": "^3.2.0"
   },
   "devDependencies": {

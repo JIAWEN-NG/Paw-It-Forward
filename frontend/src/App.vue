@@ -1,18 +1,24 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
-  <UsersViewTest msg="Welcome to Your Vue.js App"/>
+  <h1>Hello this is frontend</h1>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
-import UsersViewTest from './components/usersViewTest.vue';
+// import UsersViewTest from './components/usersViewTest.vue';
 
 
+// export default {
+//   name: 'App',
+//   components: {
+//     UsersViewTest
+//   }
+// }
 export default {
   name: 'App',
-  components: {
-    UsersViewTest
-  }
-}
+};
 </script>
 
 <style>
