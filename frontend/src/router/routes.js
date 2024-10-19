@@ -1,13 +1,11 @@
 // src/router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import usersViewTest from '../components/usersViewTest.vue';
+import CombinedAuth from '../components/CombinedAuth.vue';
 
 const routes = [
-
-    { path: '/', component: usersViewTest },
-
-
-    // please add the your route path here
+  { path: '/login', name: 'Login', component: CombinedAuth },
+  { path: '/', name: 'ViewTest', component: usersViewTest }
 ];
 
 const router = createRouter({
