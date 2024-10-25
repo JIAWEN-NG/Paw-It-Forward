@@ -1,14 +1,14 @@
 <template>
     <div class="container" :class="{ active: isRegisterActive }">
-        <div class="form-container sign-in" v-if="!isRegisterActive">
+        <div class="form-container sign-in" v-if="!isRegisterActive && !showForgotPassword">
             <form @submit.prevent="login">
                 <h1>Sign In</h1>
                 <div class="social-icons">
-                    <a href="#" class="icon" @click="signInWithGoogle">
+                    <a href="#" class="icon" @click.prevent="signInWithGoogle">
                         <img :src="require('@/assets/google-icon.png')" alt="Google" />
                     </a>
                 </div>
-                <span>----- or Sign in with Email -----</span>
+                <span>----- or Sign In with Email -----</span>
                 <div>
                     <input type="email" placeholder="Email" v-model="email" required>
                 </div>
@@ -19,17 +19,18 @@
                     <input type="checkbox" id="rememberMe" v-model="rememberMe">
                         <label for="rememberMe">Remember&nbsp;Me</label>
                 </div>
-                <a href="#" @click.prevent="toggleForgotPassword">Forgot your password?</a>
+                <a style="text-decoration: underline;" href="#" @click.prevent="toggleForgotPassword">Forgot Your Password?</a>
                 <button type="submit">Sign In</button>
             </form>
+        </div>
 
-            <div class="forgot-pw" v-if="showForgotPassword">
-                <h2>Forgot Password?</h2>
-                <form @submit.prevent="sendPasswordResetEmail"> <!-- Ensure you have this method -->
+        <div class="form-container forgot-pw" v-if="showForgotPassword">
+                <form @submit.prevent="sendPasswordResetEmail">
+                    <h1 style="margin-bottom: 10px;">Forgot Password?</h1>
                     <input type="email" placeholder="Enter your email" v-model="resetEmail" required>
                     <button type="submit">Send Reset Email</button>
+                    <a style="text-decoration: underline;" href="#" @click.prevent="toggleForgotPassword">Back to Sign In</a>
                 </form>
-            </div>
         </div>
       
         <div class="form-container sign-up" v-if="isRegisterActive">
@@ -72,8 +73,9 @@
   </template>
   
   <script>
-  import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
-  import { auth } from '../main';  // Firebase initialization
+  import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
+  import { auth, db } from '../main';  // Firebase initialization
+  import { doc, setDoc } from 'firebase/firestore'; // Firestore methods
 
   
   export default {
@@ -85,7 +87,7 @@
         resetEmail: '', // For password reset
         showForgotPassword: false, // Toggle for forgot password section
         isRegisterActive: false,
-        rememberMe: false
+        rememberMe: false,
       };
     },
     methods: {
@@ -93,30 +95,67 @@
             this.isRegisterActive = !this.isRegisterActive;
         },
         async register() {
+            const persistenceType = this.rememberMe ? browserLocalPersistence : browserSessionPersistence;
+
             try {
+            // Set persistence before registering the user
+            await setPersistence(auth, persistenceType);
+
+            // Once persistence is set, create a new user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
             const user = userCredential.user;
+
+            // Store user data in Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+            name: this.name,
+            email: this.email,
+            isVerified: false,  // Will update when the user verifies their email
+            petDescription: this.petDescription || '', // Store any pet description if provided
+            role: 'user', // Default role is 'user'; can be changed to 'admin' if needed
+            totalItemDonated: 0, // Default value
+            totalMoneyDonated: 0, // Default value
+            profileImage: this.profileImage || '', // Optional, set default or let user upload later
+            createdAt: new Date(), // Store when the account was created
+            });
 
             // Send verification email
             await sendEmailVerification(user);
             console.log('Verification email sent');
-
             alert('Account created! A verification email has been sent to your inbox.');
+
+            this.email = ''; // Clear the email input
+            this.password = ''; // Clear the password input
+            this.name = '';
+            
         } catch (error) {
             console.error('Error during registration:', error.message);
             alert('Error creating account: ' + error.message);
         }
         },
         login() {
-            signInWithEmailAndPassword(auth, this.email, this.password)
+            const persistenceType = this.rememberMe ? browserLocalPersistence : browserSessionPersistence;
+
+            // Set the persistence based on whether "Remember Me" is checked
+            setPersistence(auth, persistenceType)
+            .then(() => {
+            // Once persistence is set, proceed with the email sign-in
+            return signInWithEmailAndPassword(auth, this.email, this.password);
+            })
+
             .then((userCredential) => {
                 console.log('Logged in:', userCredential.user);
                 if (this.rememberMe) {
                     sessionStorage.setItem('email', this.email); // Save email to sessionStorage
             }
+            this.email = ''; // Clear the email input
+            this.password = ''; // Clear the password input
+            // Redirect the user to the landing page
+            this.$router.push('/about');  // Redirect to landing page
+
             })
             .catch((error) => {
                 console.error('Error logging in:', error.message);
+                alert('Login failed: Email and/or Password is incorrect');
             });
         },
         sendPasswordResetEmail() {
@@ -133,6 +172,7 @@
         },
         toggleForgotPassword() {
         this.showForgotPassword = !this.showForgotPassword; // Toggle visibility
+        console.log("Forgot Password toggled:", this.showForgotPassword); // Add this line for debugging
         this.resetEmail = '';
         },
         signInWithGoogle() {
@@ -146,6 +186,7 @@
             })
             .catch((error) => {
                 console.error('Google Sign-In Error:', error.message);
+                alert('Google Sign-In failed: ' + error.message); // Notify the user of the error
             });
       }
     }
@@ -160,16 +201,7 @@
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
-/* 
-template{
-    background-color: #c9d6ff;
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 100vh;
-} */
+
 
 .container{
     background-color: #fff;
@@ -247,7 +279,7 @@ template{
 }
 
 
-.sign-in{
+.sign-in, .forgot-pw{
     left: 0;
     width: 50%;
     z-index: 2;
@@ -380,5 +412,11 @@ img{
   margin-right:8px;
 }
 
+.forgot-pw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+} 
   </style>
   

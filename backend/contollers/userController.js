@@ -32,8 +32,30 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-
+// Controller for user registration
+const registerUser = async (req, res) => {
+    const { uid, name, email, petDescription, role, profileImage } = req.body;
+    try {
+      await db.collection('users').doc(uid).set({
+        name,
+        email,
+        petDescription: petDescription || '',
+        role: role || 'user',
+        profileImage: profileImage || '',
+        isVerified: false,
+        totalItemDonated: 0,
+        totalMoneyDonated: 0,
+        createdAt: new Date(),
+      });
+      res.status(200).json({ message: 'User successfully registered in Firestore.' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error saving user to Firestore', error });
+    }
+  };
+  
+  
 module.exports = {
     getUserById,
-    getAllUsers
+    getAllUsers,
+    registerUser
 };

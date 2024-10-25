@@ -1,7 +1,8 @@
 // index.js
 const express = require('express');
 const cors = require('cors');
-const dataRoutes = require('./routers/dataRoutes'); // Import the router
+const userRoutes = require('./routers/user'); // Import the router
+const { db } = require('./config/firebase'); // Import Firestore (ensure this is correctly configured)
 
 const PORT = 8000;
 const app = express();
@@ -10,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 // console.log('Router is being mounted');
-app.use('/api', dataRoutes); // Use the imported router
+app.use('/api', userRoutes); // Use the imported router
 
 // Health check endpoint
 app.get('/get-data', async (req, res) => {
