@@ -2,7 +2,16 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const userController = require('../contollers/userController'); // Import the controller
+const userController = require('../controllers/userController'); // Import the controller
+//Afsana added
+const { bucket } = require('../config/firebase');
+const marketplaceController = require('../controllers/marketplaceController');
+const upload = require('../middleware/uploadImage'); 
+const requestController = require('../controllers/requestController');
+
+
+//Dessy added
+const fundraisingController = require('../controllers/fundraisingController');
 
 const app = express();
 app.use(cors());
