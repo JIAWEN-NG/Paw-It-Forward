@@ -9,6 +9,13 @@
     "start": "vue-cli-service serve" 
   },
   "dependencies": {
+<<<<<<< Updated upstream
+=======
+    "@stripe/stripe-js": "^4.8.0",
+    "@vueuse/motion": "^2.2.6",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+>>>>>>> Stashed changes
     "core-js": "^3.8.3",
     "firebase": "^10.14.0",
     "firebase-admin": "^12.6.0",
