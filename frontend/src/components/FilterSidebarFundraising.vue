@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-sidebar">
+  <div class="filter-sidebar p-3 p-md-4">
     <h4 class="mt-4">Filter by Pet Type</h4>
     <div class="filter-group">
       <label>
@@ -27,7 +27,7 @@
     <div class="divider"></div>
 
     <!-- Reset Filter Button -->
-    <button class="reset-button" @click="resetFilters">Reset Filters</button>
+    <button class="reset-button w-100" @click="resetFilters">Reset Filters</button>
   </div>
 </template>
 
@@ -68,9 +68,6 @@ export default {
 
 <style scoped>
 .filter-sidebar {
-  padding: 20px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
   background-color: #FCEED5;
 }
 
@@ -115,11 +112,5 @@ input[type='radio'] {
 
 .reset-button:hover {
   background-color: #34495e;
-}
-
-@media (max-width: 768px) {
-  .filter-sidebar {
-    padding: 10px;
-  }
 }
 </style>

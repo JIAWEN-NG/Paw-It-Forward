@@ -1,10 +1,5 @@
-<!-- ManagePostView.vue -->
-
 <template>
   <div class="manage-post-view">
-    <!-- <h1>Manage Post View</h1>
-    <p class="test-paragraph">This component allows you to manage both marketplace listings and fundraising posts.</p> -->
-
     <!-- Toggle Button Area -->
     <div class="toggle-buttons">
       <button @click="currentView = 'marketplace'" :class="{ active: currentView === 'marketplace' }">
@@ -17,16 +12,14 @@
 
     <!-- Split Screen Area -->
     <div class="split-screen">
-      <!-- Left Section: Marketplace Listings (Scrollable) -->
-      <div class="left-section scrollable" v-if="currentView === 'marketplace'">
-        <!-- <h2>Marketplace Listings Management</h2> -->
+      <!-- Left Section: Marketplace Listings -->
+      <div class="left-section" v-if="currentView === 'marketplace'">
         <p>Here, you can manage your marketplace listings.</p>
         <ManageMarketplace :loadListings="currentView === 'marketplace'" />
       </div>
 
       <!-- Right Section: Fundraising Posts -->
       <div class="right-section" v-if="currentView === 'fundraising'">
-        <!-- <h2>Fundraising Posts Management</h2> -->
         <p>Here, you can manage your fundraising posts.</p>
         <ManageFundraisingPost :loadListings="currentView === 'fundraising'" />
       </div>
@@ -53,10 +46,9 @@ export default {
 </script>
 
 <style scoped>
-/* Font family for the entire component */
 body {
-  font-family: 'Montserrat', sans-serif; /* Apply the Montserrat font */
-  background:white;
+  font-family: 'Montserrat', sans-serif;
+  background: white;
 }
 
 .manage-post-view {
@@ -88,15 +80,15 @@ body {
 }
 
 .toggle-buttons button.active {
-  background-color: #2c3e50; /* Dark blue for active */
+  background-color: #2c3e50;
 }
 
 .toggle-buttons button:not(.active) {
-  background-color: grey; /* Grey for inactive */
+  background-color: grey;
 }
 
 .toggle-buttons button:hover {
-  background-color: #34495e; /* Darker blue on hover */
+  background-color: #34495e;
 }
 
 .split-screen {
@@ -104,8 +96,6 @@ body {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 20px;
-  height: 650px; 
-  /* for the beige part */
 }
 
 .left-section, .right-section {
@@ -117,14 +107,12 @@ body {
   border-radius: 8px;
 }
 
+/* Remove fixed height to allow dynamic content expansion */
 .left-section {
-  height: 600px; /* Increased height for the scrollable section */
-  overflow-y: auto;
-}
-
-.right-section {
-  height: 600px;
-  overflow-y: auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
 h2 {
@@ -139,9 +127,6 @@ p {
 @media (max-width: 768px) {
   .split-screen {
     flex-direction: column;
-  }
-  .left-section, .right-section {
-    height: auto;
   }
 }
 </style>

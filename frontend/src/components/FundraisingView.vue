@@ -12,11 +12,11 @@
         <FilterSidebarFundraising @filter="applyFilters" />
       </div>
 
-      <!-- Fundraising List in the Center with Pagination -->
+      <!-- Fundraising List in the Center with Pagination inside listing-container -->
       <div class="col-md-9 col-12">
         <hr class="divider-line" />
 
-        <!-- Scrollable Fundraising List -->
+        <!-- Dynamic Fundraising List without fixed height -->
         <div class="listing-container shadow-box">
           <FundraisingList
             :fundraisings="filteredFundraisings"
@@ -24,6 +24,8 @@
             :items-per-page="itemsPerPage"
             @update-page="updatePage"
           />
+
+          
         </div>
 
         <hr class="divider-line" />
@@ -53,11 +55,15 @@ export default {
       filteredFundraisings: [],
     };
   },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.filteredFundraisings.length / this.itemsPerPage);
+    }
+  },
   methods: {
     applyFilters(filters) {
       let sortedFundraisings = [...this.fundraisings];
 
-      // Sort only if a sort option is selected
       if (filters.sortOption) {
         if (filters.sortOption === 'recent') {
           sortedFundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -66,14 +72,13 @@ export default {
         }
       }
 
-      // Filter by pet type
       this.filteredFundraisings = sortedFundraisings.filter((fundraiser) => {
         return (
           filters.petTypes.length === 0 || filters.petTypes.includes(fundraiser.petType)
         );
       });
 
-      this.currentPage = 1; // Reset to the first page
+      this.currentPage = 1;
     },
     updatePage(page) {
       this.currentPage = page;
@@ -115,20 +120,13 @@ export default {
   }
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
-}
-
 .listing-container {
-  height: 900px;
-  overflow-y: auto;
   padding: 20px;
   background-color: #f5e0c4;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .divider-line {
@@ -137,4 +135,6 @@ export default {
   background: #ddd;
   margin: 20px 0;
 }
+
+
 </style>
