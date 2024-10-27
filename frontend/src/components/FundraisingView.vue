@@ -32,7 +32,6 @@
   </div>
 </template>
 
-
 <script>
 import FilterSidebarFundraising from './FilterSidebarFundraising.vue';
 import FundraisingList from './FundraisingList.vue';
@@ -56,12 +55,25 @@ export default {
   },
   methods: {
     applyFilters(filters) {
-      this.filteredFundraisings = this.fundraisings.filter((fundraiser) => {
+      let sortedFundraisings = [...this.fundraisings];
+
+      // Sort only if a sort option is selected
+      if (filters.sortOption) {
+        if (filters.sortOption === 'recent') {
+          sortedFundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (filters.sortOption === 'oldest') {
+          sortedFundraisings.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        }
+      }
+
+      // Filter by pet type
+      this.filteredFundraisings = sortedFundraisings.filter((fundraiser) => {
         return (
           filters.petTypes.length === 0 || filters.petTypes.includes(fundraiser.petType)
         );
       });
-      this.currentPage = 1;
+
+      this.currentPage = 1; // Reset to the first page
     },
     updatePage(page) {
       this.currentPage = page;
@@ -94,13 +106,12 @@ export default {
   min-height: 100vh;
 }
 
-/* Make layout responsive on smaller screens */
 @media (max-width: 768px) {
   .filter-container {
-    min-height: auto; /* Allow height to adjust based on content */
-    border-right: none; /* Remove border for a cleaner look on small screens */
-    border-bottom: 1px solid #ddd; /* Add bottom border for separation */
-    padding-bottom: 20px; /* Add bottom padding */
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
   }
 }
 

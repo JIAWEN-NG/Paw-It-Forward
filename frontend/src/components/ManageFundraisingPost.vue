@@ -279,13 +279,19 @@ button {
 }
 
 .modal-dialog {
-  margin-top: 50px; /* Move the modal down by 50px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0; /* Remove top margin */
+  padding: 10px; /* Add padding for smaller screens */
 }
 
 .modal-content {
   border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 500px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   display: flex;
@@ -296,8 +302,9 @@ button {
 .modal-body {
   max-height: 60vh; /* Limit height for scrolling */
   overflow-y: auto;
-  padding: 30px;
+  padding: 20px; /* Reduced padding for smaller screens */
 }
+
 
 /* Modal title styling */
 .modal-title {

@@ -18,7 +18,8 @@
                 <label for="description" class="form-label">Description</label>
                 <textarea id="description" v-model="fundraising.description" required class="form-control" rows="3"></textarea>
               </div>
-               <div class="form-group mb-3">
+
+              <div class="form-group mb-3">
                 <label for="petType" class="form-label">Pet Type</label>
                 <input type="text" id="petType" v-model="fundraising.petType" required class="form-control" />
               </div>
@@ -169,13 +170,19 @@ body {
 }
 
 .modal-dialog {
-  margin-top: 50px; /* Move the modal down by 50px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0; /* Remove top margin */
+  padding: 10px; /* Add padding for smaller screens */
 }
 
 .modal-content {
   border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 500px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   display: flex;
@@ -186,17 +193,15 @@ body {
 .modal-body {
   max-height: 60vh; /* Limit height for scrolling */
   overflow-y: auto;
-  padding: 30px;
+  padding: 20px; /* Reduced padding for smaller screens */
 }
 
 /* Modal title styling */
 .modal-title {
   text-align: center;
-  margin-top: 15px;
-  margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #2c3e50; /* Dark color for better contrast */
+  color: #2c3e50;
 }
 
 /* Close button styling */
@@ -212,11 +217,10 @@ body {
 /* Modal footer styling with spaced buttons */
 .modal-footer {
   display: flex;
-  gap: 10px; /* Adds 10px space between buttons */
-  justify-content: flex-end; /* Aligns buttons to the right */
+  gap: 10px;
+  justify-content: flex-end;
   padding-top: 15px;
 }
-
 
 /* Image upload styling */
 .image-upload-box {

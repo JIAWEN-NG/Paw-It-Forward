@@ -1,4 +1,3 @@
-<!-- FilterSidebarFundraising.vue -->
 <template>
   <div class="filter-sidebar">
     <h4 class="mt-4">Filter by Pet Type</h4>
@@ -14,6 +13,19 @@
     </div>
     <div class="divider"></div>
 
+    <!-- Sort Options -->
+    <h4 class="mt-4">Sort by</h4>
+    <div class="sort-group">
+      <label>
+        <input type="radio" value="recent" v-model="sortOption" /> Most Recent
+      </label>
+      <label>
+        <input type="radio" value="oldest" v-model="sortOption" /> Least Recent
+      </label>
+    </div>
+    
+    <div class="divider"></div>
+
     <!-- Reset Filter Button -->
     <button class="reset-button" @click="resetFilters">Reset Filters</button>
   </div>
@@ -24,6 +36,7 @@ export default {
   data() {
     return {
       selectedPetTypes: [],
+      sortOption: null, // No default selection
     };
   },
   watch: {
@@ -33,15 +46,20 @@ export default {
       },
       deep: true,
     },
+    sortOption() {
+      this.emitFilters();
+    },
   },
   methods: {
     emitFilters() {
       this.$emit('filter', {
         petTypes: this.selectedPetTypes,
+        sortOption: this.sortOption,
       });
     },
     resetFilters() {
       this.selectedPetTypes = [];
+      this.sortOption = null; // Reset sort option
       this.emitFilters();
     },
   },
@@ -62,7 +80,7 @@ h4 {
   font-family: 'Montserrat', sans-serif;
 }
 
-.filter-group {
+.filter-group, .sort-group {
   margin-bottom: 15px;
 }
 
@@ -74,7 +92,8 @@ label {
   font-family: 'Montserrat', sans-serif;
 }
 
-input[type='checkbox'] {
+input[type='checkbox'],
+input[type='radio'] {
   margin-right: 10px;
 }
 
