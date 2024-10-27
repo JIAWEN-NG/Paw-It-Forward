@@ -36,7 +36,7 @@ const getAllUsers = async (req, res) => {
 const registerUser = async (req, res) => {
     const { uid, name, email, petDescription, role, profileImage } = req.body;
     try {
-      await db.collection('users').doc(uid).set({
+      await db.collection('Users').doc(uid).set({
         name,
         email,
         petDescription: petDescription || '',
@@ -45,7 +45,6 @@ const registerUser = async (req, res) => {
         isVerified: false,
         totalItemDonated: 0,
         totalMoneyDonated: 0,
-        createdAt: new Date(),
       });
       res.status(200).json({ message: 'User successfully registered in Firestore.' });
     } catch (error) {

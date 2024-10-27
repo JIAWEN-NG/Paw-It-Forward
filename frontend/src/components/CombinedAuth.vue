@@ -106,7 +106,7 @@
             const user = userCredential.user;
 
             // Store user data in Firestore
-            await setDoc(doc(db, 'users', user.uid), {
+            await setDoc(doc(db, 'Users', user.uid), {
             name: this.name,
             email: this.email,
             isVerified: false,  // Will update when the user verifies their email
@@ -115,7 +115,6 @@
             totalItemDonated: 0, // Default value
             totalMoneyDonated: 0, // Default value
             profileImage: this.profileImage || '', // Optional, set default or let user upload later
-            createdAt: new Date(), // Store when the account was created
             });
 
             // Send verification email
