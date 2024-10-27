@@ -254,18 +254,15 @@ const deleteFundraising = async (req, res) => {
 // };
 // Add to fundraisingController.js
 const editFundraising = async (req, res) => {
-
-   
     const { id, title, description, petType, targetAmount } = req.body;
-   
-    try {
-        // Validate required fields
-        if (!id || !title || !description || !petType || !targetAmount) {
-            
-            return res.status(400).json({ message: 'Missing required fields' });
-        }
 
-        // Find the fundraising document by ID
+    // Basic field validation
+    if (!id || !title || !description || !petType || !targetAmount) {
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    try {
+        // Retrieve the fundraising document
         const fundraisingRef = db.collection('Fundraising').doc(id);
         const doc = await fundraisingRef.get();
 
@@ -273,19 +270,17 @@ const editFundraising = async (req, res) => {
             return res.status(404).json({ message: 'Fundraising post not found' });
         }
 
-        // Authorization check
+        // Check authorization
         const data = doc.data();
-        const userId = "p8v0JBWhlfNZ13DzpBFN"; // Replace with actual authenticated user's ID if available
-
+        const userId = "p8v0JBWhlfNZ13DzpBFN"; // Replace with actual user authentication
         if (data.userId !== userId) {
             return res.status(403).json({ message: 'Unauthorized to edit this post' });
         }
 
         // Prepare updated data
-
         const updatedData = { title, description, petType, targetAmount: parseFloat(targetAmount) };
 
-        // Handle new image upload if provided
+        // If a new image is provided, handle the upload
         if (req.file) {
             const bucket = admin.storage().bucket();
             const fileName = `fundraising/${userId}/${Date.now()}_${req.file.originalname}`;
@@ -296,13 +291,14 @@ const editFundraising = async (req, res) => {
                 resumable: false,
             });
 
-            const newImageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
-            updatedData.fundraisingImg = newImageUrl;
+            // Add the new image URL to the updatedData object
+            updatedData.fundraisingImg = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
         }
 
-        // Update the fundraising document in Firestore
+        // Update the document
         await fundraisingRef.update(updatedData);
 
+        // Respond with the updated data
         res.status(200).json({ message: 'Fundraising post updated successfully', updatedData });
     } catch (error) {
         console.error('Error updating fundraising post:', error.message);
