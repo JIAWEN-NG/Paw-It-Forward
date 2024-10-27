@@ -1,20 +1,19 @@
-<!-- FundraisingView.vue -->
 <template>
   <div class="container-fluid page-layout">
     <div class="row">
       <!-- Carousel Component -->
-      <CarouselMarketplace />
+      <CarouselFundraising />
     </div>
 
     <div class="row fundraising-section">
-      <!-- Sidebar Filter on the Left -->
-      <div class="col-md-3 filter-container">
+      <!-- Sidebar Filter on the Left, stacks above Fundraising List on small screens -->
+      <div class="col-md-3 col-12 filter-container">
         <CreateFundraisingForm />
         <FilterSidebarFundraising @filter="applyFilters" />
       </div>
 
       <!-- Fundraising List in the Center with Pagination -->
-      <div class="col-md-9">
+      <div class="col-md-9 col-12">
         <hr class="divider-line" />
 
         <!-- Scrollable Fundraising List -->
@@ -33,18 +32,19 @@
   </div>
 </template>
 
+
 <script>
 import FilterSidebarFundraising from './FilterSidebarFundraising.vue';
 import FundraisingList from './FundraisingList.vue';
 import CreateFundraisingForm from './CreateFundraisingForm.vue';
-import CarouselMarketplace from './CarouselMarketplace.vue';
+import CarouselFundraising from './CarouselFundraising.vue';
 
 export default {
   components: {
     FilterSidebarFundraising,
     FundraisingList,
     CreateFundraisingForm,
-    CarouselMarketplace,
+    CarouselFundraising,
   },
   data() {
     return {
@@ -92,6 +92,16 @@ export default {
   border-right: 1px solid #ddd;
   padding: 20px;
   min-height: 100vh;
+}
+
+/* Make layout responsive on smaller screens */
+@media (max-width: 768px) {
+  .filter-container {
+    min-height: auto; /* Allow height to adjust based on content */
+    border-right: none; /* Remove border for a cleaner look on small screens */
+    border-bottom: 1px solid #ddd; /* Add bottom border for separation */
+    padding-bottom: 20px; /* Add bottom padding */
+  }
 }
 
 .pagination-container {

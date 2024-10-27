@@ -212,47 +212,6 @@ const deleteFundraising = async (req, res) => {
 
 
 // // Function to edit a fundraising campaign by ID
-// const editFundraising = async (req, res) => {
-//     const { id, title, description, targetAmount,petType } = req.body;
-
-//     try {
-//         // Validate required fields
-//         if (!id || !title || !description || !targetAmount ||!petType) {
-//             return res.status(400).json({ message: 'Missing required fields' });
-//         }
-
-//         const fundraisingRef = db.collection('Fundraising').doc(id);
-
-//         // Check if the fundraising campaign exists
-//         const doc = await fundraisingRef.get();
-//         if (!doc.exists) {
-//             return res.status(404).json({ message: 'Fundraising campaign not found' });
-//         }
-
-//         // Optionally, check if the requesting user is authorized to edit the campaign
-//         const data = doc.data();
-//         const userId = "p8v0JBWhlfNZ13DzpBFN"; // Default user ID
-//         if (data.userId !== userId) {
-//             return res.status(403).json({ message: 'Unauthorized to edit this campaign' });
-//         }
-
-//         // Update the fundraising campaign
-//         const updatedFundraising = {
-//             title,
-//             description,
-//             petType,
-//             targetAmount: parseFloat(targetAmount),
-//             updatedAt: admin.firestore.Timestamp.now(),
-//         };
-//         await fundraisingRef.update(updatedFundraising);
-
-//         res.status(200).json({ message: 'Fundraising campaign updated successfully', updatedFundraising });
-//     } catch (error) {
-//         console.error('Error updating fundraising campaign:', error.message);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
-// Add to fundraisingController.js
 const editFundraising = async (req, res) => {
     const { id, title, description, petType, targetAmount } = req.body;
 

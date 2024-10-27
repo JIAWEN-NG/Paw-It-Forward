@@ -19,7 +19,7 @@ import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // 
 //import FundraisingList from '../components/FundraisingList.vue'; // To list all fundraising campaigns
 import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
 import FundraisingDetail from '../components/FundraisingDetail.vue';
-import ManageFundraisingPost from '../components/ManageFundraisingPost.vue';
+//import ManageFundraisingPost from '../components/ManageFundraisingPost.vue';
 //import EditFundraisingPost from '../components/EditFundraisingPost.vue';
 
 //afsana changed
@@ -57,10 +57,7 @@ const routes = [
     props: true
   },// Pass route params as props
 
-  { 
-    path: '/fundraising/manage', 
-    component: ManageFundraisingPost 
-  },
+
 
   
 ];
