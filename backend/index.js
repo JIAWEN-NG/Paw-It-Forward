@@ -5,16 +5,12 @@ const dataRoutes = require('./routers/dataRoutes'); // Import the router
 //afsana added
 const { db } = require('./config/firebase'); // Ensure this is correctly imported
 
-const PORT = 5000;
+const PORT = 8000;
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-<<<<<<< Updated upstream
-console.log('Router is being mounted');
-app.use('/api', dataRoutes); // Use the imported router
-=======
 // // Afsana added - Add a root route
 // app.get('/', (req, res) => {
 //     res.send('Welcome to the API!'); // You can customize this response
@@ -22,7 +18,7 @@ app.use('/api', dataRoutes); // Use the imported router
 
 console.log('Router is being mounted');
 app.use('/api', dataRoutes); 
->>>>>>> Stashed changes
+
 
 // Health check endpoint
 app.get('/get-data', async (req, res) => {

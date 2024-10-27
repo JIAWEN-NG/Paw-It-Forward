@@ -1,9 +1,9 @@
+<!-- FundraisingView.vue -->
 <template>
   <div class="container-fluid page-layout">
     <div class="row">
-      <!-- inserting carousel component here -->
-      <CarouselMarketplace/>
-      <!-- <img src="../assets/carousel.png"> -->
+      <!-- Carousel Component -->
+      <CarouselMarketplace />
     </div>
 
     <div class="row fundraising-section">
@@ -15,20 +15,18 @@
 
       <!-- Fundraising List in the Center with Pagination -->
       <div class="col-md-9">
-        <!-- Faint Divider Line -->
         <hr class="divider-line" />
-        
+
         <!-- Scrollable Fundraising List -->
         <div class="listing-container shadow-box">
           <FundraisingList
-            ref="fundraisingList"
+            :fundraisings="filteredFundraisings"
             :current-page="currentPage"
             :items-per-page="itemsPerPage"
-            :fundraisings="paginatedFundraisings"
+            @update-page="updatePage"
           />
         </div>
 
-        <!-- Faint Divider Line -->
         <hr class="divider-line" />
       </div>
     </div>
@@ -41,59 +39,47 @@ import FundraisingList from './FundraisingList.vue';
 import CreateFundraisingForm from './CreateFundraisingForm.vue';
 import CarouselMarketplace from './CarouselMarketplace.vue';
 
-
 export default {
   components: {
     FilterSidebarFundraising,
     FundraisingList,
     CreateFundraisingForm,
     CarouselMarketplace,
-    
   },
   data() {
     return {
       currentPage: 1,
       itemsPerPage: 9,
-      fundraisings: [], // Full fundraising list
+      fundraisings: [],
+      filteredFundraisings: [],
     };
-  },
-  computed: {
-    paginatedFundraisings() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.fundraisings.slice(start, end);
-    },
-    totalPages() {
-      return Math.max(Math.ceil(this.fundraisings.length / this.itemsPerPage), 1);
-    },
   },
   methods: {
     applyFilters(filters) {
-      if (this.$refs.fundraisingList && this.$refs.fundraisingList.filterFundraisings) {
-        this.$refs.fundraisingList.filterFundraisings(filters);
-      } else {
-        console.error('FundraisingList ref or filterFundraisings method is missing.');
-      }
+      this.filteredFundraisings = this.fundraisings.filter((fundraiser) => {
+        return (
+          filters.petTypes.length === 0 || filters.petTypes.includes(fundraiser.petType)
+        );
+      });
+      this.currentPage = 1;
     },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
+    updatePage(page) {
+      this.currentPage = page;
     },
     setFundraisings(fundraisings) {
-      this.fundraisings = fundraisings;
+      this.fundraisings = fundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      this.filteredFundraisings = this.fundraisings;
     },
+  },
+  async created() {
+    const response = await fetch('http://localhost:8000/api/Fundraising');
+    const data = await response.json();
+    this.setFundraisings(data);
   },
 };
 </script>
 
 <style scoped>
-/* Layout styles */
 .page-layout {
   min-height: 100vh;
   padding-top: 20px;
@@ -108,10 +94,16 @@ export default {
   min-height: 100vh;
 }
 
-/* Scrollable Donation List */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
 .listing-container {
-  height: 900px; /* Set a fixed height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  height: 900px;
+  overflow-y: auto;
   padding: 20px;
   background-color: #f5e0c4;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -124,41 +116,4 @@ export default {
   background: #ddd;
   margin: 20px 0;
 }
-
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
-}
-
-.card {
-  background-color:  #FCEED5;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-}
-
-.card:hover {
-  transform: scale(1.02);
-}
-
-.card-title,
-.card-subtitle {
-  color: #2c3e50;
-}
-
-.card-text {
-  color: #5c4033;
-}
-
-.btn-outline-primary {
-  color: #2c3e50;
-  border-color: #2c3e50;
-}
-
-.btn-outline-primary:hover {
-  background-color: #2c3e50;
-  color: #fff;
-}
 </style>
-

@@ -1,9 +1,9 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+// import { createApp } from 'vue'
+// import App from './App.vue'
 
-<<<<<<< Updated upstream
-createApp(App).mount('#app')
-=======
+
+// createApp(App).mount('#app')
+
 
 // const app = createApp(App); // Create the Vue app instance
 // app.use(router); // Use the router
@@ -29,4 +29,4 @@ app.use(router)
 app.use(MotionPlugin)
 
 app.mount('#app')
->>>>>>> Stashed changes
+

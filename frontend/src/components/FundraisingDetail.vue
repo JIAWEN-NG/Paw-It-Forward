@@ -93,9 +93,14 @@ export default {
       });
     };
 
-    const donate = () => {
-      alert('Donation feature coming soon!');
+
+   const donate = () => {
+      // Prepare the Stripe URL with the fundraising post ID as a query parameter
+      const stripeUrl = `https://donate.stripe.com/test_28og116uCcsqf0QcMM?postId=${props.id}`;
+      // Redirect to Stripe
+      window.location.href = stripeUrl;
     };
+
 
     onMounted(fetchFundraisingDetail);
 

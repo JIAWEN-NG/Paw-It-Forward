@@ -1,3 +1,4 @@
+<!-- FilterSidebarFundraising.vue -->
 <template>
   <div class="filter-sidebar">
     <h4 class="mt-4">Filter by Pet Type</h4>
@@ -41,7 +42,7 @@ export default {
     },
     resetFilters() {
       this.selectedPetTypes = [];
-      this.emitFilters(); // Emit reset filters to parent
+      this.emitFilters();
     },
   },
 };
@@ -49,69 +50,57 @@ export default {
 
 <style scoped>
 .filter-sidebar {
-  padding: 20px; /* Add padding around the sidebar */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
-  font-size: 14px; /* Set base font size */
-  background-color: #FCEED5; /* Set background color to FCEED5 */
+  padding: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  background-color: #FCEED5;
 }
 
 h4 {
-  margin-bottom: 10px; /* Space between heading and the checkbox group */
-  font-size: 16px; /* Smaller font size for headings */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
 }
 
-h5 {
-  margin-bottom: 5px; /* Space between subheading and checkbox group */
-  font-size: 14px; /* Smaller font size for subheadings */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
-}
-
-/* Filter group styling */
 .filter-group {
-  margin-bottom: 15px; /* Space between filter groups */
+  margin-bottom: 15px;
 }
 
-/* Align labels to the left */
 label {
   display: flex;
-  align-items: center; /* Align checkbox and text */
-  margin-bottom: 5px; /* Space between checkboxes */
-  cursor: pointer; /* Change cursor on hover */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
+  align-items: center;
+  margin-bottom: 5px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
 }
 
-/* Style the checkboxes */
 input[type='checkbox'] {
-  margin-right: 10px; /* Space between checkbox and label text */
+  margin-right: 10px;
 }
 
-/* Divider styling */
 .divider {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Faint line */
-  margin: 10px 0; /* Space above and below the divider */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
 }
 
-/* Reset button styling */
 .reset-button {
-  margin-top: 20px; /* Space above the button */
-  padding: 10px 15px; /* Padding for the button */
-  background-color: #2c3e50; /* Dark blue background */
-  color: white; /* White text */
-  border: none; /* No border */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .reset-button:hover {
-  background-color: #34495e; /* Darker shade on hover */
+  background-color: #34495e;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .filter-sidebar {
-    padding: 10px; /* Less padding on smaller screens */
+    padding: 10px;
   }
 }
 </style>

@@ -1,9 +1,5 @@
 <!-- App.vue -->
 <template>
-<<<<<<< Updated upstream
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
-=======
 
   <div id="app">
     <!-- afsana added -->
@@ -20,20 +16,11 @@
     <!-- afsana added ends -->
     <router-view />
   </div>
->>>>>>> Stashed changes
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
-<<<<<<< Updated upstream
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-=======
 
 // export default {
 //   name: 'App',
@@ -48,7 +35,6 @@ export default {
   name: 'App',
 };
 
->>>>>>> Stashed changes
 </script>
 
 <style>
@@ -59,9 +45,6 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-<<<<<<< Updated upstream
-=======
   background-color:white
->>>>>>> Stashed changes
 }
 </style>

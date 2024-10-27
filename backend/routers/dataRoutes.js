@@ -16,13 +16,6 @@ const fundraisingController = require('../controllers/fundraisingController');
 const app = express();
 app.use(cors());
 
-<<<<<<< Updated upstream
-console.log('dataRoutes.js is loaded'); 
-console.log('dataRoutes.js is loaded and /users route is defined');
-
-
-=======
->>>>>>> Stashed changes
 // Define the route and link it to the controller function
 // User Routes
 router.get('/users/:id', userController.getUserById);
