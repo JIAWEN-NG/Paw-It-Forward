@@ -5,7 +5,7 @@
                 <h1>Sign In</h1>
                 <div class="social-icons">
                     <a href="#" class="icon" @click.prevent="signInWithGoogle">
-                        <img :src="require('@/assets/google-icon.png')" alt="Google" />
+                        <img :src="googleImageUrl" alt="google"/>
                     </a>
                 </div>
                 <span>----- or Sign In with Email -----</span>
@@ -38,7 +38,7 @@
                 <h1>Create Account</h1>
                 <div class="social-icons">
                     <a href="#" class="icon" @click="signInWithGoogle">
-                        <img :src="require('@/assets/google-icon.png')" alt="Google" />
+                        <img :src="googleImageUrl" alt="google"/>
                     </a>
                 </div>
                 <span>----- or Register with Email -----</span>
@@ -88,6 +88,7 @@
         showForgotPassword: false, // Toggle for forgot password section
         isRegisterActive: false,
         rememberMe: false,
+        googleImageUrl:null,
       };
     },
     methods: {
@@ -187,8 +188,22 @@
                 console.error('Google Sign-In Error:', error.message);
                 alert('Google Sign-In failed: ' + error.message); // Notify the user of the error
             });
-      }
-    }
+        },
+        async fetchImage(fileName) {
+        try {
+            const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
+            const data = await response.json();
+            return data.url;
+        } catch (error) {
+            console.error(`Failed to fetch image ${fileName}:`, error);
+            return null;
+        }
+    },
+    },
+      async mounted() {
+    // Fetch each image by its filename
+    this.googleImageUrl = await this.fetchImage('google.png');
+    },
   };
   </script>
   
@@ -203,12 +218,13 @@
 
 
 .container{
+    margin-top: 80px;
     background-color: #fff;
     position: relative;
     overflow: hidden;
     max-width: 100%;
     min-height: 480px;
-    height: 100vh;
+    height: 90vh;
 
 }
 

@@ -72,7 +72,7 @@ export default {
   data() {
     return {
         isHovered: false,
-        isUserLoggedIn: true,
+        isUserLoggedIn: false,
         showDropdown: false,
         userProfilePicUrl: null, // URL for the user's profile picture
         pawlogoImageUrl: null,

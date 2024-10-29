@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
 const imageRoutes = require('./routers/imageRoutes');
-const userRoutes = require('./routers/user'); // Import the router
+const userRoutes = require('./routers/dataRoutes'); // Import the router
 const { db } = require('./config/firebase'); // Import Firestore (ensure this is correctly configured)
 
 const PORT = 8000;

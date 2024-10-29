@@ -19,9 +19,9 @@ const routes = [
       component: teamPage 
     },
 
-
-    // please add the your route path here
-  { path: '/login', name: 'Login', component: CombinedAuth },
+    { path: '/login', 
+    name: 'Login', 
+    component: CombinedAuth },
 ];
 
 const router = createRouter({

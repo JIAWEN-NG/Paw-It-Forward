@@ -25,7 +25,7 @@ export default {
     return {
       teamMembers: [
         { name: "Afsana", role: "Chief Meow-nager", photo: "path/to/steve-photo.jpg" },
-        { name: "Darius", role: "Head of Zoomies Department", photo: "path/to/alden-photo.jpg" },
+        { name: "Darius", role: "Treat Procurement Specialist", photo: "path/to/alden-photo.jpg" },
         { name: "Dessy", role: "Head of Purr-sonnel", photo: "path/to/kaley-photo.jpg" },
         { name: "Jia Wen", role: "Head of Purr-duct Development", photo: "path/to/phil-photo.jpg" },
         { name: "Jovi", role: "Chief Barketing Officer", photo: "path/to/phil-photo.jpg" },
