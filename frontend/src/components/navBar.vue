@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand me-auto" href="#">
-                <img :src="require('../assets/paw-logo.png')" alt="paw" class="paw-logo"/>
+                <img :src="pawlogoImageUrl" alt="pawlogo" class="paw-logo" v-if="pawlogoImageUrl" />
             </a>
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
@@ -34,7 +34,7 @@
             </div>
             <router-link to="/chat" class="chat-button">
                 <img
-                    :src="isHovered ? require('../assets/chatinvert.png') : require('../assets/chat3.png')"
+                    :src="isHovered ? chatInvertImageUrl : chat3ImageUrl"
                     alt="chat"
                     class="chat-logo"
                     @mouseover="isHovered = true"
@@ -45,7 +45,7 @@
             <!-- Profile or Sign In Button -->
             <li v-if="isUserLoggedIn" class="profile-container nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img :src="userProfilePic" alt="User Profile" class="profile-pic" />
+                    <img :src="userProfilePicUrl" alt="profilepic" class="profile-pic" />
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
@@ -68,20 +68,44 @@
 
 <script>
 export default {
-    name: 'navBar',
-    data(){
-        return {
-            isHovered: false,
-            isUserLoggedIn: false,
-            userProfilePic: require('../assets/logo.png'), // Path to user's profile picture
-            showDropdown: false,
-        };
+  name: "navBar",
+  data() {
+    return {
+        isHovered: false,
+        isUserLoggedIn: true,
+        showDropdown: false,
+        userProfilePicUrl: null, // URL for the user's profile picture
+        pawlogoImageUrl: null,
+        chatInvertImageUrl: null, 
+        chat3ImageUrl: null,
+    };
+  },
+  methods: {
+    async fetchImage(fileName) {
+      try {
+        const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
+        const data = await response.json();
+        return data.url; // Return the URL from the API response
+      } catch (error) {
+        console.error(`Failed to fetch image ${fileName}:`, error);
+        return null;
+      }
     },
-    methods: {
-        signOut() {
-        this.isUserLoggedIn = false;
-        },
+    signOut() {
+      this.isUserLoggedIn = false;
+      this.userProfilePicUrl = null; // Clear the profile picture URL on sign out
     },
+  },
+  async mounted() {
+    this.pawlogoImageUrl = await this.fetchImage('paw-logo.png');
+    this.chat3ImageUrl = await this.fetchImage('chat3.png');
+    this.chatInvertImageUrl = await this.fetchImage('chatinvert.png');
+
+    // If the user is logged in, fetch the profile picture
+    if (this.isUserLoggedIn) {
+      this.userProfilePicUrl = await this.fetchImage('cooldog.jpg'); // Assign the URL to userProfilePicUrl
+    }
+  },
 };
 </script>
 

@@ -18,7 +18,7 @@
                     </button>
                 </div>
                 <div class="image-content">
-                    <img :src="require('../assets/petowner.png')" alt="paw" />
+                    <img :src="petOwnerImageUrl" alt="paw" v-if="petOwnerImageUrl" />
                 </div>
             </div>
         </section>
@@ -27,7 +27,7 @@
         <section class="about-section">
             <div class="container about-content">
                 <div class="image-content">
-                    <img :src="require('../assets/support.png')" alt="" />
+                    <img :src="supportImageUrl" alt="support" v-if="supportImageUrl" />
                 </div>
                 <div class="text-content">
                     <h1>Who We're Here For</h1>
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="image-content" style="padding: 40px;">
-                    <img :src="require('../assets/heart.png')" alt="" />
+                    <img :src="heartImageUrl" alt="heart" v-if="heartImageUrl" />
                 </div>
 
                 <div class="text-content" style="width: 40%;">
@@ -92,9 +92,33 @@
 
 
 <script>
-
 export default {
-    name: "aboutPage",
+  name: "aboutPage",
+  data() {
+    return {
+      petOwnerImageUrl: null,
+      supportImageUrl: null,
+      heartImageUrl: null,
+    };
+  },
+  methods: {
+    async fetchImage(fileName) {
+      try {
+        const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
+        const data = await response.json();
+        return data.url;
+      } catch (error) {
+        console.error(`Failed to fetch image ${fileName}:`, error);
+        return null;
+      }
+    },
+  },
+  async mounted() {
+    // Fetch each image by its filename
+    this.petOwnerImageUrl = await this.fetchImage('petowner.png');
+    this.supportImageUrl = await this.fetchImage('support.png');
+    this.heartImageUrl = await this.fetchImage('heart.png');
+  },
 };
 </script>
 

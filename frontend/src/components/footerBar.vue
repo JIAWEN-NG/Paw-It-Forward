@@ -3,7 +3,7 @@
       <div class="container">
         <span class="text-muted">© 2024 Paw-It-Forward. All rights reserved.</span>
         <ul class="footer-links">
-          <li><router-link to="/meetus">Meet Our Team</router-link></li>
+          <li><router-link to="/meetus">Meet The Team</router-link></li>
         </ul>
       </div>
     </footer>
