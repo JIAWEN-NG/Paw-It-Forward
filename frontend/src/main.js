@@ -15,7 +15,9 @@ import 'bootstrap'; // Import Bootstrap JS
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import router from './router/routes'; // Import router
 import axios from 'axios';
-import { MotionPlugin } from '@vueuse/motion'
+import { MotionPlugin } from '@vueuse/motion';
+import './styles/style.css';
+
 
 const baseUrl = 'http://localhost:8000'; // Define your API base URL
 const axiosInstance = axios.create({

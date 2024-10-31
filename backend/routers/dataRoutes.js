@@ -2,7 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const userController = require('../contollers/userController'); // Import the controller
+const userController = require('../controllers/userController'); // Import the controller
+const chatController = require('../controllers/chatController');
+const requestController = require('../controllers/requestController');
+
+
+
 
 const app = express();
 app.use(cors());
@@ -14,12 +19,18 @@ router.get('/users/:id', userController.getUserById); // Use the controller's fu
 router.get("/users", userController.getAllUsers);
 // You can add more routes related to users here using the same controller
 
+//request routes
+router.post('/requests/sendRequest', requestController.createRequest); // Create a new request
+router.put('/requests/:requestId/accept', requestController.acceptRequest); // Accept a request
+router.put('/requests/:requestId/decline', requestController.declineRequest); // Decline a request
 
 
-router.get("/users", (req, res) => {
-    console.log('GET /users route hit');
-    userController.getAllUsers(req, res);
-});
+// Chat routes
+router.post('/chats/sendMessage', chatController.sendMessage); // Send a chat message
+// uter.post('/messages/sendRequestMessage', chatController.sendMessageForNewRequest); // Send a request messagero
+router.get('/chats/:chatId/messages', chatController.retrieveMessages); // Retrieve messages for a chat
+router.get('/chats/user/:userId', chatController.getUserChats); // Retrieve chats for a user
+
 
 
 module.exports = router;
