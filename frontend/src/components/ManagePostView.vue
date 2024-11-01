@@ -48,7 +48,8 @@ export default {
 <style scoped>
 body {
   font-family: 'Montserrat', sans-serif;
-  background: white;
+  background-color:#F8F9FB;
+
 }
 
 .manage-post-view {
@@ -62,33 +63,36 @@ body {
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding: 5px 15px;
-  background-color: #f0f0f0;
   border-radius: 8px;
   width: fit-content;
   margin: 0 auto 20px auto;
+  
 }
 
 .toggle-buttons button {
   padding: 10px 15px;
   font-size: 16px;
   cursor: pointer;
-  border: none;
-  color: white;
+  border: 1px solid #cccccc; /* Subtle border */
+  color: #333; /* Darker text for better readability */
   border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease; /* Smooth transition for color and shadow */
+  background-color: #ffffff; /* White background */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Light shadow for 3D effect */
 }
 
 .toggle-buttons button.active {
-  background-color: #2c3e50;
+  background-color: #2c3e50; /* Dark blue for active state */
+  color: #ffffff; /* White text on active */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Deeper shadow on active */
 }
 
-.toggle-buttons button:not(.active) {
-  background-color: grey;
+.toggle-buttons button:not(.active):hover {
+  background-color: #e0e0e0; /* Light grey on hover for inactive buttons */
 }
 
 .toggle-buttons button:hover {
-  background-color: #34495e;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Enhanced shadow on hover for all buttons */
 }
 
 .split-screen {
@@ -101,18 +105,6 @@ body {
 .left-section, .right-section {
   flex: 1;
   min-width: 300px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-}
-
-/* Remove fixed height to allow dynamic content expansion */
-.left-section {
-  padding: 20px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  border-radius: 8px;
 }
 
 h2 {

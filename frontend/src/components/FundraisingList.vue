@@ -1,10 +1,10 @@
 <template>
   <div class="fundraising-list">
-    <div class="row gx-2">
+    <div class="row justify-content-center">
       <div
         v-for="fundraiser in paginatedFundraisings"
         :key="fundraiser.id"
-        class="col-sm-6 col-lg-4 mb-2"
+        class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center mb-2"
       >
         <router-link :to="{ name: 'FundraisingDetail', params: { id: fundraiser.id } }" class="card compact-card">
           <img
@@ -15,7 +15,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ fundraiser.title }}</h5>
 
-            <!-- Fundraiser Description (20 words) -->
+            <!-- Fundraiser Description (truncated to 20 words) -->
             <p class="card-description">{{ truncatedDescription(fundraiser.description) }}</p>
 
             <!-- Progress Bar -->
@@ -94,10 +94,7 @@ export default {
     },
     formattedCurrency(value) {
       const numberValue = parseFloat(value);
-      if (isNaN(numberValue)) {
-        return '$0.00';
-      }
-      return `$${numberValue.toFixed(2)}`;
+      return isNaN(numberValue) ? '$0.00' : `$${numberValue.toFixed(2)}`;
     },
     formattedDate(date) {
       if (!date) return '';
@@ -122,28 +119,15 @@ export default {
   font-family: 'Montserrat', sans-serif;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.col-sm-6,
-.col-lg-4 {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .compact-card {
   width: 100%;
   max-width: 22rem;
-  margin: 10px;
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
-  padding: 8px;
   border-radius: 8px;
   text-decoration: none;
+  margin: 10px;
 }
 
 .compact-card:hover {
@@ -158,12 +142,13 @@ export default {
 }
 
 .card-title {
-  font-size: 0.9rem;
+  font-size: 16px;
   margin-bottom: 4px;
   text-align: left;
+  font-weight:bold;
 }
 .card-description {
-  font-size: 0.8rem;
+  font-size: 16px;
   color: #333;
   margin-bottom: 6px;
   text-align: left;
@@ -171,16 +156,17 @@ export default {
 .card-body {
   padding: 8px;
   text-align: left;
+  padding-left: 20px;
 }
 
 .card-posted-date {
-  font-size: 0.75rem;
+  font-size: 16px;
   color: #555;
   text-align: left;
 }
 
 .goal-text {
-  font-size: 0.75rem;
+  font-size: 16px;
   margin-bottom: 8px;
   text-align: left;
 }
@@ -188,7 +174,7 @@ export default {
 .progress-container {
   background-color: #f0f0f0;
   border-radius: 4px;
-  height: 8px;
+  height: 10px;
   margin-bottom: 10px;
 }
 
@@ -196,11 +182,6 @@ export default {
   height: 100%;
   background-color: #4caf50;
   border-radius: 4px;
-}
-/* Button Container */
-.button-container {
-  display: flex;
-  justify-content: flex-end;
 }
 
 /* Pagination Styling */
@@ -212,9 +193,6 @@ export default {
   margin-top: 20px;
 }
 
-.pagination-container button {
-  padding: 5px 10px;
-}
 .pagination-button {
   color: #8b4513;
   border-color: #8b4513;
@@ -226,8 +204,6 @@ export default {
   background-color: #8b4513;
   color: #fff;
 }
-
-
 
 .pagination-text {
   font-size: 0.85rem;

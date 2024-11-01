@@ -263,11 +263,7 @@ export default {
 </script>
 
 <style scoped>
-.scrollable-container {
-  background-color: #f7f7f7;
-  padding: 20px;
-  border-radius: 8px;
-}
+
 
 .compact-table {
   width: 100%;
@@ -290,6 +286,15 @@ th {
   background-color: #f1f1f1;
   color: #333;
   font-weight: 600;
+}
+/* Add this to your style section */
+tbody tr {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+tbody tr:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .thumbnail {

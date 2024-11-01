@@ -15,13 +15,10 @@ import ManagePostView from '../components/ManagePostView.vue'; //Manage Post lay
 
 
 import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // Form to create a fundraising campaign
-//import FundraisingDetail from '../components/FundraisingDetail.vue'; // To view a specific fundraising campaign
-//import FundraisingList from '../components/FundraisingList.vue'; // To list all fundraising campaigns
 import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
 import FundraisingDetail from '../components/FundraisingDetail.vue';
-//import ManageFundraisingPost from '../components/ManageFundraisingPost.vue';
-//import EditFundraisingPost from '../components/EditFundraisingPost.vue';
 
+import DonateSuccessful from '../components/DonateSuccessful.vue'; 
 //afsana changed
 const routes = [
   { path: '/', 
@@ -58,6 +55,11 @@ const routes = [
   },// Pass route params as props
 
 
+  {
+    path: '/donation-success',
+    name: 'DonationSuccess',
+    component: DonateSuccessful,
+  },
 
   
 ];

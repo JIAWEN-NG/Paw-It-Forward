@@ -6,9 +6,16 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <span class="close" @click="closeForm">&times;</span>
-          <h5 class="modal-title">Start a Fundraising Post!</h5>
+          
+          <!-- Conditionally render title if successMessage is not set -->
+          <h5 v-if="!successMessage" class="modal-title">Start a Fundraising Post!</h5>
+
           <div class="modal-body">
-            <form @submit.prevent="submitForm">
+            <!-- Success Message -->
+            <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+
+            <!-- Form -->
+            <form v-if="!successMessage" @submit.prevent="submitForm">
               <div class="form-group mb-3">
                 <label for="campaignName" class="form-label">Title</label>
                 <input type="text" id="campaignName" v-model="fundraising.campaignName" required class="form-control" />
@@ -57,6 +64,7 @@ export default {
     return {
       showForm: false,
       submitting: false,
+      successMessage: '', // For success message
       fundraising: {
         campaignName: '',
         description: '',
@@ -76,7 +84,7 @@ export default {
     async submitForm() {
       if (this.submitting) return;
       this.submitting = true;
-      
+
       const formData = new FormData();
       if (this.fundraising.image) formData.append('image', this.fundraising.image);
       formData.append('title', this.fundraising.campaignName);
@@ -91,15 +99,13 @@ export default {
         });
         const data = await response.json();
         if (response.ok) {
-          alert('Fundraising campaign created successfully!');
-          this.closeForm();
-          setTimeout(() => window.location.reload(), 500);
+          this.successMessage = 'Your fundraising post has been successfully created!';
         } else {
-          alert(`Error: ${data.message}`);
+          this.successMessage = `Error: ${data.message}`;
         }
       } catch (error) {
         console.error('Error creating fundraising campaign:', error);
-        alert('Error creating fundraising campaign. Please try again.');
+        this.successMessage = 'Error creating fundraising campaign. Please try again.';
       } finally {
         this.submitting = false;
       }
@@ -126,6 +132,7 @@ export default {
         image: null
       };
       this.imagePreview = '';
+      this.successMessage = ''; // Reset success message
     },
 
     goToManageFundraisingPost() {
@@ -155,7 +162,6 @@ body {
   background-color: #34495e;
 }
 
-/* Modal overlay styling for center alignment */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -175,8 +181,8 @@ body {
   align-items: center;
   width: 100%;
   max-width: 500px;
-  margin: 0; /* Remove top margin */
-  padding: 10px; /* Add padding for smaller screens */
+  margin: 0;
+  padding: 10px;
 }
 
 .modal-content {
@@ -187,16 +193,14 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 20px;
 }
 
-/* Scrollable modal body */
 .modal-body {
-  max-height: 60vh; /* Limit height for scrolling */
+  max-height: 60vh;
   overflow-y: auto;
-  padding: 20px; /* Reduced padding for smaller screens */
 }
 
-/* Modal title styling */
 .modal-title {
   text-align: center;
   font-size: 1.5rem;
@@ -204,7 +208,6 @@ body {
   color: #2c3e50;
 }
 
-/* Close button styling */
 .close {
   position: absolute;
   top: 10px;
@@ -214,7 +217,6 @@ body {
   cursor: pointer;
 }
 
-/* Modal footer styling with spaced buttons */
 .modal-footer {
   display: flex;
   gap: 10px;
@@ -222,7 +224,6 @@ body {
   padding-top: 15px;
 }
 
-/* Image upload styling */
 .image-upload-box {
   width: 100%;
   height: 200px;
@@ -252,5 +253,14 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.success-message {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: black;
+  padding: 15px 0;
+  margin: 10px 0 15px;
 }
 </style>

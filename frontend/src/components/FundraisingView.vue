@@ -12,21 +12,17 @@
         <FilterSidebarFundraising @filter="applyFilters" />
       </div>
 
-      <!-- Fundraising List in the Center with Pagination inside listing-container -->
+      <!-- Fundraising List in the Center with Pagination -->
       <div class="col-md-9 col-12">
         <hr class="divider-line" />
 
         <!-- Dynamic Fundraising List without fixed height -->
-        <div class="listing-container shadow-box">
-          <FundraisingList
-            :fundraisings="filteredFundraisings"
-            :current-page="currentPage"
-            :items-per-page="itemsPerPage"
-            @update-page="updatePage"
-          />
-
-          
-        </div>
+        <FundraisingList
+          :fundraisings="filteredFundraisings"
+          :current-page="currentPage"
+          :items-per-page="itemsPerPage"
+          @update-page="updatePage"
+        />
 
         <hr class="divider-line" />
       </div>
@@ -101,11 +97,11 @@ export default {
   min-height: 100vh;
   padding-top: 20px;
   font-family: 'Georgia', serif;
-  background-color: #FCEED5;
+  background-color: #F8F9FB;
 }
 
 .filter-container {
-  background-color: #FCEED5;
+  background-color: #F8F9FB;
   border-right: 1px solid #ddd;
   padding: 20px;
   min-height: 100vh;
@@ -120,21 +116,10 @@ export default {
   }
 }
 
-.listing-container {
-  padding: 20px;
-  background-color: #f5e0c4;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
 .divider-line {
   border: 0;
   height: 1px;
   background: #ddd;
   margin: 20px 0;
 }
-
-
 </style>

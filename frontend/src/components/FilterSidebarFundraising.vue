@@ -68,7 +68,7 @@ export default {
 
 <style scoped>
 .filter-sidebar {
-  background-color: #FCEED5;
+  background-color: #F8F9FB ;
 }
 
 h4 {
@@ -100,17 +100,29 @@ input[type='radio'] {
 }
 
 .reset-button {
-  margin-top: 20px;
-  padding: 10px 15px;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #4b2e1c 0%, #7a5234 100%); /* Gradient from dark brown to medium brown */
+    color: white;
+    border: none;
+    border-radius: 50px; /* Rounded edges */
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .reset-button:hover {
-  background-color: #34495e;
+    background: linear-gradient(135deg, #5c3a2a 0%, #8b6543 100%); /* Lighter gradient on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
 }
+
+.reset-button:active {
+    transform: translateY(1px); /* Subtle press effect */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+    background: #5c3a2a; /* Solid brown on active state */
+}
+
 </style>
