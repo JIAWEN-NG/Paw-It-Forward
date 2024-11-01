@@ -174,6 +174,35 @@ const getUserChats = async (req, res) => {
     }
 };
 
+//function to get chat by id 
+const getChatById = async (req, res) => {
+    const { chatId } = req.params;
+
+    try {
+        const chatRef = db.collection('Chats').doc(chatId);
+        const chatDoc = await chatRef.get();
+
+        if (!chatDoc.exists) {
+            return res.status(404).json({ error: 'Chat not found' });
+        }
+
+        // Get the chat data
+        const chatData = chatDoc.data();
+
+        // Respond with the relevant chat details
+        res.json({
+            systemMessage: chatData.systemMessage,
+            lastMessage: chatData.lastMessage,
+            lastMessageTimestamp: chatData.lastMessageTimestamp,
+            requestedItem: chatData.requestedItem
+        });
+    } catch (error) {
+        console.error('Error fetching chat details:', error);
+        res.status(500).json({ error: 'Error fetching chat details' });
+    }
+
+};
+
 
 
 
@@ -181,4 +210,5 @@ module.exports = {
     sendMessage,
     retrieveMessages,
     getUserChats,
+    getChatById
 };

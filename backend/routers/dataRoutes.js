@@ -26,6 +26,7 @@ router.put('/requests/:requestId/decline', requestController.declineRequest); //
 
 
 // Chat routes
+router.get('/chats/:chatId', chatController.getChatById); // Retrieve all chats
 router.post('/chats/sendMessage', chatController.sendMessage); // Send a chat message
 // uter.post('/messages/sendRequestMessage', chatController.sendMessageForNewRequest); // Send a request messagero
 router.get('/chats/:chatId/messages', chatController.retrieveMessages); // Retrieve messages for a chat

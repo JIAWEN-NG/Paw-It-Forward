@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid chat-view vh-100">
+  <div class="container-fluid chat-view">
     <div class="row h-100 gx-0">
       <!-- ChatList - Left Pane -->
       <div class="col-12 col-md-6 col-lg-3 p-0 border-end chat-list-wrapper" v-show="showChatList || isLargeScreen">
@@ -7,8 +7,13 @@
       </div>
 
       <!-- ChatRoom - Right Pane -->
-      <div class="col-12 col-md-6 col-lg-9 p-0 chat-room-wrapper" v-show="selectedChat || isLargeScreen">
-        <ChatRoom v-if="selectedChat" :currentUserId="currentUserId" :selectedChat="selectedChat" />
+      <div
+        class="col-12 col-md-6 col-lg-9 p-0 chat-room-wrapper"
+        v-show="selectedChat || isLargeScreen"
+      >
+        <ChatRoom v-if="selectedChat" :currentUserId="currentUserId" :selectedChat="selectedChat"
+          @backToChatList="handleBackToChatList" />
+
         <div v-else class="empty-space d-flex align-items-center justify-content-center">
           <div class="h-full flex flex-col justify-center items-center">
             <div class="w-10 h-10 mr-4 mb-4 flex justify-center items-center rounded-full">
@@ -42,7 +47,7 @@ export default {
   },
   data() {
     return {
-      currentUserId: 'p8v0JBWhlfNZ13DzpBFN',
+      currentUserId: 'qiDkbANAR9U1Lr2m9tqUTdU9Lgl2',
       selectedChat: null,
       showChatList: true,
       isLargeScreen: window.innerWidth > 768, // Match large breakpoint
@@ -52,15 +57,20 @@ export default {
   methods: {
     setSelectedChat(chat) {
       this.selectedChat = chat;
-      if (!this.isLargeScreen) {
+      if (innerWidth < 576) {
         this.showChatList = false; // Hide chat list on smaller screens
       }
+    },
+    handleBackToChatList() {
+      this.showChatList = true;
+      this.selectedChat = null; // Deselect the chat to return to chat list
     },
     toggleChatList() {
       this.showChatList = !this.showChatList;
     },
     checkScreenSize() {
       this.isLargeScreen = window.innerWidth > 768;
+      console.log("Updated isLargeScreen:", this.isLargeScreen);
       if (this.isLargeScreen) {
         this.showChatList = true;
       }
@@ -82,6 +92,7 @@ export default {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
     this.fetchCurrentUser();
+    console.log("Initial values - showChatList:", this.showChatList, "isLargeScreen:", this.isLargeScreen);
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.checkScreenSize);
@@ -111,6 +122,12 @@ export default {
   color: #888;
   text-align: center;
   height: 100%;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.chat-list-wrapper::-webkit-scrollbar,
+.chat-room-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 /* Media Queries for Responsiveness */

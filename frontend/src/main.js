@@ -19,6 +19,8 @@ import { MotionPlugin } from '@vueuse/motion';
 import './styles/style.css';
 
 
+
+
 const baseUrl = 'http://localhost:8000'; // Define your API base URL
 const axiosInstance = axios.create({
     baseURL: baseUrl,

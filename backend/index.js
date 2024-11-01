@@ -58,20 +58,6 @@ io.on('connection', (socket) => {
     console.log('Client connected');
     socket.emit('testEvent', { message: 'Hello from server' });
 });
-io.on('connection', (socket) => {
-    console.log('Client connected');
-
-    // Send a test newMessage event after connection
-    setTimeout(() => {
-        socket.emit('newMessage', {
-            senderId: 'testUser',
-            receiverId: 'testReceiver',
-            message: 'This is a test message',
-            requestId: 'testRequestId',
-            timestamp: new Date().toISOString(),
-        });
-    }, 3000);
-});
 
 
 // app.listen(PORT, () => {

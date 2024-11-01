@@ -50,7 +50,7 @@ const createRequest = async (req, res) => {
 
         // Emit a 'newChat' event with the new chat data
         const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
-        io.emit('newChat', { 
+        io.emit('newChat', {
             chatId: chatRef.id,
             donorId,
             receiverId,
@@ -99,23 +99,20 @@ const acceptRequest = async (req, res) => {
             status: 'accepted'
         });
 
-        // // Fetch the chat related to this request
-        // const chatSnapshot = await db.collection('Chats').where('requestId', '==', requestId).get();
-        // if (!chatSnapshot.empty) {
-        //     const chatRef = chatSnapshot.docs[0].ref;
-        //     // Add an acceptance message to the chat
-        //     await chatRef.collection('messages').add({
-        //         message: 'The request has been accepted.',
-        //         timestamp: new Date().toISOString(),
-        //         systemMessage: true
-        //     });
+        // Fetch the chat related to this request
+        const chatSnapshot = await db.collection('Chats').where('requestId', '==', requestId).get();
+        if (!chatSnapshot.empty) {
+            const chatRef = chatSnapshot.docs[0].ref;
+            // Add an acceptance message to the chat
+            await chatRef.update({
+                'requestedItem.status': 'accepted',
+                lastMessage: 'The request has been accepted.',
+               
+                lastMessageTimestamp: new Date().toISOString(),
+                systemMessage: "The request has been Accepted"
+            });
 
-        //     // Update the chat with the last message
-        //     await chatRef.update({
-        //         lastMessage: 'The request has been accepted.',
-        //         lastMessageTimestamp: new Date().toISOString()
-        //     });
-        // }
+        }
 
         res.json({ message: 'Request accepted' });
     } catch (error) {
@@ -152,23 +149,20 @@ const declineRequest = async (req, res) => {
         const chatSnapshot = await db.collection('Chats').where('requestId', '==', requestId).get();
         if (!chatSnapshot.empty) {
             const chatRef = chatSnapshot.docs[0].ref;
-            const chatData = chatSnapshot.docs[0].data();
 
-            // Determine the other user in the chat
-            const otherUserId = chatData.participants.find(participant => participant !== userId);
+            // Update the chat with the declined status
+            await chatRef.update({
+                'requestedItem.status': 'declined',
+                lastMessage: 'The request has been declined.',
+                lastMessageTimestamp: new Date().toISOString(),
+                systemMessage: "The request has been Declined."
+            });
 
             // // Add a decline message to the chat
             // await chatRef.collection('messages').add({
-            //     senderId: userId,
-            //     receiverId: otherUserId,
             //     message: 'The request has been declined.',
-            //     timestamp: new Date().toISOString()
-            // });
-
-            // // Update the chat with the last message
-            // await chatRef.update({
-            //     lastMessage: 'The request has been declined.',
-            //     lastMessageTimestamp: new Date().toISOString()
+            //     timestamp: new Date().toISOString(),
+            //     systemMessage: true
             // });
         }
 

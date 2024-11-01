@@ -1,36 +1,70 @@
 <template>
   <div class="chat-room">
-    <!-- Chat Header (Fixed to the top) -->
-    <div class="chat-header">
-      <img :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
-        class="profile-image" />
-      <div class="user-details">
-        <h5>{{ selectedChat?.receiverName || 'Unknown User' }}</h5>
-        <p>Last seen 2 hours ago</p>
+    <!-- Chat Header Section -->
+    <div class="chat-header row align-items-center p-3 border-bottom">
+      <!-- Back arrow for small devices only -->
+      <div class="col-auto d-flex align-items-center d-md-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="size-6" @click="goBackToChatList" style="cursor: pointer;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+      </div>
+
+      <div class="col-auto d-flex align-items-center">
+        <img :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
+          class="profile-image" />
+      </div>
+      <div class="user-details col d-flex align-items-center">
+        <div>
+          <h5 class="mb-0">{{ selectedChat?.receiverName || 'Unknown User' }}</h5>
+        </div>
       </div>
     </div>
 
     <!-- Item Info Section -->
-    <div class="item-info">
-      <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/50'" alt="Item Image"
-        class="item-image" />
-      <div class="item-details">
-        <h5>{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}</h5>
-        <span v-if="selectedChat?.status === 'pending'">Offered: {{ selectedChat?.requestMessage }}</span>
-        <span v-else
-          :class="{ 'accepted': selectedChat?.requestedItem?.status === 'accepted', 'rejected': selectedChat?.requestedItem?.status === 'rejected' }">
-          {{ selectedChat?.requestedItem?.status.charAt(0).toUpperCase() + selectedChat?.requestedItem?.status.slice(1)
-          }}
-        </span>
+    <div class="item-info row align-items-center p-3 border-bottom">
+      <!-- Item Image -->
+      <div class="col-auto d-flex align-items-center">
+        <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/50'" alt="Item Image"
+          class="item-image" />
       </div>
-      <div v-if="selectedChat?.requestId && selectedChat?.requestedItem?.status === 'pending'" class="button-group">
-        <button @click="acceptRequest" class="accept-button">Accept</button>
-        <button @click="rejectRequest" class="reject-button">Reject</button>
+
+      <!-- Item Details -->
+      <div class="item-details col d-flex align-items-center">
+        <h5 class="mb-0">{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}</h5>
+      </div>
+
+
+      <!-- Display status or action buttons -->
+      <div class="col-auto d-flex align-items-center">
+        <template v-if="selectedChat?.requestedItem?.status === 'pending'">
+          <button @click="acceptRequest" class="btn accept-button me-2">Accept</button>
+          <button @click="declineRequest" class="btn reject-button">Decline</button>
+        </template>
+        <template v-else>
+          <span :class="['status-label', selectedChat?.requestedItem?.status]">
+            {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' : 'Declined' }}
+          </span>
+        </template>
       </div>
     </div>
 
+
+
     <!-- Messages Section -->
     <div class="messages">
+      <!-- System Message Section -->
+      <div v-if="systemMessage" class="system-message ">
+        <div class="'row">
+          <div class="col-auto">
+            <p>{{ systemMessage }}</p>
+          </div>
+          <div class="col-auto">
+            <small class="text-muted">{{ formatMessageTimestamp(lastMessageTimestamp) }}</small>
+          </div>
+        </div>
+      </div>
+
       <template v-for="(message, index) in messages" :key="message.id">
         <!-- Display date divider -->
         <div v-if="shouldShowDateDivider(message.timestamp, index)" class="timeline-divider">
@@ -38,8 +72,7 @@
         </div>
 
         <!-- Message Block -->
-        <div
-          :class="['message', message.senderId === currentUserId ? 'sent' : 'received']">
+        <div :class="['message', message.senderId === currentUserId ? 'sent' : 'received']">
           <!-- Avatar for received messages -->
           <img v-if="message.senderId !== currentUserId"
             :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
@@ -79,6 +112,7 @@
 
 <script>
 import axios from 'axios';
+import { comma } from 'postcss/lib/list';
 import { io } from 'socket.io-client';
 
 export default {
@@ -88,12 +122,8 @@ export default {
       messages: [],
       newMessage: '',
       socket: null, // Initialize socket as null
-      contextMenu: {
-        visible: false,
-        x: 0,
-        y: 0,
-        message: null,
-      },
+      systemMessage: '',
+      lastMessageTimestamp: ''  // For displaying system messages
     };
   },
   mounted() {
@@ -119,6 +149,7 @@ export default {
     if (this.selectedChat) {
       this.joinChat(this.selectedChat.chatID);
       this.fetchMessages();
+      this.fetchChatDetails();
     }
   },
   beforeUnmount() {
@@ -133,6 +164,10 @@ export default {
     },
   },
   methods: {
+    goBackToChatList() {
+      console.log('Back button clicked'); // Debugging step
+      this.$emit('backToChatList'); // Emit an event to notify the parent component
+    },
     joinChat(chatId) {
       if (this.socket) {
         this.socket.emit('joinChat', chatId); // Join the chat room if socket is defined
@@ -152,6 +187,19 @@ export default {
     handleNewMessage(message) {
       if (message.requestId === this.selectedChat.requestId) {
         this.messages.push(message);
+      }
+    },
+    async fetchChatDetails() {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatID}`);
+        const chatData = response.data;
+
+        // Set the retrieved data
+        this.systemMessage = chatData.systemMessage || '';
+        this.lastMessageTimestamp = chatData.lastMessageTimestamp;
+        console.log('Chat details:', chatData);
+      } catch (error) {
+        console.error('Error fetching chat details:', error);
       }
     },
     async sendMessage() {
@@ -197,14 +245,21 @@ export default {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/accept`);
         alert('Request accepted');
+
+        // Optionally, refresh messages to include the system message
+        this.fetchMessages();
       } catch (error) {
         console.error('Error accepting request:', error);
       }
     },
-    async rejectRequest() {
+    async declineRequest() {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/decline`);
         alert('Request rejected');
+
+
+        // Optionally, refresh messages to include the system message
+        this.fetchMessages();
       } catch (error) {
         console.error('Error rejecting request:', error);
       }
@@ -279,59 +334,50 @@ export default {
   /* overflow: hidden; */
 }
 
-.chat-header {
-  border-color: #999;
-}
-
-.item-info,
-.message-input-container {
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+.chat-header,
+.item-info {
   display: flex;
   align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-
 .profile-image {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 0.75rem;
 }
 
 .item-image {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
+  /* Optional for styling */
   object-fit: cover;
-  margin-right: 0.75rem;
-
 }
 
 .user-details,
 .item-details {
   flex-grow: 1;
   overflow: hidden;
+  font-size: 1.2rem;
+  text-align: left;
 }
 
-.item-info {
-  top: 64px;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: 100%;
-}
 
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding-bottom: 4rem;
-  margin-top: 30px;
   background-color: #ffffff;
   scroll-behavior: smooth;
   display: flex;
   flex-direction: column;
   /* Add this to ensure messages align properly */
+
+  background-image: url("../assets/chat-bg3.jpeg");
+  background-blend-mode: overlay;
+  background-color: rgba(221, 218, 218, 0.5); /* Overlay color with opacity */
 }
 
 .message {
@@ -342,7 +388,7 @@ export default {
 
 .message.received {
   align-self: flex-start;
-  background-color: #ffffff;
+  font-size: 1rem;
 }
 
 
@@ -359,8 +405,9 @@ export default {
   align-self: flex-end;
   /* Additional styling to ensure alignment */
   margin-left: auto;
-  /* Push the sent message content to the right */
-  border-radius: 8px;
+  border-radius: 10px;
+
+
 }
 
 .message-content {
@@ -370,11 +417,12 @@ export default {
   max-width: 60%;
   display: flex;
   flex-direction: column;
+  ;
 }
 
 .message-content p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 1.2rem;
   text-align: left;
 }
 
@@ -415,35 +463,88 @@ export default {
 }
 
 
-.options-button,
-.accept-button,
-.reject-button {
-  border: none;
-  background: none;
-  cursor: pointer;
-}
 
 .button-group {
   display: flex;
   gap: 0.5rem;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 .accept-button {
-  background-color: #28a745;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 5px;
+  position: relative;
+  padding: 10px 25px;
+  background: transparent;
+  border-radius: 10px;
+  border: 2px solid #2aaa3f;
+  outline: 2px solid #2aaa3f;
+  outline-offset: -2px;
+  font-size: 1rem;
+  color: #2aaa3f;
+  font-weight: 500;
+  cursor: pointer;
+  transition: outline-offset 200ms ease;
+}
+
+.accept-button:hover {
+  color: #2aaa3f;
+  outline-offset: 2px;
+}
+
+.accept-button:active {
+  transform: scale(0.95);
 }
 
 .reject-button {
-  background-color: #dc3545;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  border-radius: 5px;
+  position: relative;
+  padding: 10px 15px;
+  background: transparent;
+  border-radius: 10px;
+  border: 2px solid #f54500;
+  outline: 2px solid #f54500;
+  outline-offset: -2px;
+  font-size: 1rem;
+  color: #f54500;
+  font-weight: 500;
+  cursor: pointer;
+  transition: outline-offset 200ms ease;
+}
+
+.reject-button:hover {
+  color: #f54500;
+  outline-offset: 3px;
+}
+
+.reject-button:active {
+  transform: scale(0.95);
+}
+
+.status-label {
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.status-label.accepted {
+  color: green;
+  background-color: #e6f4e6;
+}
+
+.status-label.declined {
+  color: red;
+  background-color: #fce8e8;
+}
+
+.system-message {
+  text-align: center;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 30px;
+  font-weight: bold;
 }
 
 .send-button {
-  background-color: #007bff;
+  background: #6771dd;
   color: #ffffff;
   padding: 0.5rem;
   border-radius: 50%;
@@ -451,14 +552,65 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
   transition: transform 0.2s;
+  cursor: pointer;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
 }
 
-.send-button:hover {
-  transform: scale(1.1);
-  background-color: #0056b3;
+/* Scale and bounce effect on click */
+.send-button:active {
+  animation: bounce 0.4s ease;
 }
+
+
+/* Pulse effect that emanates from the button */
+.send-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(4, 7, 238, 0.3);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  z-index: -1;
+}
+
+/* Show the pulse effect on click */
+.send-button:active::before {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* Background inside the button */
+.send-button::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #5a62d4;
+  z-index: -1;
+}
+
+/* Bounce animation for the button */
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+    /* Slightly larger */
+  }
+
+  100% {
+    transform: scale(1);
+    /* Back to normal size */
+  }
+}
+
 
 .timeline-divider {
   text-align: center;

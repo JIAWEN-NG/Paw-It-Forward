@@ -55,16 +55,20 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <p>Loading chats...</p>
+        <!-- Loading Spinner -->
+        <div v-else class="loading-container d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="loading-text ms-2">Loading Chats...</p>
         </div>
     </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import { io } from 'socket.io-client';
+
 
 export default {
     props: ['currentUserId'],
@@ -78,7 +82,6 @@ export default {
     },
     computed: {
         filteredChats() {
-            // Filter chats based on the search query, checking if receiverName exists
             return this.chats.filter((chat) =>
                 chat.receiverName && chat.receiverName.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
@@ -105,7 +108,7 @@ export default {
                 );
 
                 this.chats = updatedChats;
-                this.isLoadingChats = false; // Set loading to false once complete
+                this.isLoadingChats = false;
             } catch (error) {
                 console.error('Error fetching chats:', error);
             }
@@ -124,28 +127,36 @@ export default {
             if (!message) return 'No message available';
             return message.length > 30 ? message.slice(0, 30) + '...' : message;
         },
-
         updateChatList(newMessage) {
-            const chatIndex = this.chats.findIndex(chat => chat.requestId === newMessage.requestId);
-            if (chatIndex > -1) {
+            const chatIndex = this.chats.findIndex(chat => chat.chatID === newMessage.chatID);
+
+            if (chatIndex !== -1) {
+                // Update existing chat
                 this.chats[chatIndex].lastMessage = newMessage.message;
                 this.chats[chatIndex].lastMessageTimestamp = newMessage.timestamp;
-                this.chats = [...this.chats]; // Trigger reactivity
             } else {
-                this.fetchChats(); // Fetch all chats if the chat is not found
+                // If the chat does not exist, fetch it
+                this.fetchChats();
             }
+
+            // Trigger reactivity by reassigning the chats array
+            this.chats = [...this.chats];
+        },
+        handleNewChat(newChatData) {
+            const existingChatIndex = this.chats.findIndex(chat => chat.chatID === newChatData.chatID);
+
+            if (existingChatIndex === -1) {
+                // If the new chat is not already in the list, add it to the top
+                this.chats.unshift(newChatData);
+            } else {
+                // Update the chat if it already exists
+                this.chats[existingChatIndex] = newChatData;
+            }
+
+            // Trigger reactivity by reassigning the chats array
+            this.chats = [...this.chats];
         },
 
-        handleNewChat(newChatData) {
-            // Check if the new chat already exists
-            const existingChatIndex = this.chats.findIndex(chat => chat.requestId === newChatData.requestId);
-            if (existingChatIndex === -1) {
-                this.chats.unshift(newChatData); // Add new chat to the list
-            } else {
-                this.chats[existingChatIndex] = newChatData; // Update if it exists
-            }
-            this.chats = [...this.chats]; // Ensure reactivity
-        },
     },
     created() {
         this.fetchChats();
@@ -154,11 +165,6 @@ export default {
         this.socket.on('connect', () => {
             console.log('Connected to WebSocket server chatlist');
         });
-
-        this.socket.on('testEvent', (data) => {
-            console.log('Test event received:', data);
-        });
-
 
         this.socket.on('newMessage', data => {
             console.log('New message received:', data);
@@ -179,8 +185,26 @@ export default {
     },
 };
 </script>
-
 <style scoped>
+.loading-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
 .chat-list-container {
     width: 100%;
     height: 100%;
@@ -202,6 +226,7 @@ export default {
     background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
     padding: 0.75rem 1rem;
+    font-size: 1.5rem;
 }
 
 /* Search Bar */
@@ -222,7 +247,7 @@ export default {
     background-color: #f1f1f1;
     border: 1px solid #ccc;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #333;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     /* Smooth transition */
@@ -311,14 +336,14 @@ export default {
 
 /* Chat Username */
 .chat-username {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin: 0;
     color: #111827;
 }
 
 /* Text Preview */
 .text-preview {
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: #666;
     white-space: nowrap;
     overflow: hidden;
