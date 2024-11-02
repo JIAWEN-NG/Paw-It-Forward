@@ -115,9 +115,9 @@ export default {
   },
   async mounted() {
     // Fetch each image by its filename
-    this.petOwnerImageUrl = await this.fetchImage('petowner.png');
-    this.supportImageUrl = await this.fetchImage('support.png');
-    this.heartImageUrl = await this.fetchImage('heart.png');
+    this.petOwnerImageUrl = await this.fetchImage('about/petowner.png');
+    this.supportImageUrl = await this.fetchImage('about/support.png');
+    this.heartImageUrl = await this.fetchImage('about/heart.png');
   },
 };
 </script>

@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const userController = require('../contollers/userController'); // Import the controller
-const { registerUser } = require('../contollers/userController');
+const userController = require('../controllers/userController'); // Import the controller
+const { registerUser } = require('../controllers/userController');
 
 const app = express();
 app.use(cors());

@@ -52,7 +52,7 @@
                     <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
                     </li>
                     <li>
-                    <button @click="signOut" class="dropdown-item">Sign Out</button>
+                    <button @click="handleSignOut" class="dropdown-item">Sign Out</button>
                     </li>
                 </ul>
             </li>
@@ -66,15 +66,19 @@
     </nav>
 </template>
 
+
 <script>
+import { signOut } from 'firebase/auth';
+import { auth, db } from '../main';
+import { authState } from '../store/auth.js';
+import { doc, getDoc } from 'firebase/firestore';
+
 export default {
   name: "navBar",
   data() {
     return {
         isHovered: false,
-        isUserLoggedIn: false,
-        showDropdown: false,
-        userProfilePicUrl: null, // URL for the user's profile picture
+        // showDropdown: false,
         pawlogoImageUrl: null,
         chatInvertImageUrl: null, 
         chat3ImageUrl: null,
@@ -91,21 +95,49 @@ export default {
         return null;
       }
     },
-    signOut() {
-      this.isUserLoggedIn = false;
-      this.userProfilePicUrl = null; // Clear the profile picture URL on sign out
+  async handleSignOut() {
+    try {
+      await signOut(auth); // This will trigger the onAuthStateChanged listener in auth.js
+      // No need to set isUserLoggedIn or userProfilePicUrl manually
+    } catch (error) {
+      console.error('Error signing out:', error.message);
+    }
+  },
+  async loadUserProfilePic() {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userDocRef = doc(db, "Users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            authState.userProfilePicUrl = userDoc.data().profileImage; // Set the profile image URL from Firestore
+          } else {
+            console.log("No such user document!");
+          }
+        } catch (error) {
+          console.error("Error fetching user profile image:", error);
+        }
+      }
     },
   },
   async mounted() {
-    this.pawlogoImageUrl = await this.fetchImage('paw-logo.png');
-    this.chat3ImageUrl = await this.fetchImage('chat3.png');
-    this.chatInvertImageUrl = await this.fetchImage('chatinvert.png');
+    this.pawlogoImageUrl = await this.fetchImage('about/paw-logo.png');
+    this.chat3ImageUrl = await this.fetchImage('about/chat3.png');
+    this.chatInvertImageUrl = await this.fetchImage('about/chatinvert.png');
 
     // If the user is logged in, fetch the profile picture
     if (this.isUserLoggedIn) {
-      this.userProfilePicUrl = await this.fetchImage('cooldog.jpg'); // Assign the URL to userProfilePicUrl
+        await this.loadUserProfilePic();
     }
   },
+  computed: {
+    isUserLoggedIn() {
+      return authState.isUserLoggedIn;
+    },
+    userProfilePicUrl() {
+      return authState.userProfilePicUrl;
+    },
+},
 };
 </script>
 

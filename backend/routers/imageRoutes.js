@@ -12,7 +12,7 @@ router.get('/images', async (req, res) => {
         }
     
         // Get the file reference using the exact path to the file
-        const file = storage.file(`about/${fileName}`); // Adjust 'about/' to your folder path if needed
+        const file = storage.file(fileName); // Adjust 'about/' to your folder path if needed
     
         // Get a signed URL for the specific file
         const [url] = await file.getSignedUrl({
