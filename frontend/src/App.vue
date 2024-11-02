@@ -1,21 +1,19 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <h1>Hello this is frontend</h1>
   <div id="app">
+    <!-- Inline navigation links -->
+    <nav style="display: inline;">
+      <router-link to="/marketplace">Marketplace</router-link>
+    </nav>
+    <nav style="display: inline; margin-left: 10px;">
+      <router-link to="/managepost">Manage Posts</router-link>
+    </nav>
+    
+    <!-- Main content area for routed components -->
     <router-view />
   </div>
 </template>
 
 <script>
-// import UsersViewTest from './components/usersViewTest.vue';
-
-
-// export default {
-//   name: 'App',
-//   components: {
-//     UsersViewTest
-//   }
-// }
 export default {
   name: 'App',
 };
@@ -29,5 +27,6 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  background: #F8F9FB;
 }
 </style>
