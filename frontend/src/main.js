@@ -22,6 +22,8 @@ import { MotionPlugin } from '@vueuse/motion'
 import { initializeApp } from 'firebase/app';  // Import Firebase App initialization
 import { getAuth } from 'firebase/auth';       // Import Firebase Auth
 import { getFirestore } from 'firebase/firestore';
+// import './store/auth.js'; // Import auth.js to initialize authState
+import { setupAuthState } from './store/auth.js'; // Import the setup function
 
 // Firebase configuration
 const firebaseConfig = {
@@ -40,6 +42,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
 const db = getFirestore(firebaseApp);
+setupAuthState(auth);
 
 const baseUrl = 'http://localhost:8000'; // Define your API base URL
 const axiosInstance = axios.create({

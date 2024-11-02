@@ -77,7 +77,6 @@
   import { auth, db } from '../main';  // Firebase initialization
   import { doc, setDoc } from 'firebase/firestore'; // Firestore methods
 
-  
   export default {
     data() {
       return {
@@ -89,6 +88,7 @@
         isRegisterActive: false,
         rememberMe: false,
         googleImageUrl:null,
+        defaultProfileImageUrl: null,
       };
     },
     methods: {
@@ -101,6 +101,12 @@
             try {
             // Set persistence before registering the user
             await setPersistence(auth, persistenceType);
+
+            const defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
+            if (!defaultProfileImageUrl) {
+                console.error('Default profile image URL could not be fetched');
+                return;
+            }
 
             // Once persistence is set, create a new user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
@@ -115,7 +121,7 @@
             role: 'user', // Default role is 'user'; can be changed to 'admin' if needed
             totalItemDonated: 0, // Default value
             totalMoneyDonated: 0, // Default value
-            profileImage: this.profileImage || '', // Optional, set default or let user upload later
+            profileImage: defaultProfileImageUrl,
             });
 
             // Send verification email
@@ -182,7 +188,7 @@
                 console.log('Google Sign-In Success:', result);
                 if (this.rememberMe) {
                 sessionStorage.setItem('email', result.user.email); // Save Google email to sessionStorage
-            }
+            }           
             })
             .catch((error) => {
                 console.error('Google Sign-In Error:', error.message);
@@ -202,7 +208,8 @@
     },
       async mounted() {
     // Fetch each image by its filename
-    this.googleImageUrl = await this.fetchImage('google.png');
+    this.googleImageUrl = await this.fetchImage('about/google.png');
+    // this.defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
     },
   };
   </script>
