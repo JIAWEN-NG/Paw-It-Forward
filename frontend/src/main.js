@@ -16,6 +16,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import router from './router/routes'; // Import router
 import axios from 'axios';
 import { MotionPlugin } from '@vueuse/motion'
+// In your main entry file (e.g., main.js or App.vue)
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 // Import Firebase modules
 import { initializeApp } from 'firebase/app';  // Import Firebase App initialization

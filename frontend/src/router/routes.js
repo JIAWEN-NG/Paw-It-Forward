@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
+import AdminView from '@/components/AdminView.vue';
 
 const routes = [
 
@@ -22,6 +23,11 @@ const routes = [
     { path: '/login', 
     name: 'Login', 
     component: CombinedAuth },
+
+    { path: '/admin',
+      name:'admin',
+      component: AdminView, 
+    },
 ];
 
 const router = createRouter({
