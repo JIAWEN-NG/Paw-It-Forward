@@ -1,9 +1,23 @@
+<!-- App.vue -->
 <template>
   <div id="app">
     <navBar />
-      <router-view />
+      <!-- afsana added -->
+
+    <!-- <nav style="display: inline;">
+      <router-link to="/marketplace">Marketplace</router-link>
+    </nav>
+    <nav style="display: inline; margin-left: 10px;">
+      <router-link to="/managepost">Manage Posts</router-link>
+    </nav>
+    <nav style="display: inline; margin-left: 10px;">
+      <router-link to="/fundraising">fundraising</router-link>
+    </nav> -->
+    <!-- afsana added ends -->
+    <router-view />
     <footerBar />
   </div>
+
 </template>
 
 <script>
@@ -17,6 +31,7 @@ export default {
     footerBar,
   }
 };
+
 </script>
 
 <!-- 
@@ -28,7 +43,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-  padding: 0;
+  background: #F8F9FB;
 }
 </style>
 -->

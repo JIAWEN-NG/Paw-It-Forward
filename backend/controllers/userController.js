@@ -1,5 +1,6 @@
 // controllers/userController.js
 const { db } = require('../config/firebase'); // Adjust if necessary
+// const { db, admin } = require('../config/firebase'); // Import Firestore database and Firebase Admin SDK
 
 // Function to get a user by ID
 const getUserById = async (req, res) => {
