@@ -98,6 +98,7 @@ export default {
   padding-top: 20px;
   font-family: 'Georgia', serif;
   background-color: #F8F9FB;
+  margin-top: 80px;
 }
 
 .filter-container {

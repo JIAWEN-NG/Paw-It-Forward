@@ -55,6 +55,8 @@ body {
 .manage-post-view {
   padding: 0;
   width: 100%;
+  margin-top: 80px;
+
 }
 
 /* Toggle Buttons as Full-Width Navbar */

@@ -12,7 +12,7 @@ const requestController = require('../controllers/requestController');
 
 //Dessy added
 const fundraisingController = require('../controllers/fundraisingController');
-const { registerUser } = require('../contollers/userController');
+const { registerUser } = require('../controllers/userController');
 
 const app = express();
 app.use(cors());

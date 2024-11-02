@@ -91,11 +91,13 @@ export default {
 
 <style scoped>
 /* Layout styles */
+
 .page-layout {
   background-color: #F8F9FB;
   min-height: 100vh;
   padding-top: 20px;
   font-family: 'Georgia', serif;
+  margin-top: 80px;
 }
 
 .filter-container {

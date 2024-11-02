@@ -27,7 +27,7 @@
                             <router-link to="/testimonials" active-class="active-link" class="nav-link mx-lg-2">Testimonials</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/manage" active-class="active-link" class="nav-link mx-lg-2">Manage Posts</router-link>
+                            <router-link to="/managepost" active-class="active-link" class="nav-link mx-lg-2">Manage Posts</router-link>
                         </li>
                     </ul>
                 </div>
