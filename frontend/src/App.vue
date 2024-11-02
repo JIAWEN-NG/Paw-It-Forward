@@ -1,22 +1,29 @@
+<!-- App.vue -->
 <template>
+
   <div id="app">
-    <!-- Inline navigation links -->
+    <!-- afsana added -->
+
     <nav style="display: inline;">
       <router-link to="/marketplace">Marketplace</router-link>
     </nav>
     <nav style="display: inline; margin-left: 10px;">
       <router-link to="/managepost">Manage Posts</router-link>
     </nav>
-    
-    <!-- Main content area for routed components -->
+    <nav style="display: inline; margin-left: 10px;">
+      <router-link to="/fundraising">fundraising</router-link>
+    </nav>
+    <!-- afsana added ends -->
     <router-view />
   </div>
+
 </template>
 
 <script>
 export default {
   name: 'App',
 };
+
 </script>
 
 <style>

@@ -3,12 +3,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import usersViewTest from '../components/usersViewTest.vue';
 
-// afsana changed
-// Import necessary components (assuming they exist or will be created)
-// import CreateDonation from '../components/CreateDonation.vue'; // To create a donation
-// import DonationDetail from '../components/DonationDetail.vue'; // To view a specific donation
-// import DonationList from '../components/DonationList.vue'; // To list all donations
-
 
 import MarketplaceView from '../components/MarketplaceView.vue'; // Marketplace layout
 import CreateDonationForm from '../components/CreateDonationForm.vue'; // Form to create a donation
@@ -16,30 +10,35 @@ import ManagePostView from '../components/ManagePostView.vue'; //Manage Post lay
 import DonationDetails from '@/components/DonationDetails.vue';
 
 
+import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // Form to create a fundraising campaign
+import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
+import FundraisingDetail from '../components/FundraisingDetail.vue';
+import DonateSuccessful from '../components/DonateSuccessful.vue'; 
+
+
+// src/router.js
+import { createRouter, createWebHistory } from 'vue-router';
+import usersViewTest from '../components/usersViewTest.vue';
+
+
 //afsana changed
 const routes = [
-  { path: '/', component: usersViewTest },
+  { path: '/', 
+    component: usersViewTest 
+  },
+   // Route to create a donation
+  { 
+    path: '/marketplacee', 
+    component: CreateDonationForm 
 
-  // Route to create a donation
-  { path: '/marketplacee', component: CreateDonationForm },
-
-  // Route to get a specific donation by ID
-  // { path: '/donation/:id', component: DonationDetail, props: true },
-
-  // Route to get all donations (optional filter by donorId or receiverId can be handled in DonationList component)
-  // { path: '/marketplace', component: DonationList },
-
-  // Other routes can be added as needed
-  // Marketplace route (with sidebar and donation list)
+  },
   { 
     path: '/marketplace', 
     component: MarketplaceView 
   },
-
   {
     path: '/managepost',
-    component: ManagePostView 
-  },
+    component: ManagePostView },
 
   {
     path: '/:id', // Dynamic route for the full-screen donation view
@@ -48,6 +47,30 @@ const routes = [
     props: true, // Allows the route parameter to be passed as a prop
   },
 
+ // Routes for fundraising
+  { path: '/fundraising/create', 
+    component: CreateFundraisingForm 
+  }, // Route to create a fundraising campaign
+
+  { path: '/fundraising', 
+    component: FundraisingView 
+  }, // Route to list all fundraising campaigns
+
+  {
+    path: '/fundraising/:id',
+    name: 'FundraisingDetail',
+    component: FundraisingDetail,
+    props: true
+  },// Pass route params as props
+
+
+  {
+    path: '/donation-success',
+    name: 'DonationSuccess',
+    component: DonateSuccessful,
+  },
+
+  
 ];
 
 const router = createRouter({
