@@ -15,12 +15,6 @@ import FundraisingView from '../components/FundraisingView.vue'; // To list all 
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 import DonateSuccessful from '../components/DonateSuccessful.vue'; 
 
-
-// src/router.js
-import { createRouter, createWebHistory } from 'vue-router';
-import usersViewTest from '../components/usersViewTest.vue';
-
-
 //afsana changed
 const routes = [
   { path: '/', 

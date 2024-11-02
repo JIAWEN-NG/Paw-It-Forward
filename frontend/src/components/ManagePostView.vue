@@ -1,7 +1,7 @@
 <!-- ManagePostView.vue -->
 <template>
   <div class="manage-post-view">
-    <!-- Toggle Button Area as Full-Width Navbar -->
+    <!-- Toggle Button Area -->
     <div class="toggle-buttons">
       <button @click="currentView = 'marketplace'" :class="{ active: currentView === 'marketplace' }">
         Manage Marketplace Listings
@@ -11,22 +11,26 @@
       </button>
     </div>
 
-    <!-- Directly Display Sections as Extension of Navbar -->
-    <!-- Marketplace Listings Section -->
-    <div class="left-section" v-if="currentView === 'marketplace'">
-      <p>Here, you can manage your marketplace listings.</p>
-      <ManageMarketplace :loadListings="currentView === 'marketplace'" />
-    </div>
+    <!-- Split Screen Area -->
+    <div class="split-screen">
+      <!-- Left Section: Marketplace Listings -->
+      <div class="left-section" v-if="currentView === 'marketplace'">
+        <p>Here, you can manage your marketplace listings.</p>
+        <ManageMarketplace :loadListings="currentView === 'marketplace'" />
+      </div>
 
-    <!-- Fundraising Posts Section -->
-    <div class="right-section" v-if="currentView === 'fundraising'">
-      <p>Here, you can manage your fundraising posts.</p>
+      <!-- Right Section: Fundraising Posts -->
+      <div class="right-section" v-if="currentView === 'fundraising'">
+        <p>Here, you can manage your fundraising posts.</p>
+        <ManageFundraisingPost :loadListings="currentView === 'fundraising'" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import ManageMarketplace from './ManageMarketplace.vue';
+import ManageFundraisingPost from './ManageFundraisingPost.vue';
 
 export default {
   name: "ManagePostView",
@@ -36,7 +40,8 @@ export default {
     };
   },
   components: { 
-    ManageMarketplace 
+    ManageMarketplace,
+    ManageFundraisingPost
   }
 };
 </script>
