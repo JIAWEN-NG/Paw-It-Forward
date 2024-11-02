@@ -44,8 +44,8 @@ const registerUser = async (req, res) => {
         role: role || 'user',
         profileImage: profileImage || '',
         isVerified: false,
-        totalItemDonated: 0,
-        totalMoneyDonated: 0,
+        isPhotoVerified: false,
+        rejectionReason: '',
       });
       res.status(200).json({ message: 'User successfully registered in Firestore.' });
     } catch (error) {

@@ -117,11 +117,11 @@
             name: this.name,
             email: this.email,
             isVerified: false,  // Will update when the user verifies their email
+            isPhotoVerified: false,
             petDescription: this.petDescription || '', // Store any pet description if provided
             role: 'user', // Default role is 'user'; can be changed to 'admin' if needed
-            totalItemDonated: 0, // Default value
-            totalMoneyDonated: 0, // Default value
             profileImage: defaultProfileImageUrl,
+            rejectionReason: "",
             });
 
             // Send verification email
