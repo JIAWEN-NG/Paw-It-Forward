@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import ManageMarketplace from './ManageMarketplace.vue';
+
 import ManageFundraisingPost from './ManageFundraisingPost.vue';
 
 export default {
@@ -39,7 +39,7 @@ export default {
     };
   },
   components: { 
-    ManageMarketplace,
+    
     ManageFundraisingPost
   }
 };

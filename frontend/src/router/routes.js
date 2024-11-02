@@ -8,9 +8,6 @@ import usersViewTest from '../components/usersViewTest.vue';
 // import DonationDetail from '../components/DonationDetail.vue'; // To view a specific donation
 // import DonationList from '../components/DonationList.vue'; // To list all donations
 
-
-import MarketplaceView from '../components/MarketplaceView.vue'; // Marketplace layout
-import CreateDonationForm from '../components/CreateDonationForm.vue'; // Form to create a donation
 import ManagePostView from '../components/ManagePostView.vue'; //Manage Post layout
 
 
@@ -25,15 +22,7 @@ const routes = [
     component: usersViewTest 
   },
    // Route to create a donation
-  { 
-    path: '/marketplacee', 
-    component: CreateDonationForm 
-
-  },
-  { 
-    path: '/marketplace', 
-    component: MarketplaceView 
-  },
+  
   {
     path: '/managepost',
     component: ManagePostView },
