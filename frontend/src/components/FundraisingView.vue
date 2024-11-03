@@ -1,20 +1,24 @@
 <template>
   <div class="container-fluid page-layout">
     <div class="row">
-      <!-- Carousel Component -->
       <CarouselFundraising />
     </div>
 
     <div class="row fundraising-section">
       <!-- Sidebar Filter on the Left, stacks above Fundraising List on small screens -->
       <div class="col-md-3 col-12 filter-container">
-        <CreateFundraisingForm />
+        <CreateFundraisingForm @postCreated="handlePostCreated" />
         <FilterSidebarFundraising @filter="applyFilters" />
       </div>
 
-      <!-- Fundraising List in the Center with Pagination -->
+      <!-- Fundraising List in the Center with Pagination and Success Message -->
       <div class="col-md-9 col-12">
         <hr class="divider-line" />
+
+        <!-- Success Message inside Fundraising List Container -->
+        <div v-if="showSuccessMessage" class="alert alert-success" role="alert">
+          Your fundraising post has been successfully created.
+        </div>
 
         <!-- Dynamic Fundraising List without fixed height -->
         <FundraisingList
@@ -49,29 +53,20 @@ export default {
       itemsPerPage: 9,
       fundraisings: [],
       filteredFundraisings: [],
+      showSuccessMessage: false, // To control visibility of success message
     };
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.filteredFundraisings.length / this.itemsPerPage);
-    }
   },
   methods: {
     applyFilters(filters) {
       let sortedFundraisings = [...this.fundraisings];
-
-      if (filters.sortOption) {
-        if (filters.sortOption === 'recent') {
-          sortedFundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        } else if (filters.sortOption === 'oldest') {
-          sortedFundraisings.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        }
+      if (filters.sortOption === 'recent') {
+        sortedFundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (filters.sortOption === 'oldest') {
+        sortedFundraisings.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       }
 
       this.filteredFundraisings = sortedFundraisings.filter((fundraiser) => {
-        return (
-          filters.petTypes.length === 0 || filters.petTypes.includes(fundraiser.petType)
-        );
+        return filters.petTypes.length === 0 || filters.petTypes.includes(fundraiser.petType);
       });
 
       this.currentPage = 1;
@@ -83,11 +78,28 @@ export default {
       this.fundraisings = fundraisings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       this.filteredFundraisings = this.fundraisings;
     },
+
+    // Handle postCreated event
+    handlePostCreated() {
+      this.showSuccessMessage = true;
+      
+      // Hide the message after 3 seconds
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+      }, 3000);
+      
+      // Reload the list of fundraisings
+      this.fetchFundraisings();
+    },
+
+    async fetchFundraisings() {
+      const response = await fetch('http://localhost:8000/api/Fundraising');
+      const data = await response.json();
+      this.setFundraisings(data);
+    },
   },
   async created() {
-    const response = await fetch('http://localhost:8000/api/Fundraising');
-    const data = await response.json();
-    this.setFundraisings(data);
+    this.fetchFundraisings();
   },
 };
 </script>
@@ -98,6 +110,11 @@ export default {
   padding-top: 20px;
   font-family: 'Georgia', serif;
   background-color: #F8F9FB;
+}
+
+.alert {
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .filter-container {

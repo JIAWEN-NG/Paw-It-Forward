@@ -4,9 +4,7 @@
   <div id="app">
     <!-- afsana added -->
 
-    <nav style="display: inline;">
-      <router-link to="/marketplace">Marketplace</router-link>
-    </nav>
+
     <nav style="display: inline; margin-left: 10px;">
       <router-link to="/managepost">Manage Posts</router-link>
     </nav>

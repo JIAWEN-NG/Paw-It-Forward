@@ -9,13 +9,13 @@ import usersViewTest from '../components/usersViewTest.vue';
 // import DonationList from '../components/DonationList.vue'; // To list all donations
 
 import ManagePostView from '../components/ManagePostView.vue'; //Manage Post layout
-
-
 import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // Form to create a fundraising campaign
 import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 
 import DonateSuccessful from '../components/DonateSuccessful.vue'; 
+import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue'; 
+
 //afsana changed
 const routes = [
   { path: '/', 
@@ -49,6 +49,14 @@ const routes = [
     name: 'DonationSuccess',
     component: DonateSuccessful,
   },
+
+  {
+    path: '/withdrawal/create',
+    component: CreateWithdrawalForm,
+   
+  },
+ 
+
 
   
 ];
