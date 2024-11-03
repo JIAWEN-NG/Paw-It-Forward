@@ -49,6 +49,7 @@ const registerUser = async (req, res) => {
       });
       res.status(200).json({ message: 'User successfully registered in Firestore.' });
     } catch (error) {
+      console.log("Error saving user to Firestore:", error.message)
       res.status(500).json({ message: 'Error saving user to Firestore', error });
     }
   };

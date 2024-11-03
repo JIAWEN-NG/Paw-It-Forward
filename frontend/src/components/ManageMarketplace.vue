@@ -2,7 +2,7 @@
 <!-- has to be a scrollable function within ManagePostView's marketplace toggle background area  -->
 
 <template>
-  <div class="scrollable-container">
+  <div class="container">
     <div v-if="listings && listings.length">
       <table class="compact-table">
         <thead>
@@ -12,7 +12,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="listing in listings" :key="listing.id">
+          <tr v-for="listing in paginatedListings" :key="listing.id">
             <td>
               <div class="listing-container">
                 <img :src="listing.itemImage" alt="Item Image" class="thumbnail" v-if="listing.itemImage" />
@@ -37,6 +37,26 @@
     <div v-else>
       <p>No listings available.</p>
     </div>
+
+        <!-- Pagination Controls -->
+        <div v-if="totalPages > 1" class="pagination-container">
+      <button 
+        @click="changePage(currentPage - 1)" 
+        :disabled="currentPage === 1" 
+        class="pagination-button"
+      >
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button 
+        @click="changePage(currentPage + 1)" 
+        :disabled="currentPage === totalPages" 
+        class="pagination-button"
+      >
+        Next
+      </button>
+    </div>
+
 
     <!-- Edit Form Modal -->
     <div v-if="showForm" class="modal">
@@ -128,10 +148,22 @@ export default {
       listing: { id: '', itemCategory: '', condition: '', petType: '', itemsDonated: '', itemImage: '', location: ''},
       imagePreview: '',       // For showing the new image preview
       selectedImageFile: null, // To store the new image file
+      currentPage: 1,
+      itemsPerPage: 5,
     };
   },
   async created() {
     await this.fetchListings();
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.listings.length / this.itemsPerPage);
+    },
+    paginatedListings() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.listings.slice(start, end);
+    },
   },
   methods: {
     async fetchListings() {
@@ -208,17 +240,22 @@ export default {
           this.submitting = false;
       }
   },
+  changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
   }
 };
 </script>
 
 
 <style scoped>
-.scrollable-container {
+/* .scrollable-container {
   max-height: 500px;
   padding: 20px;
   border-radius: 8px;
-}
+} */
 
 .compact-table {
   width: 100%;
@@ -250,6 +287,7 @@ tbody tr {
 tbody tr:hover {
   transform: scale(1.01); /* Slight scale-up on hover for emphasis */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
 }
 
 .listing-container {
@@ -352,4 +390,38 @@ button.btn-danger:hover {
 #title {
   font-weight: bold;
 }
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  color: #8b4513;
+  border: 1px solid #8b4513;
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination-button:hover {
+  background-color: #8b4513;
+  color: #fff;
+  border-color: #8b4513;
+}
+
+.pagination-button:disabled {
+  color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+  background-color: #f7f7f7;
+}
+
 </style>

@@ -57,7 +57,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
 .carousel-item img {
   width: 100%;
   height: auto; /* Maintain aspect ratio */

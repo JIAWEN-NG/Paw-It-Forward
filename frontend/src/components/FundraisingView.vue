@@ -1,9 +1,9 @@
 <template>
   <div class="container-fluid page-layout">
-    <div class="row">
+    <!-- <div class="row"> -->
       <!-- Carousel Component -->
       <CarouselFundraising />
-    </div>
+    <!-- </div> -->
 
     <div class="row fundraising-section">
       <!-- Sidebar Filter on the Left, stacks above Fundraising List on small screens -->
@@ -96,9 +96,7 @@ export default {
 .page-layout {
   min-height: 100vh;
   padding-top: 20px;
-  font-family: 'Georgia', serif;
   background-color: #F8F9FB;
-  margin-top: 80px;
 }
 
 .filter-container {

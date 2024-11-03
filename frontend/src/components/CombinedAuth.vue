@@ -97,12 +97,13 @@
         },
         async register() {
             const persistenceType = this.rememberMe ? browserLocalPersistence : browserSessionPersistence;
-
+            
             try {
             // Set persistence before registering the user
             await setPersistence(auth, persistenceType);
 
             const defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
+            
             if (!defaultProfileImageUrl) {
                 console.error('Default profile image URL could not be fetched');
                 return;
