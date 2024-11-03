@@ -47,8 +47,8 @@
               </div>
 
               <div class="modal-footer">
-                <button type="submit" class="btn btn-success" :disabled="submitting">Submit</button>
                 <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
+                <button type="submit" class="btn btn-success" :disabled="submitting">Submit</button>
               </div>
             </form>
           </div>
