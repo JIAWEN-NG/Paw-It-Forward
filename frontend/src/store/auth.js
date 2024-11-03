@@ -14,9 +14,14 @@ export function setupAuthState(auth) {
     if (user) {
       authState.isUserLoggedIn = true;
       authState.userProfilePicUrl = user.photoURL || null;
+      console.log("User is logged in:", authState.isUserLoggedIn);
+      console.log("User Profile Picture URL:", authState.userProfilePicUrl);
+
     } else {
       authState.isUserLoggedIn = false;
       authState.userProfilePicUrl = null;
+      console.log("User is logged out");
+
     }
   });
 }

@@ -14,7 +14,9 @@
       <router-link to="/fundraising">fundraising</router-link>
     </nav> -->
     <!-- afsana added ends -->
-    <router-view />
+    <div id="content">
+      <router-view />
+    </div>
     <footerBar />
   </div>
 
@@ -36,6 +38,7 @@ export default {
 
 <!-- 
 <style>
+
 /* #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -47,3 +50,18 @@ export default {
 }
 </style>
 -->
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+#app {
+  font-family: 'Montserrat', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#content {
+  margin-top: 80px;
+}
+</style>

@@ -89,6 +89,7 @@ export default {
       try {
         const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
         const data = await response.json();
+        console.log("fetching");
         return data.url; // Return the URL from the API response
       } catch (error) {
         console.error(`Failed to fetch image ${fileName}:`, error);
@@ -105,10 +106,12 @@ export default {
   },
   async loadUserProfilePic() {
       const user = auth.currentUser;
+      console.log("123")
       if (user) {
         try {
           const userDocRef = doc(db, "Users", user.uid);
           const userDoc = await getDoc(userDocRef);
+          console.log(userDoc);
           if (userDoc.exists()) {
             authState.userProfilePicUrl = userDoc.data().profileImage; // Set the profile image URL from Firestore
           } else {
@@ -127,8 +130,11 @@ export default {
 
     // If the user is logged in, fetch the profile picture
     if (this.isUserLoggedIn) {
-        await this.loadUserProfilePic();
-    }
+    console.log("User logged in, loading profile picture...");
+    await this.loadUserProfilePic();
+    console.log("Profile picture loaded:", this.userProfilePicUrl);
+  }
+
   },
   computed: {
     isUserLoggedIn() {
@@ -142,13 +148,11 @@ export default {
 </script>
 
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+<style scoped>
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
 }
 
 .paw-logo{
@@ -160,7 +164,8 @@ export default {
     background-color: white;
     height: 80px;
     padding: 0.5rem;
-    font-weight: 500;
+    font-weight: bold;
+    text-align: center
 }
 .btn{
     border-width: 2px !important; 
@@ -193,7 +198,7 @@ export default {
 
 .nav-link {
     color: #666777;
-    font-weight: 400;
+    font-weight: 500;
     position: relative;
 }
 

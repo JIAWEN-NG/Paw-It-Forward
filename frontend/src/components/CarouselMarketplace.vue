@@ -57,31 +57,25 @@
   };
   </script>
   
-  <style>
-  .carousel {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); /* Soft shadow for subtle depth */
-  }
-  
+  <style scoped>
+.carousel-item img {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  max-height: 300px; /* Set a maximum height to keep uniformity */
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+@media (max-width: 768px) {
   .carousel-item img {
-    width: 100%;
-    height: 300px; /* Adjust height as needed */
-    object-fit: cover;
-    border-radius: 20px;
-    transition: opacity 0.3s ease; /* Subtle fade transition */
+    max-height: 200px; /* Reduce height on smaller screens */
   }
-  
-  .carousel-control-prev,
-  .carousel-control-next {
-    opacity: 0.8; /* Slight transparency */
-    transition: opacity 0.3s ease; /* Smooth transition for hover */
+}
+
+@media (max-width: 576px) {
+  .carousel-item img {
+    max-height: 150px; /* Further reduce height on very small screens */
   }
-  
-  .carousel-control-prev:hover,
-  .carousel-control-next:hover {
-    opacity: 1; /* Full opacity on hover */
-  }
+}
   </style>
   

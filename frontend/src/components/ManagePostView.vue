@@ -48,9 +48,9 @@ export default {
 
 <style scoped>
 /* Font family for the entire component */
-body {
-  font-family: 'Montserrat', sans-serif; /* Apply the Montserrat font */
-}
+/* body {
+  font-family: 'Montserrat', sans-serif;
+} */
 
 .manage-post-view {
   padding: 0;

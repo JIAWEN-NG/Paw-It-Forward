@@ -1,5 +1,5 @@
 const express = require('express');
-const { storage } = require('../config/firebase');
+const { bucket } = require('../config/firebase');
 const router = express.Router();
 
 // Endpoint to retrieve image URLs from Firebase Storage
@@ -12,7 +12,7 @@ router.get('/images', async (req, res) => {
         }
     
         // Get the file reference using the exact path to the file
-        const file = storage.file(fileName); // Adjust 'about/' to your folder path if needed
+        const file = bucket.file(fileName); // Adjust 'about/' to your folder path if needed
     
         // Get a signed URL for the specific file
         const [url] = await file.getSignedUrl({
@@ -22,7 +22,6 @@ router.get('/images', async (req, res) => {
 
             res.status(200).json({ url }); // Send the URL to the client
         } catch (error) {
-            console.error("Error retrieving image URL:", error);
             res.status(500).json({ error: 'Failed to retrieve image' });
         }
 });

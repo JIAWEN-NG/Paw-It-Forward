@@ -133,10 +133,7 @@ export default {
 }
 
 /* General Page Styling */
-.landing-page {
-    /* font-family: 'Arial', sans-serif; */
-    margin-top: 80px;
-}
+
 
 /* Hero Section */
 .hero-section {

@@ -23,8 +23,5 @@ console.log("Bucket Name:", bucket.name);
 
 // Export the db and bucket references
 module.exports = { db, admin, bucket };
-const storage = admin.storage().bucket();
-
-module.exports = { db, admin, storage };
 
 

@@ -19,7 +19,6 @@ app.use(cors());
 
 // Define the route and link it to the controller function
 router.get('/users/:id', userController.getUserById); // Use the controller's function
-router.get("/users", userController.getAllUsers);
 // You can add more routes related to users here using the same controller
 router.post('/register', registerUser);
 
