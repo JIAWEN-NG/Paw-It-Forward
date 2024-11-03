@@ -1,8 +1,13 @@
 <template>
-  <div class="scrollable-container py-4">
- 
+  <div class="container py-4">
     <div v-if="loading" class="text-center">Loading fundraising posts...</div>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    
+    <!-- Success Alert Message -->
+    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ successMessage }}
+      <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
+    </div>
 
     <div v-if="!loading && paginatedFundraisings.length > 0">
       <table class="compact-table">
@@ -31,9 +36,11 @@
             <td>{{ formatCurrency(fundraising.targetAmount) }}</td>
             <td>{{ formatCurrency(fundraising.amountRaised) }}</td>
             <td>
-              <button @click="openEditForm(fundraising)" class="btn btn-outline-secondary btn-sm">Edit</button>
-              <button @click="deleteFundraising(fundraising.id)" class="btn btn-outline-danger btn-sm">Delete</button>
-              <button @click="withdrawFunds(fundraising.id)" class="btn btn-outline-primary btn-sm">Withdraw</button>
+              <div class="action-buttons">
+                <button @click="openEditForm(fundraising)" class="btn btn-outline-secondary btn-sm">Edit</button>
+                <button @click="confirmDeleteFundraising(fundraising.id)" class="btn btn-outline-danger btn-sm">Delete</button>
+                <button @click="openWithdrawalForm(fundraising.id)" class="btn btn-outline-primary btn-sm">Withdraw</button>
+              </div>  
             </td>
           </tr>
         </tbody>
@@ -68,7 +75,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <span class="close" @click="closeEditForm">&times;</span>
-          <h5 class="modal-title">Edit Fundraising Post</h5>
+          <h5 class="modal-title text-center">Edit Fundraising Post</h5>
           <div class="modal-body">
             <form @submit.prevent="updateFundraising">
               <div class="form-group mb-3">
@@ -83,7 +90,11 @@
 
               <div class="form-group mb-3">
                 <label for="petType" class="form-label">Pet Type</label>
-                <input type="text" id="petType" v-model="fundraising.petType" required class="form-control" />
+                <select id="petType" v-model="fundraising.petType" required class="form-control">
+                  <option value="">Select Pet Type</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Dog">Dog</option>
+                </select>
               </div>
 
               <div class="form-group mb-3">
@@ -98,14 +109,40 @@
                   <span v-else class="placeholder">No Image Uploaded</span>
                 </div>
                 <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none;" />
-                <button type="button" @click="triggerFileInput" class="upload-button">{{ fundraising.fundraisingImg ? 'Reupload' : 'Choose File' }}</button>
+                <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{ fundraising.fundraisingImg ? 'Reupload' : 'Choose File' }}</button>
               </div>
 
               <div class="modal-footer">
-                <button type="submit" class="btn btn-success" :disabled="submitting">{{ submitting ? 'Saving...' : 'Save Changes' }}</button>
                 <button type="button" class="btn btn-secondary" @click="closeEditForm">Cancel</button>
+                <button type="submit" class="btn btn-success" :disabled="submitting">{{ submitting ? 'Saving...' : 'Save Changes' }}</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <CreateWithdrawalForm
+      v-if="showWithdrawalForm"
+      :postId="selectedPostId"
+      @withdrawalCreated="handleWithdrawalCreated"
+      @close="showWithdrawalForm = false"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this fundraising post?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancel</button>
+            <button type="button" class="btn btn-danger" @click="deleteFundraising">Delete</button>
           </div>
         </div>
       </div>
@@ -115,18 +152,23 @@
 
 <script>
 import axios from 'axios';
+import CreateWithdrawalForm from './CreateWithdrawalForm.vue';
 
 export default {
+  components: {
+    CreateWithdrawalForm
+  },
   data() {
     return {
       fundraisings: [],
       loading: false,
       error: null,
+      successMessage: '', // Success message data property
       userId: 'p8v0JBWhlfNZ13DzpBFN',
       showForm: false,
       submitting: false,
       currentPage: 1,
-      itemsPerPage: 5, // Items per page for pagination
+      itemsPerPage: 5,
       fundraising: {
         id: '',
         title: '',
@@ -137,7 +179,12 @@ export default {
         fundraisingImg: ''
       },
       imagePreview: '',
-      selectedImageFile: null
+      selectedImageFile: null,
+      showDeleteModal: false,
+      deletePostId: null,
+      // New properties for withdrawal form
+      showWithdrawalForm: false,
+      selectedPostId: null,
     };
   },
 
@@ -193,17 +240,30 @@ export default {
         petType: '',
         targetAmount: 0,
       };
+      this.imagePreview = '';
+      this.selectedImageFile = null;
     },
-    async deleteFundraising(id) {
-      if (confirm('Are you sure you want to delete this fundraising post?')) {
-        try {
-          await axios.delete(`http://localhost:8000/api/fundraising`, { data: { id } });
-          this.fundraisings = this.fundraisings.filter(f => f.id !== id);
-          alert('Fundraising post deleted successfully.');
-        } catch (error) {
-          alert('Failed to delete the fundraising post. Please try again.');
-        }
+
+    confirmDeleteFundraising(id) {
+      this.deletePostId = id;
+      this.showDeleteModal = true;
+    },
+
+    async deleteFundraising() {
+      try {
+        await axios.delete(`http://localhost:8000/api/fundraising`, { data: { id: this.deletePostId } });
+        this.fundraisings = this.fundraisings.filter(f => f.id !== this.deletePostId);
+        this.setSuccessMessage('Fundraising post deleted successfully.');
+      } catch (error) {
+        this.error = 'Failed to delete the fundraising post. Please try again.';
+      } finally {
+        this.closeDeleteModal();
       }
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false;
+      this.deletePostId = null;
     },
 
     async updateFundraising() {
@@ -226,13 +286,35 @@ export default {
         });
         this.fundraisings = this.fundraisings.map(f => f.id === this.fundraising.id ? { ...f, ...response.data.updatedData } : f);
         this.showForm = false;
-        alert('Fundraising updated successfully.');
+        this.setSuccessMessage('Fundraising updated successfully.');
       } catch (error) {
         console.error('Failed to update the fundraising:', error.response?.data || error.message);
-        alert(`Failed to update the fundraising: ${error.response?.data?.message || 'Please try again.'}`);
+        this.error = 'Failed to update the fundraising post. Please try again.';
       } finally {
         this.submitting = false;
       }
+    },
+
+    openWithdrawalForm(postId) {
+      this.selectedPostId = postId;
+      this.showWithdrawalForm = true;
+    },
+
+    handleWithdrawalCreated() {
+      this.showWithdrawalForm = false;
+      this.fetchFundraisings();
+      this.setSuccessMessage('Withdrawal request created successfully.');
+    },
+
+    setSuccessMessage(message) {
+      this.successMessage = message;
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    },
+
+    clearMessage() {
+      this.successMessage = '';
     },
 
     triggerFileInput() {
@@ -263,8 +345,7 @@ export default {
 </script>
 
 <style scoped>
-
-
+/* Table Styling */
 .compact-table {
   width: 100%;
   max-width: 100%;
@@ -287,7 +368,7 @@ th {
   color: #333;
   font-weight: 600;
 }
-/* Add this to your style section */
+
 tbody tr {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -295,7 +376,7 @@ tbody tr {
 tbody tr:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
+  border-radius:8px;
 }
 
 .thumbnail {
@@ -343,35 +424,19 @@ tbody tr:hover {
   cursor: not-allowed;
   background-color: #f7f7f7;
 }
-/* Button styling for a cleaner look */
-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
+.action-buttons {
+  display: flex;
+  gap: 5px; 
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: #000;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
-
-button.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-button.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-button.btn-danger {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-button.btn-danger:hover {
-  background-color: #c82333;
-}
-
-/* Modal styling for consistency with Code 2 */
+/* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -396,12 +461,11 @@ button.btn-danger:hover {
 
 .modal-content {
   border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
+  background-color: white;
+  padding: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
 .modal-body {
@@ -415,15 +479,25 @@ button.btn-danger:hover {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
+  margin-bottom: 20px;
 }
 
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.5rem;
-  color: #000;
-  cursor: pointer;
+.form-label {
+  font-weight: 500;
+  color: #2c3e50;
+  display: block;
+  text-align: left;
+}
+
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: #80bdff;
 }
 
 .modal-footer {
@@ -463,4 +537,33 @@ button.btn-danger:hover {
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* Button styling for a cleaner look */
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+button.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+button.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+button.btn-danger:hover {
+  background-color: #c82333;
+}
+
 </style>

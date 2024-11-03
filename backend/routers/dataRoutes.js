@@ -149,4 +149,8 @@ router.post('/fundraising', upload, async (req, res) => {
 router.put('/fundraising', upload, fundraisingController.editFundraising);
 
 
+// Withdrawal Routes
+router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
+router.get('/withdrawals', withdrawalController.getAllWithdrawals);
+
 module.exports = router;

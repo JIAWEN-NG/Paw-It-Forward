@@ -14,6 +14,7 @@ import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // 
 import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 import DonateSuccessful from '../components/DonateSuccessful.vue'; 
+import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue'; 
 
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
@@ -79,6 +80,12 @@ const routes = [
     { path: '/login', 
     name: 'Login', 
     component: CombinedAuth },
+
+    {
+      path: '/withdrawal/create',
+      component: CreateWithdrawalForm,
+     
+    },
 ];
 
 const router = createRouter({
