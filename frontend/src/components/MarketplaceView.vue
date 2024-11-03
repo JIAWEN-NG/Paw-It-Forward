@@ -1,12 +1,8 @@
 <!-- MarketplaceView.vue -->
 <template>
   <div class="container-fluid page-layout">
-
-    
     <!-- inserting carousel component here -->
     <CarouselMarketplace/>
-      
-
     <div class="row">
       <!-- Sidebar Filter on the Left -->
       <div class="col-md-3 filter-container">
@@ -17,16 +13,27 @@
       <!-- Donation List in the Center with Pagination -->
       <div class="col-md-9">
         <!-- Direct Donation List -->
-        <DonationList
-          ref="donationList"
-          :current-page="currentPage"
-          :items-per-page="itemsPerPage"
-          :donations="paginatedDonations"
-        />
+        <DonationList :donations="paginatedDonations" />
 
         <!-- Faint Divider Line -->
         <hr class="divider-line" />
-        <!-- <PuppyAnimation/> -->
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container">
+          <button 
+            :disabled="currentPage === 1" 
+            @click="prevPage" 
+            class="btn btn-outline-primary">
+            Previous
+          </button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button 
+            :disabled="currentPage === totalPages" 
+            @click="nextPage" 
+            class="btn btn-outline-primary">
+            Next
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -37,7 +44,6 @@ import FilterSidebar from './FilterSidebar.vue';
 import DonationList from './DonationList.vue';
 import CreateDonationForm from './CreateDonationForm.vue';
 import CarouselMarketplace from './CarouselMarketplace.vue';
-// import PuppyAnimation from './PuppyAnimation.vue';
 
 export default {
   components: {
@@ -45,46 +51,74 @@ export default {
     DonationList,
     CreateDonationForm,
     CarouselMarketplace,
-    // PuppyAnimation,
   },
   data() {
     return {
+      donations: [], // Full list of donations
+      filteredDonations: [], // Filtered and sorted list of donations
       currentPage: 1,
       itemsPerPage: 9,
-      donations: [], // Full donation list
+      selectedFilters: {}, // Holds applied filters
     };
   },
   computed: {
+    // Apply pagination to the filtered donations
     paginatedDonations() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.donations.slice(start, end);
+      return this.filteredDonations.slice(start, end);
     },
+    // Calculate total pages for the filtered donations
     totalPages() {
-      return Math.max(Math.ceil(this.donations.length / this.itemsPerPage), 1);
+      return Math.ceil(this.filteredDonations.length / this.itemsPerPage);
     },
   },
   methods: {
+    // Fetch donations and set the full and filtered donations list
+    async fetchDonations() {
+      try {
+        const response = await fetch('http://localhost:8000/api/marketplace');
+        if (!response.ok) throw new Error('Failed to fetch donations');
+        const data = await response.json();
+        this.donations = data;
+        this.filteredDonations = data; // Initialize with all donations
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+      }
+    },
+    // Apply the filters to the donations
     applyFilters(filters) {
-      if (this.$refs.donationList && this.$refs.donationList.filterDonations) {
-        this.$refs.donationList.filterDonations(filters);
-      } else {
-        console.error('DonationList ref or filterDonations method is missing.');
+      this.selectedFilters = filters;
+      let filtered = this.donations.filter(donation => {
+        const matchesCondition = !filters.conditions.length || filters.conditions.includes(donation.condition);
+        const matchesCategory = !filters.itemCategories.length || filters.itemCategories.includes(donation.itemCategory);
+        const matchesPetType = !filters.petTypes.length || filters.petTypes.includes(donation.petType);
+        const matchesLocation = !filters.locations.length || filters.locations.includes(donation.location);
+
+        return matchesCondition && matchesCategory && matchesPetType && matchesLocation;
+      });
+
+      // Apply sorting by "Most Recent" or "Least Recent"
+      if (filters.sortOrder === 'mostRecent') {
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (filters.sortOrder === 'leastRecent') {
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       }
+
+      this.filteredDonations = filtered;
+      this.currentPage = 1; // Reset to the first page after filtering
     },
+    // Pagination: go to previous page
     prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
+      if (this.currentPage > 1) this.currentPage--;
     },
+    // Pagination: go to next page
     nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
+      if (this.currentPage < this.totalPages) this.currentPage++;
     },
-    setDonations(donations) {
-      this.donations = donations;
-    },
+  },
+  async created() {
+    await this.fetchDonations();
   },
 };
 </script>

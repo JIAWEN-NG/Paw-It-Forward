@@ -5,7 +5,7 @@
     <div class="cards-container">
       <div class="row gx-2">
         <div
-          v-for="donation in formattedDonations"
+          v-for="donation in donations"
           :key="donation.id"
           class="col-sm-6 col-lg-4 mb-2"
         >
@@ -22,7 +22,6 @@
                   {{ donation.donorName || 'Anonymous' }}
                 </h6>
               </div>
-              
             </div>
 
             <img
@@ -33,13 +32,8 @@
             />
 
             <div class="card-body">
-
-              <!-- Title and Location in a single line -->
               <div class="d-flex justify-content-between align-items-center">
-                <!-- Display itemsDonated and petType on the left -->
                 <h5 class="card-title mb-0">{{ donation.itemsDonated }} | {{ donation.petType || 'N/A' }}</h5>
-
-                <!-- Location display on the right with icon -->
                 <div class="location-container" v-if="donation.location">
                   <img src="../assets/location.png" alt="Location Icon" class="location-icon" />
                   <span class="card-location">{{ donation.location }}</span>
@@ -51,8 +45,6 @@
               <p class="card-text">
                 {{ donation.itemCategory || 'N/A' }}
               </p>
-
-              <!-- Add 'Posted on' date and button alignment -->
               <div class="d-flex justify-content-between align-items-center">
                 <span class="posted-on">Posted {{ donation.postedOn }}</span>
                 <a
@@ -67,25 +59,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Fixed Pagination Controls -->
-    <div class="pagination-container">
-      <button
-        :disabled="currentPage === 1"
-        @click="currentPage--"
-        class="btn btn-outline-primary"
-      >
-        Previous
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button
-        :disabled="currentPage === totalPages"
-        @click="currentPage++"
-        class="btn btn-outline-primary"
-      >
-        Next
-      </button>
     </div>
 
     <!-- Modal for Requesting Item -->
@@ -112,96 +85,20 @@
 
 <script>
 export default {
+  props: {
+    donations: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
-      donations: [],
-      selectedFilters: {
-        conditions: [],
-        itemCategories: [],
-        petTypes: [],
-      },
-      currentPage: 1,
-      itemsPerPage: 12,
       showModal: false,
       selectedDonation: null,
       requestMessage: '',
-      filteredDonationsList: [], // Store filtered results here
     };
   },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.sortedAndFilteredDonations.length / this.itemsPerPage);
-    },
-    sortedAndFilteredDonations() {
-      // Sort donations based on the selectedSortOrder before pagination
-      return [...this.filteredDonationsList].sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-
-        if (this.selectedFilters.sortOrder === 'mostRecent') {
-          return dateB - dateA; // Sort descending for most recent
-        } else if (this.selectedFilters.sortOrder === 'leastRecent') {
-          return dateA - dateB; // Sort ascending for least recent
-        }
-        return 0;
-      });
-    },
-    paginatedDonations() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.sortedAndFilteredDonations.slice(start, end);
-    },
-    formattedDonations() {
-      // Format dates for paginated donations
-      return this.paginatedDonations.map((donation) => {
-        const date = new Date(donation.createdAt);
-        const formattedDate = date.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        });
-        return {
-          ...donation,
-          postedOn: formattedDate,
-        };
-      });
-    },
-  },
   methods: {
-    async fetchDonations() {
-      try {
-        const response = await fetch('http://localhost:8000/api/marketplace');
-        if (!response.ok) {
-          throw new Error('Network response was not ok: ' + response.statusText);
-        }
-        const data = await response.json();
-        this.donations = data;
-        this.filteredDonationsList = data; // Initialize with all donations
-      } catch (error) {
-        console.error('Error fetching donations:', error);
-      }
-    },
-    filterDonations(filters) {
-      this.selectedFilters = filters;
-      this.filteredDonationsList = this.donations.filter((donation) => {
-        const matchesCondition =
-          filters.conditions.length === 0 ||
-          filters.conditions.includes(donation.condition.trim());
-        const matchesCategory =
-          filters.itemCategories.length === 0 ||
-          filters.itemCategories.includes(donation.itemCategory.trim());
-        const matchesPetType =
-          filters.petTypes.length === 0 ||
-          filters.petTypes.includes(donation.petType);
-        const matchesLocation =
-          filters.locations.length === 0 ||
-          filters.locations.includes(donation.location);
-
-        return matchesCondition && matchesCategory && matchesPetType && matchesLocation;
-      });
-
-      this.currentPage = 1; // Reset to the first page after filtering
-    },
     openRequestModal(donation) {
       this.selectedDonation = donation;
       this.showModal = true;
@@ -212,45 +109,41 @@ export default {
     },
     async sendRequest() {
       if (!this.requestMessage) {
-          alert('Please enter a message.');
-          return;
+        alert('Please enter a message.');
+        return;
       }
 
       const requestPayload = {
-          donorId: this.selectedDonation.donorId,
-          itemImage: this.selectedDonation.itemImage,
-          itemsDonated: this.selectedDonation.itemsDonated,
-          receiverId: "p8v0JBWhlfNZ13DzpBFN",
-          requestMessage: this.requestMessage,
-          status: "pending"
+        donorId: this.selectedDonation.donorId,
+        itemImage: this.selectedDonation.itemImage,
+        itemsDonated: this.selectedDonation.itemsDonated,
+        receiverId: "p8v0JBWhlfNZ13DzpBFN",
+        requestMessage: this.requestMessage,
+        status: "pending"
       };
 
       try {
-          const response = await fetch('http://localhost:8000/api/requests', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(requestPayload),
-          });
+        const response = await fetch('http://localhost:8000/api/requests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestPayload),
+        });
 
-          if (!response.ok) {
-              const errorData = await response.json();
-              console.error('Server error response:', errorData);
-              throw new Error('Error sending request');
-          }
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Server error response:', errorData);
+          throw new Error('Error sending request');
+        }
 
-          alert('Request sent successfully!');
-          this.closeRequestModal();
+        alert('Request sent successfully!');
+        this.closeRequestModal();
       } catch (error) {
-          console.error('Error sending request:', error);
-          alert('There was an error sending your request.');
+        console.error('Error sending request:', error);
+        alert('There was an error sending your request.');
       }
     },
-  },
-
-  async created() {
-    await this.fetchDonations();
   },
 };
 </script>
