@@ -163,7 +163,7 @@ const getUserChats = async (req, res) => {
             .get();
 
         const chats = chatsSnapshot.docs.map(doc => ({
-            chatID: doc.id,
+            chatId: doc.id,
             ...doc.data()
         }));
 

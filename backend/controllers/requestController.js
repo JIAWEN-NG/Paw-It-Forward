@@ -39,8 +39,8 @@ const createRequest = async (req, res) => {
         // Create the 'messages' sub-collection and add the initial message
         const messagesRef = chatRef.collection('messages');
         await messagesRef.add({
-            senderId: donorId,
-            receiverId: receiverId,
+            senderId: receiverId,
+            receiverId: donorId,
             message: requestMessage,
             timestamp: new Date().toISOString(),
             receiverName: receiverData.name,

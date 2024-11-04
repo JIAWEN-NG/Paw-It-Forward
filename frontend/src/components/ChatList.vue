@@ -19,16 +19,16 @@
             </div>
         </div>
 
-        <div v-if="!isLoadingChats" class="chat-items-wrapper flex-grow-1 overflow-auto">
+        <div ref="chatListContainer" v-if="!isLoadingChats" class="chat-items-wrapper flex-grow-1 overflow-auto">
             <!-- No Chats Available Message -->
             <div v-if="chats.length === 0" class="no-chats-message text-muted p-4 text-center">
                 <p>You do not have any active chats.</p>
             </div>
-            <!-- Chat Items (Scrollable) -->
+            <!-- Chat Items (Scrollable) with Inline Filtering -->
             <div v-else class="chat-items px-2">
-                <div v-for="chat in filteredChats" :key="chat.chatID"
+                <div v-for="chat in filteredChats" :key="chat.chatId"
                     class="chat-item d-flex align-items-center p-3 mb-2 rounded cursor-pointer"
-                    @click="selectChat(chat)">
+                    @click="handleSelectedChat(chat)">
                     <!-- Profile Image -->
                     <img :src="chat.receiverProfileImage || 'default-avatar.png'" alt="avatar"
                         class="avatar me-3 rounded-circle" />
@@ -69,33 +69,63 @@
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-
 export default {
-    props: ['currentUserId'],
+    props: ['currentUserId', 'selectedChat'], // Keep selectedChat as a prop
     data() {
         return {
             chats: [],
             searchQuery: '',
-            socket: null,
             isLoadingChats: true,
+            socket: null,
+            updateKey: 0,
         };
     },
     computed: {
         filteredChats() {
-            return this.chats.filter((chat) =>
+        let chatsToDisplay = this.chats;
+        // Filter chats based on search query
+        if (this.searchQuery) {
+            chatsToDisplay = chatsToDisplay.filter((chat) =>
                 chat.receiverName && chat.receiverName.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
+        }
+        // Sort chats based on lastMessageTimestamp, descending order
+        return chatsToDisplay.sort((a, b) => {
+            // Convert timestamps to Date objects for comparison
+            const timeA = new Date(a.lastMessageTimestamp).getTime();
+            const timeB = new Date(b.lastMessageTimestamp).getTime();
+            return timeB - timeA; // Sort in descending order
+        });
+    },
+    },
+    watch: {
+    selectedChat: {
+        immediate: true,
+        handler(newChat) {
+            if (newChat && newChat.chatId) { // Ensure chatId is defined
+                this.fetchMessages(newChat.chatId); // Fetch messages using the valid chatId
+            } else {
+                console.error('Selected chat is invalid or has no chatId');
+            }
         },
     },
+},
+
     methods: {
-        async fetchChats() {
+        updateChatInList(chat) {
+            const chatIndex = this.chats.findIndex(c => c.chatId === chat.chatId);
+            if (chatIndex !== -1) {
+                this.$set(this.chats, chatIndex, chat); // Ensure reactivity
+            }
+        },
+        async fetchInitialChats() {
             try {
                 const response = await axios.get(`http://localhost:8000/api/chats/user/${this.currentUserId}`);
                 const chatsData = response.data;
 
                 const updatedChats = await Promise.all(
-                    chatsData.map(async chat => {
-                        const otherUserId = chat.participants.find(participant => participant !== this.currentUserId);
+                    chatsData.map(async (chat) => {
+                        const otherUserId = chat.participants.find((participant) => participant !== this.currentUserId);
                         chat.otherUserId = otherUserId;
 
                         const userResponse = await axios.get(`http://localhost:8000/api/users/${otherUserId}`);
@@ -109,13 +139,46 @@ export default {
 
                 this.chats = updatedChats;
                 this.isLoadingChats = false;
+
+                this.setupSocketListeners();
             } catch (error) {
                 console.error('Error fetching chats:', error);
             }
         },
+        setupSocketListeners() {
+            this.socket = io('http://localhost:8000');
+            this.socket.on('newChat', async (newChat) => {
+                // Check if chat with the same ID already exists
+                const existingChatIndex = this.chats.findIndex(chat => chat.chatId === newChat.chatId);
+                if (existingChatIndex === -1) {
+                    // Add receiver details to the new chat
+                    const otherUserId = newChat.participants.find((participant) => participant !== this.currentUserId);
+                    if (otherUserId) {
+                        try {
+                            const userResponse = await axios.get(`http://localhost:8000/api/users/${otherUserId}`);
+                            const userData = userResponse.data;
+                            newChat.receiverName = userData.name;
+                            newChat.receiverProfileImage = userData.profileImage;
+                        } catch (error) {
+                            console.error('Error fetching user data for new chat:', error);
+                        }
+                    }
+                    // Add the new chat and create a new array reference to force reactivity
+                    this.chats.unshift(newChat);
 
-        selectChat(chat) {
-            this.$emit('chatSelected', chat);
+                } else {
+                    console.log("Duplicate chat detected, not adding to chats array");
+                }
+            });
+
+            // Listen for updates on the selected chat
+            this.socket.on('updateChat', async (updatedChat) => {
+                this.updateChatInList(updatedChat); // Update the chat in the list
+            });
+        },
+
+        handleSelectedChat(chat) { // Renamed method
+            this.$emit('selectedChat', chat);
         },
 
         formatDate(date) {
@@ -127,64 +190,26 @@ export default {
             if (!message) return 'No message available';
             return message.length > 30 ? message.slice(0, 30) + '...' : message;
         },
-        updateChatList(newMessage) {
-            const chatIndex = this.chats.findIndex(chat => chat.chatID === newMessage.chatID);
-
-            if (chatIndex !== -1) {
-                // Update existing chat
-                this.chats[chatIndex].lastMessage = newMessage.message;
-                this.chats[chatIndex].lastMessageTimestamp = newMessage.timestamp;
-            } else {
-                // If the chat does not exist, fetch it
-                this.fetchChats();
-            }
-
-            // Trigger reactivity by reassigning the chats array
-            this.chats = [...this.chats];
-        },
-        handleNewChat(newChatData) {
-            const existingChatIndex = this.chats.findIndex(chat => chat.chatID === newChatData.chatID);
-
-            if (existingChatIndex === -1) {
-                // If the new chat is not already in the list, add it to the top
-                this.chats.unshift(newChatData);
-            } else {
-                // Update the chat if it already exists
-                this.chats[existingChatIndex] = newChatData;
-            }
-
-            // Trigger reactivity by reassigning the chats array
-            this.chats = [...this.chats];
-        },
-
     },
-    created() {
-        this.fetchChats();
-        this.socket = io('http://localhost:8000', { transports: ['websocket'] });
 
-        this.socket.on('connect', () => {
-            console.log('Connected to WebSocket server chatlist');
-        });
-
-        this.socket.on('newMessage', data => {
-            console.log('New message received:', data);
-            this.updateChatList(data);
-        });
-
-        this.socket.on('newChat', data => {
-            console.log('New chat received:', data);
-            this.handleNewChat(data);
-        });
+    async mounted() {
+        console.log("ChatList.vue mounted");
+        if (this.currentUserId) {
+            await this.fetchInitialChats();
+        }
     },
+
     beforeUnmount() {
+        console.log("ChatList.vue beforeUnmount");
         if (this.socket) {
-            this.socket.off('newMessage');
-            this.socket.off('newChat');
             this.socket.disconnect();
         }
     },
 };
 </script>
+
+
+
 <style scoped>
 .loading-container {
     flex-grow: 1;

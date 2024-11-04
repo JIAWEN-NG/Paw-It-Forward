@@ -1,0 +1,373 @@
+
+.chat-room {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* overflow: hidden; */
+}
+
+.chat-header,
+.item-info {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.item-image {
+  width: 60px;
+  height: 60px;
+  /* Optional for styling */
+  object-fit: cover;
+}
+
+.user-details,
+.item-details {
+  flex-grow: 1;
+  overflow: hidden;
+  font-size: 1.2rem;
+  text-align: left;
+}
+
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #ffffff;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  /* Add this to ensure messages align properly */
+
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/chatbg-final.png?alt=media&token=c7e507e1-178c-4faa-ac3c-18e54f71420f");
+  background-blend-mode: overlay;
+  background-color: rgba(221, 218, 218, 0.5);
+  /* Overlay color with opacity */
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.message.received {
+  align-self: flex-start;
+  font-size: 1rem;
+}
+
+
+.message.received .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.message.sent .message-content {
+  background-color: #d1f7c4;
+  align-self: flex-end;
+  /* Additional styling to ensure alignment */
+  margin-left: auto;
+  border-radius: 10px;
+
+
+}
+
+.message-content {
+  background-color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  ;
+}
+
+.message-content p {
+  margin: 0;
+  font-size: 1.2rem;
+  text-align: left;
+}
+
+.message-content small {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.message-text {
+  font-size: 0.875rem;
+  color: #333333;
+  margin: 0;
+}
+
+.message.received .message-content {
+  background-color: #e9e9e9;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  color: #999999;
+}
+
+.message-input-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.text-input {
+  flex-grow: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid #dddddd;
+  outline: none;
+}
+
+
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.accept-button {
+  position: relative;
+  padding: 10px 25px;
+  background: transparent;
+  border-radius: 10px;
+  border: 2px solid #2aaa3f;
+  outline: 2px solid #2aaa3f;
+  outline-offset: -2px;
+  font-size: 1rem;
+  color: #2aaa3f;
+  font-weight: 500;
+  cursor: pointer;
+  transition: outline-offset 200ms ease;
+}
+
+.accept-button:hover {
+  color: #2aaa3f;
+  outline-offset: 2px;
+}
+
+.accept-button:active {
+  transform: scale(0.95);
+}
+
+.reject-button {
+  position: relative;
+  padding: 10px 15px;
+  background: transparent;
+  border-radius: 10px;
+  border: 2px solid #f54500;
+  outline: 2px solid #f54500;
+  outline-offset: -2px;
+  font-size: 1rem;
+  color: #f54500;
+  font-weight: 500;
+  cursor: pointer;
+  transition: outline-offset 200ms ease;
+}
+
+.reject-button:hover {
+  color: #f54500;
+  outline-offset: 3px;
+}
+
+.reject-button:active {
+  transform: scale(0.95);
+}
+
+.status-label {
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.status-label.accepted {
+  color: green;
+  background-color: #e6f4e6;
+}
+
+.status-label.declined {
+  color: red;
+  background-color: #fce8e8;
+}
+
+.system-message {
+  text-align: center;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 30px;
+  font-weight: bold;
+}
+
+.send-button {
+  background: #6771dd;
+  color: #ffffff;
+  padding: 0.5rem;
+  border-radius: 50%;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  cursor: pointer;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scale and bounce effect on click */
+.send-button:active {
+  animation: bounce 0.4s ease;
+}
+
+
+/* Pulse effect that emanates from the button */
+.send-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(4, 7, 238, 0.3);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  z-index: -1;
+}
+
+/* Show the pulse effect on click */
+.send-button:active::before {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* Background inside the button */
+.send-button::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #5a62d4;
+  z-index: -1;
+}
+
+/* Bounce animation for the button */
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+    /* Slightly larger */
+  }
+
+  100% {
+    transform: scale(1);
+    /* Back to normal size */
+  }
+}
+
+
+.timeline-divider {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.timeline-divider::before,
+.timeline-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #d1d5db;
+  margin: 0 0.5rem;
+}
+
+.modal-buttons {
+  display: flex;
+  text-align: center;
+  width: 380px;
+  gap: 10px;
+  --b: 2px;   /* the border thickness */
+  --h: 1.5em; /* the height */
+}
+
+.modal-buttons button {
+  --_c: green;
+  flex: calc(1.25 + var(--_s,0));
+  min-width: 0;
+  font-size: 20px;
+  height: var(--h);
+  cursor: pointer;
+  color: var(--_c);
+  border: var(--b) solid var(--_c);
+  background: 
+    conic-gradient(at calc(100% - 1.3*var(--b)) 0,var(--_c) 209deg, #0000 211deg) 
+    border-box;
+  clip-path: polygon(0 0,100% 0,calc(100% - 0.577*var(--h)) 100%,0 100%);
+  padding: 0 calc(0.288*var(--h)) 0 0;
+  margin: 0 calc(-0.288*var(--h)) 0 0;
+  box-sizing: border-box;
+  transition: flex .4s;
+}
+.modal-buttons button + button {
+  --_c: red;
+  flex: calc(.75 + var(--_s,0));
+  background: 
+    conic-gradient(from -90deg at calc(1.3*var(--b)) 100%,var(--_c) 119deg, #0000 121deg) 
+    border-box;
+  clip-path: polygon(calc(0.577*var(--h)) 0,100% 0,100% 100%,0 100%);
+  margin: 0 0 0 calc(-0.288*var(--h));
+  padding: 0 0 0 calc(0.288*var(--h));
+}
+.modal-buttons button:focus-visible {
+  outline-offset: calc(-2*var(--b));
+  outline: calc(var(--b)/2) solid #000;
+  background: none;
+  clip-path: none;
+  margin: 0;
+  padding: 0;
+}
+.modal-buttons button:focus-visible + button {
+  background: none;
+  clip-path: none;
+  margin: 0;
+  padding: 0;
+}
+.modal-buttons button:has(+ button:focus-visible) {
+  background: none;
+  clip-path: none;
+  margin: 0;
+  padding: 0;
+}
+button:hover,
+button:active:not(:focus-visible) {
+  --_s: .75;
+}
+button:active {
+  box-shadow: inset 0 0 0 100vmax var(--_c);
+  color: #fff;
+}
+
+

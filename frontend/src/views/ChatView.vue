@@ -1,9 +1,9 @@
 <template>
-  <div class="container-fluid chat-view">
+  <div v-if="!loading && currentUserId" class="container-fluid chat-view">
     <div class="row h-100 gx-0">
       <!-- ChatList - Left Pane -->
       <div class="col-12 col-md-6 col-lg-3 p-0 border-end chat-list-wrapper" v-show="showChatList || isLargeScreen">
-        <ChatList :currentUserId="currentUserId" @chatSelected="setSelectedChat" />
+        <ChatList :currentUserId="currentUserId" @selectedChat ="setSelectedChat" />
       </div>
 
       <!-- ChatRoom - Right Pane -->
@@ -34,7 +34,6 @@
   </div>
 </template>
 
-
 <script>
 import ChatList from '../components/ChatList.vue';
 import ChatRoom from '../components/ChatRoom.vue';
@@ -47,7 +46,7 @@ export default {
   },
   data() {
     return {
-      currentUserId: 'qiDkbANAR9U1Lr2m9tqUTdU9Lgl2',
+      currentUserId: null,
       selectedChat: null,
       showChatList: true,
       isLargeScreen: window.innerWidth > 768, // Match large breakpoint
@@ -57,6 +56,7 @@ export default {
   methods: {
     setSelectedChat(chat) {
       this.selectedChat = chat;
+      console.log('Set selected chat:', this.selectedChat)
       if (innerWidth < 576) {
         this.showChatList = false; // Hide chat list on smaller screens
       }
@@ -76,11 +76,18 @@ export default {
       }
     },
 
+/**
+ * Fetches the currently authenticated user and updates the component's state.
+ * If a user is authenticated, their UID is stored in `currentUserId` and the loading state is set to false.
+ * If no user is authenticated, `currentUserId` is set to null and the user is redirected to the login page.
+ */
     fetchCurrentUser() {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
         if (user) {
           this.currentUserId = user.uid;
+          console.log("Current User ID:", this.currentUserId);
+          this.loading = false;
         } else {
           this.currentUserId = null;
           this.$router.push({ name: 'Login' });
@@ -92,7 +99,7 @@ export default {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
     this.fetchCurrentUser();
-    console.log("Initial values - showChatList:", this.showChatList, "isLargeScreen:", this.isLargeScreen);
+    
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.checkScreenSize);

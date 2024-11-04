@@ -21,25 +21,24 @@
       </div>
     </div>
 
-    <!-- Item Info Section -->
+    <!-- Item Info Section with Accept and Decline buttons -->
     <div class="item-info row align-items-center p-3 border-bottom">
-      <!-- Item Image -->
       <div class="col-auto d-flex align-items-center">
         <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/50'" alt="Item Image"
           class="item-image" />
       </div>
 
-      <!-- Item Details -->
       <div class="item-details col d-flex align-items-center">
         <h5 class="mb-0">{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}</h5>
       </div>
 
-
-      <!-- Display status or action buttons -->
       <div class="col-auto d-flex align-items-center">
         <template v-if="selectedChat?.requestedItem?.status === 'pending'">
-          <button @click="acceptRequest" class="btn accept-button me-2">Accept</button>
-          <button @click="declineRequest" class="btn reject-button">Decline</button>
+          <!-- Updated Accept and Decline buttons to open modal -->
+          <button @click="setModalAction('accept')" class="btn accept-button me-2" data-bs-toggle="modal"
+            data-bs-target="#confirmModal">Accept</button>
+          <button @click="setModalAction('decline')" class="btn reject-button" data-bs-toggle="modal"
+            data-bs-target="#confirmModal">Decline</button>
         </template>
         <template v-else>
           <span :class="['status-label', selectedChat?.requestedItem?.status]">
@@ -50,6 +49,36 @@
     </div>
 
 
+    <!-- Bootstrap Modal for Accept/Decline Confirmation -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+
+          <!-- Illustration Section -->
+          <div class="illustration-section">
+            <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/300x200'" alt="Item Image"
+              class="img-fluid rounded-top-4" style="width: 100%; height: auto;" />
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+              style="position: absolute; top: 10px; right: 10px;"></button>
+          </div>
+
+          <!-- Title Section -->
+          <div class="text-section text-start px-4 pt-3">
+            <h5 class="fw-bold mb-2" style="font-size: 1.25rem;">{{ selectedChat?.requestedItem?.title || 'Cat Litter'
+              }}
+            </h5>
+            <p class="text-muted" style="font-size: 0.9rem;">Are you sure you want to <b> {{ modalAction }} </b> this
+              request?</p>
+          </div>
+
+          <!-- Buttons Section -->
+          <div class="modal-footer modal-buttons d-flex justify-content-between border-0 p-4">
+            <button type="button" @click="confirmAction">Confirm</button>
+            <button type="button" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Messages Section -->
     <div class="messages">
@@ -57,7 +86,7 @@
       <div v-if="systemMessage" class="system-message ">
         <div class="'row">
           <div class="col-auto">
-            <p>{{ systemMessage }}</p>
+            <p>{{ this.selectedChat.systemMessage }}</p>
           </div>
           <div class="col-auto">
             <small class="text-muted">{{ formatMessageTimestamp(lastMessageTimestamp) }}</small>
@@ -112,7 +141,6 @@
 
 <script>
 import axios from 'axios';
-import { comma } from 'postcss/lib/list';
 import { io } from 'socket.io-client';
 
 export default {
@@ -123,35 +151,30 @@ export default {
       newMessage: '',
       socket: null, // Initialize socket as null
       systemMessage: '',
-      lastMessageTimestamp: ''  // For displaying system messages
+      lastMessageTimestamp: '', // For displaying system messages
+      modalAction: '',
     };
   },
   mounted() {
     console.log("Attempting to connect to WebSocket server");
-
-    // Initialize the socket connection in mounted lifecycle hook
     this.socket = io('http://localhost:8000', { transports: ['websocket'] });
 
     this.socket.on('connect', () => {
-      console.log('Connected to the WebSocket server'); // This should appear after a successful connection
-      console.log('Socket connected status:', this.socket.connected); // This should now show true
+      console.log('Connected to the WebSocket server');
+      if (this.selectedChat && this.selectedChat.chatId) { // Check for chatId
+        this.joinChat(this.selectedChat.chatId);
+        this.fetchMessages(); // Fetch messages only if chatId is defined
+        this.fetchChatDetails();
+      }
     });
 
-    // Additional event listeners for troubleshooting
-    this.socket.on('error', (error) => {
-      console.error('Socket encountered error:', error);
-    });
     this.socket.on('disconnect', () => {
       console.log('Disconnected from the WebSocket server');
     });
 
     this.setupSocketListeners();
-    if (this.selectedChat) {
-      this.joinChat(this.selectedChat.chatID);
-      this.fetchMessages();
-      this.fetchChatDetails();
-    }
   },
+
   beforeUnmount() {
     this.cleanupSocketListeners();
     if (this.socket) {
@@ -177,26 +200,40 @@ export default {
     },
     setupSocketListeners() {
       console.log("Setting up socket listeners");
-      // Listen for new messages
-      this.socket.on('newMessage', this.handleNewMessage);
+      this.socket.on('newMessage', (message) => {
+        this.handleNewMessage(message);
+        if (message.requestId === this.selectedChat.requestId) {
+          // Also update selectedChat's last message if it matches
+          this.selectedChat.lastMessage = message.message;
+          this.selectedChat.lastMessageTimestamp = message.timestamp;
+        }
+      });
     },
+
     cleanupSocketListeners() {
       // Remove the event listener when the component unmounts to prevent duplicates
       this.socket.off('newMessage', this.handleNewMessage);
     },
     handleNewMessage(message) {
-      if (message.requestId === this.selectedChat.requestId) {
+      console.log('New message received:', message); // Log the incoming message
+    if (message.requestId === this.selectedChat.requestId) {
         this.messages.push(message);
-      }
+        this.selectedChat.lastMessage = message.message;
+        this.lastMessageTimestamp = message.timestamp;
+    }
     },
     async fetchChatDetails() {
+      console.log('Selected chat in ChatRoom:', this.selectedChat); // Right before fetching messages
+
       try {
-        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatID}`);
+        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}`); // Ensure 'chatId' is consistent
         const chatData = response.data;
 
-        // Set the retrieved data
+        // Update selectedChat details from the response
         this.systemMessage = chatData.systemMessage || '';
-        this.lastMessageTimestamp = chatData.lastMessageTimestamp;
+        this.selectedChat.lastMessage = chatData.lastMessage || '';
+        this.selectedChat.lastMessageTimestamp = chatData.lastMessageTimestamp || '';
+        this.selectedChat.requestedItem = chatData.requestedItem || {};
         console.log('Chat details:', chatData);
       } catch (error) {
         console.error('Error fetching chat details:', error);
@@ -221,7 +258,6 @@ export default {
         // Emit the message event to the server via Socket.IO
         this.socket.emit('sendMessage', messageData);
 
-
         // Clear the input after sending
         this.newMessage = '';
       } catch (error) {
@@ -229,25 +265,41 @@ export default {
       }
     },
 
-
     async fetchMessages() {
-
-      try {
-        if (this.selectedChat) {
-          const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatID}/messages`);
-          this.messages = response.data.messages;
+    try {
+        if (this.selectedChat && this.selectedChat.chatId) {
+            const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
+            console.log('Fetched messages:', response.data.messages); // Log the fetched messages
+            this.messages = response.data.messages;
+        } else {
+            console.error('No chatId found when fetching messages');
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching messages:', error);
+    }
+},
+
+    setModalAction(action) {
+      this.modalAction = action; // Set the action type
+    },
+    async confirmAction() {
+      // Confirm action based on modalAction value
+      if (this.modalAction === 'accept') {
+        await this.acceptRequest();
+        this.selectedChat.requestedItem.status = 'accepted';
+      } else if (this.modalAction === 'decline') {
+        await this.declineRequest();
+        this.selectedChat.requestedItem.status = 'declined';
       }
+      await this.fetchChatDetails(); // Refresh chat details after action
+      const dismissButton = document.querySelector('#confirmModal .btn-close');
+      dismissButton.click(); // Simulate a click on the close button
     },
     async acceptRequest() {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/accept`);
-        alert('Request accepted');
-
-        // Optionally, refresh messages to include the system message
-        this.fetchMessages();
+        console.log('Request accepted');
+        await this.fetchMessages(); // Refresh messages after accepting
       } catch (error) {
         console.error('Error accepting request:', error);
       }
@@ -255,13 +307,10 @@ export default {
     async declineRequest() {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/decline`);
-        alert('Request rejected');
-
-
-        // Optionally, refresh messages to include the system message
-        this.fetchMessages();
+        console.log('Request declined');
+        await this.fetchMessages(); // Refresh messages after declining
       } catch (error) {
-        console.error('Error rejecting request:', error);
+        console.error('Error declining request:', error);
       }
     },
 
@@ -288,37 +337,28 @@ export default {
       const options = { hour: '2-digit', minute: '2-digit', hour12: true };
       return new Date(timestamp).toLocaleTimeString([], options);
     },
-
-    openContextMenu(message, event) {
-      this.contextMenu.visible = true;
-      this.contextMenu.x = event.clientX;
-      this.contextMenu.y = event.clientY;
-      this.contextMenu.message = message;
-    },
-    replyToMessage(message) {
-      // Logic for replying to a specific message
-      alert('Replying to: ' + message.message);
-      this.contextMenu.visible = false;
-    },
   },
   watch: {
     selectedChat: {
       immediate: true,
       handler(newChat) {
-        if (newChat) {
-          // Wait for the socket to be initialized and connected
+        console.log('Selected chat:', newChat); // Log the new chat
+        if (newChat && newChat.chatId) { // Ensure chatId is defined
           if (this.socket && this.socket.connected) {
-            this.joinChat(newChat.chatID);
+            this.joinChat(newChat.chatId);
+            this.fetchMessages(); // Fetch messages only if chatId is defined
           } else {
-            // Retry joinChat after a slight delay if socket is not ready
+            console.warn("Socket is not connected yet. Retrying...");
             const retryJoinChat = setInterval(() => {
               if (this.socket && this.socket.connected) {
-                this.joinChat(newChat.chatID);
+                this.joinChat(newChat.chatId);
+                this.fetchMessages(); // Fetch messages when ready
                 clearInterval(retryJoinChat); // Stop retrying once successful
               }
-            }, 100); // Adjust delay as needed
+            }, 100);
           }
-          this.fetchMessages(newChat.chatID);
+        } else {
+          console.error('Selected chat is invalid or has no chatId');
         }
       },
     },
@@ -326,308 +366,8 @@ export default {
 };
 </script>
 
+
 <style scoped>
-.chat-room {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  /* overflow: hidden; */
-}
-
-.chat-header,
-.item-info {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.profile-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.item-image {
-  width: 60px;
-  height: 60px;
-  /* Optional for styling */
-  object-fit: cover;
-}
-
-.user-details,
-.item-details {
-  flex-grow: 1;
-  overflow: hidden;
-  font-size: 1.2rem;
-  text-align: left;
-}
-
-
-.messages {
-  flex-grow: 1;
-  overflow-y: auto;
-  background-color: #ffffff;
-  scroll-behavior: smooth;
-  display: flex;
-  flex-direction: column;
-  /* Add this to ensure messages align properly */
-
-  background-image: url("../assets/chat-bg3.jpeg");
-  background-blend-mode: overlay;
-  background-color: rgba(221, 218, 218, 0.5); /* Overlay color with opacity */
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.message.received {
-  align-self: flex-start;
-  font-size: 1rem;
-}
-
-
-.message.received .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.75rem;
-}
-
-.message.sent .message-content {
-  background-color: #d1f7c4;
-  align-self: flex-end;
-  /* Additional styling to ensure alignment */
-  margin-left: auto;
-  border-radius: 10px;
-
-
-}
-
-.message-content {
-  background-color: #ffffff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  max-width: 60%;
-  display: flex;
-  flex-direction: column;
-  ;
-}
-
-.message-content p {
-  margin: 0;
-  font-size: 1.2rem;
-  text-align: left;
-}
-
-.message-content small {
-  font-size: 0.75rem;
-  color: #999;
-  margin-top: 0.25rem;
-}
-
-.message-text {
-  font-size: 0.875rem;
-  color: #333333;
-  margin: 0;
-}
-
-.message.received .message-content {
-  background-color: #e9e9e9;
-}
-
-.message-timestamp {
-  font-size: 0.75rem;
-  color: #999999;
-}
-
-.message-input-container {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.text-input {
-  flex-grow: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  border: 1px solid #dddddd;
-  outline: none;
-}
-
-
-
-.button-group {
-  display: flex;
-  gap: 0.5rem;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
-
-.accept-button {
-  position: relative;
-  padding: 10px 25px;
-  background: transparent;
-  border-radius: 10px;
-  border: 2px solid #2aaa3f;
-  outline: 2px solid #2aaa3f;
-  outline-offset: -2px;
-  font-size: 1rem;
-  color: #2aaa3f;
-  font-weight: 500;
-  cursor: pointer;
-  transition: outline-offset 200ms ease;
-}
-
-.accept-button:hover {
-  color: #2aaa3f;
-  outline-offset: 2px;
-}
-
-.accept-button:active {
-  transform: scale(0.95);
-}
-
-.reject-button {
-  position: relative;
-  padding: 10px 15px;
-  background: transparent;
-  border-radius: 10px;
-  border: 2px solid #f54500;
-  outline: 2px solid #f54500;
-  outline-offset: -2px;
-  font-size: 1rem;
-  color: #f54500;
-  font-weight: 500;
-  cursor: pointer;
-  transition: outline-offset 200ms ease;
-}
-
-.reject-button:hover {
-  color: #f54500;
-  outline-offset: 3px;
-}
-
-.reject-button:active {
-  transform: scale(0.95);
-}
-
-.status-label {
-  font-weight: bold;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.status-label.accepted {
-  color: green;
-  background-color: #e6f4e6;
-}
-
-.status-label.declined {
-  color: red;
-  background-color: #fce8e8;
-}
-
-.system-message {
-  text-align: center;
-  font-size: 1rem;
-  text-align: center;
-  margin-top: 30px;
-  font-weight: bold;
-}
-
-.send-button {
-  background: #6771dd;
-  color: #ffffff;
-  padding: 0.5rem;
-  border-radius: 50%;
-  margin-left: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-  cursor: pointer;
-  z-index: 1;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Scale and bounce effect on click */
-.send-button:active {
-  animation: bounce 0.4s ease;
-}
-
-
-/* Pulse effect that emanates from the button */
-.send-button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: rgba(4, 7, 238, 0.3);
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  z-index: -1;
-}
-
-/* Show the pulse effect on click */
-.send-button:active::before {
-  opacity: 1;
-  transform: scale(1.3);
-}
-
-/* Background inside the button */
-.send-button::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: #5a62d4;
-  z-index: -1;
-}
-
-/* Bounce animation for the button */
-@keyframes bounce {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.1);
-    /* Slightly larger */
-  }
-
-  100% {
-    transform: scale(1);
-    /* Back to normal size */
-  }
-}
-
-
-.timeline-divider {
-  text-align: center;
-  color: #6b7280;
-  font-size: 0.85rem;
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.timeline-divider::before,
-.timeline-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #d1d5db;
-  margin: 0 0.5rem;
-}
+@import '../styles/chatroom.css';
+/* Adjust the path accordingly */
 </style>
