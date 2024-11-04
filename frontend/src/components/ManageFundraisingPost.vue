@@ -13,8 +13,8 @@
       <table class="compact-table">
         <thead>
           <tr>
-            <th>Image</th>
-            <th style="width: 40%;">Details</th>
+            <th>My Posts</th>
+            <!-- <th style="width: 40%;">Details</th> -->
             <th>Target Amount</th>
             <th>Amount Raised</th>
             <th>Actions</th>
@@ -23,15 +23,15 @@
         <tbody>
           <tr v-for="fundraising in paginatedFundraisings" :key="fundraising.id">
             <td>
-              <img :src="fundraising.fundraisingImg || 'https://via.placeholder.com/200'" alt="Fundraising Image" class="thumbnail">
-            </td>
-            <td>
-              <div class="details-column">
-                <p class="title">{{ fundraising.title }}</p>
-                <p class="description">{{ truncateText(fundraising.description, 50) }}</p>
-                <p class="pet-type">Pet Type: {{ fundraising.petType }}</p>
-                <p class="posted-date">Posted: {{ formatDate(fundraising.createdAt) }}</p>
-              </div>
+              <div class="listing-container">
+                <img :src="fundraising.fundraisingImg || 'https://via.placeholder.com/200'" alt="Fundraising Image" class="thumbnail">
+                <div class="listing-details">
+                  <p class="title">{{ fundraising.title }}</p>
+                  <p class="description">{{ truncateText(fundraising.description, 50) }}</p>
+                  <p class="pet-type">Pet Type: {{ fundraising.petType }}</p>
+                  <p class="posted-date">Posted: {{ formatDate(fundraising.createdAt) }}</p>
+                </div>
+              </div>  
             </td>
             <td>{{ formatCurrency(fundraising.targetAmount) }}</td>
             <td>{{ formatCurrency(fundraising.amountRaised) }}</td>
@@ -52,19 +52,19 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div v-if="totalPages > 1" class="pagination-container">
+    <div class="pagination-container">
       <button 
         @click="changePage(currentPage - 1)" 
         :disabled="currentPage === 1" 
-        class="pagination-button"
+        class="btn btn-outline-primary  pagination-button"
       >
         Previous
       </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
       <button 
         @click="changePage(currentPage + 1)" 
         :disabled="currentPage === totalPages" 
-        class="pagination-button"
+        class="btn btn-outline-primary pagination-button"
       >
         Next
       </button>
@@ -308,6 +308,10 @@ export default {
 
     setSuccessMessage(message) {
       this.successMessage = message;
+      
+      // Scroll to top to make the success message visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       setTimeout(() => {
         this.successMessage = '';
       }, 3000);
@@ -386,43 +390,50 @@ tbody tr:hover {
   border-radius: 6px;
   border: 1px solid #ddd;
 }
-
-.details-column {
-  font-size: 0.9rem;
-  color: #555;
+.listing-container {
+  display: flex;
+  align-items: stretch; /* Make items take full height of the container */
+  gap: 15px; /* Spacing between image and text */
 }
+.listing-details p {
+  margin: 2px 0; /* Less margin between lines for a compact look */
+  font-size: 0.9rem;
+  color: #555; /* Soft gray text color */
+}
+
+.thumbnail {
+  width: 100px; /* Fixed width */
+  height: 100px; /* Remove fixed height */
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd; /* Light border for images */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for images */
+  flex-shrink: 0;
+}
+
 
 .pagination-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  padding: 20px 0;
+  
 }
-
 .pagination-button {
-  color: #8b4513;
-  border: 1px solid #8b4513;
-  font-size: 0.75rem;
-  padding: 5px 10px;
-  background-color: #fff;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  border: 1px solid #2c3e50; /* Ensures a visible border */
+  color: #2c3e50;
+  border-radius: 5px;
+  padding: 6px 12px;
+}
+.btn-outline-primary {
+  color: #2c3e50;
+  border-color: #2c3e50;
+  
 }
 
-.pagination-button:hover {
-  background-color: #8b4513;
+.btn-outline-primary:hover {
+  background-color: #2c3e50;
   color: #fff;
-  border-color: #8b4513;
-}
-
-.pagination-button:disabled {
-  color: #ccc;
-  border-color: #ccc;
-  cursor: not-allowed;
-  background-color: #f7f7f7;
 }
 .action-buttons {
   display: flex;

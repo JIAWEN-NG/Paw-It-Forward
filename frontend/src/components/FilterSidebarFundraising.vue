@@ -1,6 +1,20 @@
 <template>
-  <div class="filter-sidebar p-3 p-md-4">
-    <h4 class="mt-4">Filter by Pet Type</h4>
+  <div class="filter-sidebar">
+
+    <!-- Sort Options -->
+    <h4>Sort by</h4>
+    <div class="filter-group">
+      <label>
+        <input type="radio" value="recent" v-model="sortOption" /> Most Recent
+      </label>
+      <label>
+        <input type="radio" value="oldest" v-model="sortOption" /> Least Recent
+      </label>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <h4>Filter by Pet Type</h4>
     <div class="filter-group">
       <label>
         <input type="checkbox" value="Cat" v-model="selectedPetTypes" />
@@ -13,18 +27,7 @@
     </div>
     <div class="divider"></div>
 
-    <!-- Sort Options -->
-    <h4 class="mt-4">Sort by</h4>
-    <div class="sort-group">
-      <label>
-        <input type="radio" value="recent" v-model="sortOption" /> Most Recent
-      </label>
-      <label>
-        <input type="radio" value="oldest" v-model="sortOption" /> Least Recent
-      </label>
-    </div>
-    
-    <div class="divider"></div>
+
 
     <!-- Reset Filter Button -->
     <button class="reset-button w-100" @click="resetFilters">Reset Filters</button>
@@ -68,61 +71,72 @@ export default {
 
 <style scoped>
 .filter-sidebar {
-  background-color: #F8F9FB ;
+  padding: 25px;
+  background-color: #ffffff;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #333;
 }
 
 h4 {
-  margin-bottom: 10px;
-  font-size: 16px;
-  font-family: 'Montserrat', sans-serif;
+  margin-top: 2px; 
+  margin-bottom: 5px;
+  font-size: 1.1em;
+  color: #444;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  border-bottom: 2px solid #ececec;
+  padding-bottom: 5px;
 }
 
-.filter-group, .sort-group {
-  margin-bottom: 15px;
-}
+
 
 label {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  color: #555;
 }
 
 input[type='checkbox'],
 input[type='radio'] {
   margin-right: 10px;
+  accent-color: #5a6e8c;
+  transform: scale(1.1);
 }
-
 .divider {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
+  border-bottom: 1px solid #e2e2e2;
+  margin: 0;
 }
 
 .reset-button {
-    margin-top: 20px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #4b2e1c 0%, #7a5234 100%); /* Gradient from dark brown to medium brown */
-    color: white;
-    border: none;
-    border-radius: 50px; /* Rounded edges */
-    cursor: pointer;
-    font-size: 16px;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #5d483a 0%, #a0522d 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  width: 100%;
+  text-align: center;
+  font-size: medium;
 }
 
 .reset-button:hover {
-    background: linear-gradient(135deg, #5c3a2a 0%, #8b6543 100%); /* Lighter gradient on hover */
-    transform: translateY(-2px); /* Slight lift on hover */
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow */
+  background: linear-gradient(135deg, #8b5726 0%, #b3573d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .reset-button:active {
-    transform: translateY(1px); /* Subtle press effect */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Lighter shadow */
-    background: #5c3a2a; /* Solid brown on active state */
+  transform: translateY(1px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 </style>
