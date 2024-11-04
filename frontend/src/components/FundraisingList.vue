@@ -1,8 +1,8 @@
 <template>
   <div class="fundraising-list">
-    <div class="row justify-content-center">
+    <div class="row justify-content-start">
       <div
-        v-for="fundraiser in paginatedFundraisings"
+        v-for="fundraiser in fundraisings"
         :key="fundraiser.id"
         class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center mb-2"
       >
@@ -15,7 +15,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ fundraiser.title }}</h5>
 
-            <!-- Fundraiser Description (truncated to 20 words) -->
+            <!-- Fundraiser Description (truncated to 10 words) -->
             <p class="card-description">{{ truncatedDescription(fundraiser.description) }}</p>
 
             <!-- Progress Bar -->
@@ -36,23 +36,6 @@
         </router-link>
       </div>
     </div>
-
-    <!-- Pagination Controls -->
-    <div class="pagination-container">
-      <button 
-        @click="changePage(currentPage - 1)" 
-        :disabled="currentPage === 1" 
-        class="btn btn-outline-primary pagination-button">
-        Previous
-      </button>
-      <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button 
-        @click="changePage(currentPage + 1)" 
-        :disabled="currentPage === totalPages" 
-        class="btn btn-outline-primary pagination-button">
-        Next
-      </button>
-    </div>
   </div>
 </template>
 
@@ -63,31 +46,8 @@ export default {
       type: Array,
       required: true,
     },
-    currentPage: {
-      type: Number,
-      required: true,
-    },
-    itemsPerPage: {
-      type: Number,
-      required: true,
-    },
-  },
-  computed: {
-    paginatedFundraisings() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.fundraisings.slice(start, end);
-    },
-    totalPages() {
-      return Math.max(Math.ceil(this.fundraisings.length / this.itemsPerPage), 1);
-    },
   },
   methods: {
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.$emit('update-page', page);
-      }
-    },
     progressPercentage(fundraiser) {
       const percentage = (fundraiser.amountRaised / fundraiser.targetAmount) * 100;
       return isFinite(percentage) ? percentage.toFixed(2) : 0;
@@ -145,7 +105,7 @@ export default {
   font-size: 16px;
   margin-bottom: 4px;
   text-align: left;
-  font-weight:bold;
+  font-weight: bold;
 }
 .card-description {
   font-size: 16px;
@@ -182,31 +142,5 @@ export default {
   height: 100%;
   background-color: #4caf50;
   border-radius: 4px;
-}
-
-/* Pagination Styling */
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.pagination-button {
-  color: #8b4513;
-  border-color: #8b4513;
-  font-size: 0.75rem;
-  padding: 3px 6px;
-}
-
-.pagination-button:hover {
-  background-color: #8b4513;
-  color: #fff;
-}
-
-.pagination-text {
-  font-size: 0.85rem;
-  color: #333;
 }
 </style>
