@@ -38,20 +38,20 @@
       <p>No listings available.</p>
     </div>
 
-        <!-- Pagination Controls -->
-        <div v-if="totalPages > 1" class="pagination-container">
+    <!-- Pagination Controls -->
+    <div class="pagination-container">
       <button 
         @click="changePage(currentPage - 1)" 
         :disabled="currentPage === 1" 
-        class="pagination-button"
+        class="btn btn-outline-primary pagination-button"
       >
         Previous
       </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
       <button 
         @click="changePage(currentPage + 1)" 
         :disabled="currentPage === totalPages" 
-        class="pagination-button"
+        class="btn btn-outline-primary pagination-button"
       >
         Next
       </button>
@@ -393,35 +393,26 @@ button.btn-danger:hover {
 
 .pagination-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  padding: 20px 0;
+  
 }
-
 .pagination-button {
-  color: #8b4513;
-  border: 1px solid #8b4513;
-  font-size: 0.75rem;
-  padding: 5px 10px;
-  background-color: #fff;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  border: 1px solid #2c3e50; /* Ensures a visible border */
+  color: #2c3e50;
+  border-radius: 5px;
+  padding: 6px 12px;
+}
+.btn-outline-primary {
+  color: #2c3e50;
+  border-color: #2c3e50;
+  
 }
 
-.pagination-button:hover {
-  background-color: #8b4513;
+.btn-outline-primary:hover {
+  background-color: #2c3e50;
   color: #fff;
-  border-color: #8b4513;
-}
-
-.pagination-button:disabled {
-  color: #ccc;
-  border-color: #ccc;
-  cursor: not-allowed;
-  background-color: #f7f7f7;
 }
 
 </style>
