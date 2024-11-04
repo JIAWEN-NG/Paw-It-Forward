@@ -108,7 +108,8 @@ export default {
     // Handle postCreated event
     handlePostCreated() {
       this.showSuccessMessage = true;
-      
+      // Scroll to top to make the success message visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       // Hide the message after 3 seconds
       setTimeout(() => {
         this.showSuccessMessage = false;

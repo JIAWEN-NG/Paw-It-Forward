@@ -13,8 +13,8 @@
       <table class="compact-table">
         <thead>
           <tr>
-            <th>Image</th>
-            <th style="width: 40%;">Details</th>
+            <th>My Posts</th>
+            <!-- <th style="width: 40%;">Details</th> -->
             <th>Target Amount</th>
             <th>Amount Raised</th>
             <th>Actions</th>
@@ -23,15 +23,15 @@
         <tbody>
           <tr v-for="fundraising in paginatedFundraisings" :key="fundraising.id">
             <td>
-              <img :src="fundraising.fundraisingImg || 'https://via.placeholder.com/200'" alt="Fundraising Image" class="thumbnail">
-            </td>
-            <td>
-              <div class="details-column">
-                <p class="title">{{ fundraising.title }}</p>
-                <p class="description">{{ truncateText(fundraising.description, 50) }}</p>
-                <p class="pet-type">Pet Type: {{ fundraising.petType }}</p>
-                <p class="posted-date">Posted: {{ formatDate(fundraising.createdAt) }}</p>
-              </div>
+              <div class="listing-container">
+                <img :src="fundraising.fundraisingImg || 'https://via.placeholder.com/200'" alt="Fundraising Image" class="thumbnail">
+                <div class="listing-details">
+                  <p class="title">{{ fundraising.title }}</p>
+                  <p class="description">{{ truncateText(fundraising.description, 50) }}</p>
+                  <p class="pet-type">Pet Type: {{ fundraising.petType }}</p>
+                  <p class="posted-date">Posted: {{ formatDate(fundraising.createdAt) }}</p>
+                </div>
+              </div>  
             </td>
             <td>{{ formatCurrency(fundraising.targetAmount) }}</td>
             <td>{{ formatCurrency(fundraising.amountRaised) }}</td>
@@ -308,6 +308,10 @@ export default {
 
     setSuccessMessage(message) {
       this.successMessage = message;
+      
+      // Scroll to top to make the success message visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       setTimeout(() => {
         this.successMessage = '';
       }, 3000);
@@ -386,11 +390,27 @@ tbody tr:hover {
   border-radius: 6px;
   border: 1px solid #ddd;
 }
-
-.details-column {
-  font-size: 0.9rem;
-  color: #555;
+.listing-container {
+  display: flex;
+  align-items: stretch; /* Make items take full height of the container */
+  gap: 15px; /* Spacing between image and text */
 }
+.listing-details p {
+  margin: 2px 0; /* Less margin between lines for a compact look */
+  font-size: 0.9rem;
+  color: #555; /* Soft gray text color */
+}
+
+.thumbnail {
+  width: 100px; /* Fixed width */
+  height: 100px; /* Remove fixed height */
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd; /* Light border for images */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for images */
+  flex-shrink: 0;
+}
+
 
 .pagination-container {
   display: flex;
