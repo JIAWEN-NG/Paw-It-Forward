@@ -44,6 +44,9 @@ export function setupAuthState(auth) {
       authState.userId = user.uid; // Capture user ID
       console.log("User is logged in:", authState.isUserLoggedIn);
       console.log("User ID:", authState.userId);
+      console.log("User UID:", user.uid);
+      console.log("User Profile Picture URL:", authState.userProfilePicUrl);
+
     } else {
       authState.isUserLoggedIn = false;
       authState.userProfilePicUrl = null;

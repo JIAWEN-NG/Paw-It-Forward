@@ -64,4 +64,5 @@ export default {
 #content {
   margin-top: 80px;
 }
+
 </style>

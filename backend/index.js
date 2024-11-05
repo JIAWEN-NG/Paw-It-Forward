@@ -8,9 +8,22 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initi
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
 const userRoutes = require('./routers/dataRoutes'); // Import the router
+const bodyParser = require('body-parser');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const PORT = 8000;
 const app = express();
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000", // Allow the frontend to connect
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true,
+    },
+});
 
 app.use(express.json());
 app.use(cors());
@@ -19,6 +32,7 @@ app.use(cors());
 app.use('/api', dataRoutes); // Use the imported router
 app.use('/api', imageRoutes);
 app.use('/api', userRoutes); // Use the imported router
+app.use(bodyParser.json()); // To parse JSON request bodies
 
 // Health check endpoint
 app.get('/get-data', async (req, res) => {
@@ -30,6 +44,11 @@ app.get('/get-data', async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+// Attach the Socket.IO instance to the Express app
+app.set('socketio', io);
+// WebSocket connection setup
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
 
 // Helper function to update amountRaised in Fundraising collection
 async function updateFundraisingAmount(postId, amount) {
@@ -158,3 +177,35 @@ app.get('/get-checkout-session/:sessionId', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`[SYSTEM] Server started on port ${PORT}...`);
 });
+    // Example: Listen for a message event from the client
+    socket.on('joinChat', (chatId) => {
+        socket.join(chatId); // Join a room for the specific chat
+        console.log(`User joined chat: ${chatId}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+    });
+});
+
+// In index.js or main server file
+io.on('connection', (socket) => {
+    console.log('Client connected');
+    socket.emit('testEvent', { message: 'Hello from server' });
+});
+
+
+// app.listen(PORT, () => {
+//     console.log(`[SYSTEM] Server started on port ${PORT}...`);
+    
+// });
+// Only start the server if not in a test environment
+// if (process.env.NODE_ENV !== 'test') {
+//     server.listen(PORT, () => {
+//         console.log(`[SYSTEM] Server started on port ${PORT}...`);
+//     });
+// }
+
+module.exports = app; // Export the app instance for testing
+
+

@@ -13,6 +13,11 @@ const withdrawalController = require('../controllers/withdrawalController');
 //Dessy added
 const fundraisingController = require('../controllers/fundraisingController');
 const { registerUser } = require('../controllers/userController');
+const chatController = require('../controllers/chatController');
+
+
+
+
 
 const app = express();
 app.use(cors());
@@ -21,6 +26,15 @@ app.use(cors());
 router.get('/users/:id', userController.getUserById); // Use the controller's function
 // You can add more routes related to users here using the same controller
 router.post('/register', registerUser);
+
+//request routes
+//router.post('/requests/sendRequest', requestController.createRequest); // Create a new request
+router.put('/requests/:requestId/accept', requestController.acceptRequest); // Accept a request
+router.put('/requests/:requestId/decline', requestController.declineRequest); // Decline a request
+
+
+//requests routes 
+router.post('/requests', requestController.createRequest);
 
 
 
@@ -85,10 +99,12 @@ router.post('/marketplace', upload, async (req, res) => {
         res.status(500).send('Error creating donation.');
     }
 });
+// Chat routes
+router.get('/chats/:chatId', chatController.getChatById); // Retrieve all chats
+router.post('/chats/sendMessage', chatController.sendMessage); // Send a chat message
+router.get('/chats/:chatId/messages', chatController.retrieveMessages); // Retrieve messages for a chat
+router.get('/chats/user/:userId', chatController.getUserChats); // Retrieve chats for a user
 
-
-//requests routes 
-router.post('/requests', requestController.createRequest);
 
 
 //Dessy added
