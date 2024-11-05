@@ -153,6 +153,7 @@
 <script>
 import axios from 'axios';
 import CreateWithdrawalForm from './CreateWithdrawalForm.vue';
+import { authState } from '@/store/auth';
 
 export default {
   components: {
@@ -163,8 +164,7 @@ export default {
       fundraisings: [],
       loading: false,
       error: null,
-      successMessage: '', // Success message data property
-      userId: 'p8v0JBWhlfNZ13DzpBFN',
+      successMessage: '', 
       showForm: false,
       submitting: false,
       currentPage: 1,
@@ -182,7 +182,6 @@ export default {
       selectedImageFile: null,
       showDeleteModal: false,
       deletePostId: null,
-      // New properties for withdrawal form
       showWithdrawalForm: false,
       selectedPostId: null,
     };
@@ -205,10 +204,15 @@ export default {
 
   methods: {
     async fetchFundraisings() {
+      if (!authState.isUserLoggedIn || !authState.userId) {
+        this.error = 'User is not authenticated.';
+        return;
+      }
+
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get(`http://localhost:8000/api/fundraising/user/${this.userId}`);
+        const response = await axios.get(`http://localhost:8000/api/fundraising/user/${authState.userId}`);
         this.fundraisings = response.data
           .map(fundraising => ({ ...fundraising, createdAt: new Date(fundraising.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
@@ -233,15 +237,7 @@ export default {
 
     closeEditForm() {
       this.showForm = false;
-      this.fundraising = {
-        id: '',
-        title: '',
-        description: '',
-        petType: '',
-        targetAmount: 0,
-      };
-      this.imagePreview = '';
-      this.selectedImageFile = null;
+      this.resetForm();
     },
 
     confirmDeleteFundraising(id) {
@@ -251,9 +247,14 @@ export default {
 
     async deleteFundraising() {
       try {
-        await axios.delete(`http://localhost:8000/api/fundraising`, { data: { id: this.deletePostId } });
+        await axios.delete(`http://localhost:8000/api/fundraising`, { 
+          data: { 
+            id: this.deletePostId,
+            userId: authState.userId
+          } 
+        });
         this.fundraisings = this.fundraisings.filter(f => f.id !== this.deletePostId);
-        this.setSuccessMessage('Fundraising post deleted successfully.');
+        this.setSuccessMessage('Listing deleted successfully.');
       } catch (error) {
         this.error = 'Failed to delete the fundraising post. Please try again.';
       } finally {
@@ -275,6 +276,7 @@ export default {
       formData.append('description', this.fundraising.description);
       formData.append('petType', this.fundraising.petType);
       formData.append('targetAmount', Number(this.fundraising.targetAmount));
+      formData.append('userId', authState.userId); // Include userId for backend authorization check
 
       if (this.selectedImageFile) {
         formData.append('image', this.selectedImageFile);
@@ -286,7 +288,7 @@ export default {
         });
         this.fundraisings = this.fundraisings.map(f => f.id === this.fundraising.id ? { ...f, ...response.data.updatedData } : f);
         this.showForm = false;
-        this.setSuccessMessage('Fundraising updated successfully.');
+        this.setSuccessMessage('Listing updated successfully.');
       } catch (error) {
         console.error('Failed to update the fundraising:', error.response?.data || error.message);
         this.error = 'Failed to update the fundraising post. Please try again.';
@@ -309,7 +311,6 @@ export default {
     setSuccessMessage(message) {
       this.successMessage = message;
       
-      // Scroll to top to make the success message visible
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       setTimeout(() => {
@@ -343,10 +344,24 @@ export default {
 
     truncateText(text, length) {
       return text.length > length ? text.slice(0, length) + '...' : text;
+    },
+
+    resetForm() {
+      this.fundraising = {
+        id: '',
+        title: '',
+        description: '',
+        petType: '',
+        targetAmount: 0,
+        fundraisingImg: '',
+      };
+      this.imagePreview = '';
+      this.selectedImageFile = null;
     }
   }
 };
 </script>
+
 
 <style scoped>
 /* Table Styling */

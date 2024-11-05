@@ -2,7 +2,7 @@
   <div class="filter-sidebar">
 
     <!-- Sort Options -->
-    <h4>Sort by</h4>
+    <h4>Sort by Date</h4>
     <div class="filter-group">
       <label>
         <input type="radio" value="recent" v-model="sortOption" /> Most Recent

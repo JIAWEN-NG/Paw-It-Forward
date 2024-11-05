@@ -1,11 +1,11 @@
 <template>
   <div class="container py-4">
-    <button class="btn btn-primary create-fundraising-button" @click="showForm = true">
-            <span class="plus-sign">+</span>
-            <span class="divider"></span>
-            <span class="button-text">Create Fundraising Post</span>
+    <button class="btn btn-primary create-fundraising-button" @click="handleCreateFundraising">
+      <span class="plus-sign">+</span>
+      <span class="divider"></span>
+      <span class="button-text">Create Fundraising Post</span>
     </button>
-        
+
     <div v-if="showForm" class="modal-overlay">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -13,6 +13,7 @@
           <h5 class="modal-title">Start a Fundraising Post!</h5>
           <div class="modal-body">
             <form @submit.prevent="submitForm">
+
               <div class="form-group mb-3">
                 <label for="campaignName" class="form-label">Title</label>
                 <input type="text" id="campaignName" v-model="fundraising.campaignName" required class="form-control" />
@@ -51,6 +52,7 @@
                 <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
                 <button type="submit" class="btn btn-success" :disabled="submitting">Submit</button>
               </div>
+              <!-- Form Fields Here -->
             </form>
           </div>
         </div>
@@ -60,6 +62,8 @@
 </template>
 
 <script>
+import { authState } from '@/store/auth';
+
 export default {
   data() {
     return {
@@ -70,12 +74,20 @@ export default {
         description: '',
         petType: '',
         targetAmount: null,
-        image: null
+        image: null,
       },
       imagePreview: '' // For image preview
     };
   },
   methods: {
+    handleCreateFundraising() {
+      if (!authState.isUserLoggedIn) {
+        this.$router.push('/login'); // Redirect to login if not authenticated
+      } else {
+        this.showForm = true; // Show form if authenticated
+      }
+    },
+    
     closeForm() {
       this.showForm = false;
       this.resetForm();
@@ -84,13 +96,16 @@ export default {
     async submitForm() {
       if (this.submitting) return;
       this.submitting = true;
-      
+
       const formData = new FormData();
       if (this.fundraising.image) formData.append('image', this.fundraising.image);
       formData.append('title', this.fundraising.campaignName);
       formData.append('description', this.fundraising.description);
       formData.append('petType', this.fundraising.petType);
       formData.append('targetAmount', this.fundraising.targetAmount);
+
+      // Include the logged-in user's UID
+      formData.append('userId', authState.userId);
 
       try {
         const response = await fetch(`http://localhost:8000/api/fundraising`, {
@@ -137,6 +152,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .create-fundraising-button {
@@ -225,6 +241,7 @@ export default {
 }
 
 .modal-title {
+  font-family: 'Montserrat', sans-serif;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;

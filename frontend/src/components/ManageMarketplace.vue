@@ -3,6 +3,15 @@
 
 <template>
   <div class="container">
+    <!-- Notification for Success and Error Messages -->
+    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ successMessage }}
+      <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
+    </div>
+    <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ errorMessage }}
+      <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
+    </div>
     <div v-if="listings && listings.length">
       <table class="compact-table">
         <thead>
@@ -17,7 +26,6 @@
               <div class="listing-container">
                 <img :src="listing.itemImage" alt="Item Image" class="thumbnail" v-if="listing.itemImage" />
                 <div class="listing-details">
-                  <!-- Display itemsDonated and petType in one line -->
                   <p id="title">{{ listing.itemsDonated }} | {{ listing.petType }}</p>
                   <p class="small-text">{{ listing.itemCategory }}</p>
                   <p class="small-text">{{ listing.condition }}</p>
@@ -28,7 +36,7 @@
             </td>
             <td>
               <button @click="openEditForm(listing)" class="btn btn-outline-secondary btn-sm">Edit</button>
-              <button @click="deleteListing(listing.id)" class="btn btn-outline-danger btn-sm">Delete</button>
+              <button @click="confirmDeleteListing(listing.id)" class="btn btn-outline-danger btn-sm">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -57,6 +65,23 @@
       </button>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this listing?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancel</button>
+            <button type="button" class="btn btn-danger" @click="deleteListing">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Edit Form Modal -->
     <div v-if="showForm" class="modal">
@@ -103,7 +128,6 @@
               <option value="Dog">Dog</option>
             </select>
           </div>
-          <!-- New Location Field -->
           <div class="form-group">
             <label for="location">Location</label>
             <select v-model="listing.location" id="location" class="form-select" required>
@@ -134,26 +158,32 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
+import { authState } from '@/store/auth';
 
 export default {
   data() {
     return {
       listings: [],
-      donorId: "p8v0JBWhlfNZ13DzpBFN",
       showForm: false,
-      submitting: false,
-      listing: { id: '', itemCategory: '', condition: '', petType: '', itemsDonated: '', itemImage: '', location: ''},
-      imagePreview: '',       // For showing the new image preview
-      selectedImageFile: null, // To store the new image file
+      showDeleteModal: false, // Control delete modal visibility
+      deleteListingId: null,   // Store ID of the listing to delete
+      listing: { id: '', itemCategory: '', condition: '', petType: '', itemsDonated: '', itemImage: '', location: '' },
+      imagePreview: '',
+      selectedImageFile: null,
       currentPage: 1,
       itemsPerPage: 5,
+      successMessage: '',
+      errorMessage: ''
     };
   },
   async created() {
-    await this.fetchListings();
+    if (authState.isUserLoggedIn) {
+      await this.fetchListings(authState.userId);
+    } else {
+      console.error("User is not logged in.");
+    }
   },
   computed: {
     totalPages() {
@@ -166,9 +196,45 @@ export default {
     },
   },
   methods: {
-    async fetchListings() {
+    confirmDeleteListing(id) {
+      this.deleteListingId = id;
+      this.showDeleteModal = true; // Show confirmation modal
+    },
+    closeDeleteModal() {
+      this.showDeleteModal = false;
+      this.deleteListingId = null;
+    },
+    async deleteListing() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/marketplace/${this.donorId}`);
+        await axios.delete('http://localhost:8000/api/marketplace', {
+          data: { 
+            id: this.deleteListingId,  // Use stored ID for deletion
+            userId: authState.userId
+          }
+        });
+        this.listings = this.listings.filter(l => l.id !== this.deleteListingId);
+        this.setSuccessMessage('Listing deleted successfully.');
+      } catch (error) {
+        this.setErrorMessage('Failed to delete the listing. Please try again.');
+      } finally {
+        this.closeDeleteModal(); // Close modal and reset ID
+      }
+    },
+    setSuccessMessage(message) {
+      this.successMessage = message;
+      setTimeout(() => { this.successMessage = ''; }, 3000);
+    },
+    setErrorMessage(message) {
+      this.errorMessage = message;
+      setTimeout(() => { this.errorMessage = ''; }, 3000);
+    },
+    clearMessage() {
+      this.successMessage = '';
+      this.errorMessage = '';
+    },
+    async fetchListings(userId) {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/marketplace/${userId}`);
         this.listings = response.data
           .map(listing => ({ ...listing, createdAt: new Date(listing.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
@@ -189,18 +255,6 @@ export default {
       this.showForm = false;
       this.listing = { id: '', itemCategory: '', condition: '', petType: '', itemsDonated: '', itemImage: '' };
     },
-    async deleteListing(id) {
-      if (confirm('Are you sure you want to delete this listing?')) {
-        try {
-          await axios.delete('http://localhost:8000/api/marketplace', { data: { id } });
-          this.listings = this.listings.filter(l => l.id !== id);
-          alert('Listing deleted successfully.');
-        } catch (error) {
-          console.error('Failed to delete the listing:', error.response || error.message);
-          alert('Failed to delete the listing. Please try again.');
-        }
-      }
-    },
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
@@ -212,40 +266,38 @@ export default {
     async updateListing() {
       this.submitting = true;
       try {
-          const formData = new FormData();
-          formData.append('id', this.listing.id);
-          formData.append('itemsDonated', this.listing.itemsDonated); // Include updated itemsDonated
-          formData.append('itemCategory', this.listing.itemCategory);
-          formData.append('condition', this.listing.condition);
-          formData.append('petType', this.listing.petType);
-          formData.append('location', this.listing.location); // Include location
+        const formData = new FormData();
+        formData.append('id', this.listing.id);
+        formData.append('itemsDonated', this.listing.itemsDonated);
+        formData.append('itemCategory', this.listing.itemCategory);
+        formData.append('condition', this.listing.condition);
+        formData.append('petType', this.listing.petType);
+        formData.append('location', this.listing.location);
+        if (this.selectedImageFile) {
+          formData.append('image', this.selectedImageFile);
+        }
+        formData.append('userId', authState.userId);
 
-          // If a new image file is selected, add it to formData
-          if (this.selectedImageFile) {
-              formData.append('image', this.selectedImageFile);
-          }
+        const response = await axios.put('http://localhost:8000/api/marketplace', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
 
-          const response = await axios.put('http://localhost:8000/api/marketplace', formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-          });
-
-          // Update listing data in the local state
-          this.listings = this.listings.map(l => (l.id === this.listing.id ? { ...l, ...response.data.updatedListing } : l));
-          this.showForm = false; // Close form
-          alert('Listing updated successfully.');
+        this.listings = this.listings.map(l => (l.id === this.listing.id ? { ...l, ...response.data.updatedListing } : l));
+        this.showForm = false;
+        this.setSuccessMessage('Listing updated successfully.');
       } catch (error) {
-          console.error('Failed to update the listing:', error.response || error.message);
-          alert('Failed to update the listing. Please try again.');
+        console.error('Failed to update the listing:', error.response || error.message);
+        this.setErrorMessage('Failed to update the Marketplace listing. Please try again.');
       } finally {
-          this.submitting = false;
+        this.submitting = false;
       }
-  },
-  changePage(page) {
+    },
+    changePage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
     },
-  }
+  },
 };
 </script>
 
@@ -413,6 +465,52 @@ button.btn-danger:hover {
 .btn-outline-primary:hover {
   background-color: #2c3e50;
   color: #fff;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+}
+
+.modal-content {
+  border-radius: 8px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: relative;
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
 }
 
 </style>

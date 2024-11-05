@@ -3,7 +3,6 @@
     
       <CarouselFundraising />
 
-
     <div class="row fundraising-section">
       <!-- Sidebar Filter on the Left, stacks above Fundraising List on small screens -->
       <div class="col-md-3 col-12 filter-container">
