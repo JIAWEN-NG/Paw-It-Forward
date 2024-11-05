@@ -1,110 +1,72 @@
 // src/router.js
 // works like app.js
-import { createRouter, createWebHistory } from 'vue-router';
 
+import { createRouter, createWebHistory } from 'vue-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 import ChatView from '../views/ChatView.vue';
 import ItemRequest from '@/components/ItemRequest.vue';
-
-
-
-
-import MarketplaceView from '../components/MarketplaceView.vue'; // Marketplace layout
-import CreateDonationForm from '../components/CreateDonationForm.vue'; // Form to create a donation
-import ManagePostView from '../components/ManagePostView.vue'; //Manage Post layout
+import MarketplaceView from '../components/MarketplaceView.vue';
+import CreateDonationForm from '../components/CreateDonationForm.vue';
+import ManagePostView from '../components/ManagePostView.vue';
 import DonationDetails from '@/components/DonationDetails.vue';
-
-
-import CreateFundraisingForm from '../components/CreateFundraisingForm.vue'; // Form to create a fundraising campaign
-import FundraisingView from '../components/FundraisingView.vue'; // To list all fundraising campaigns
+import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
+import FundraisingView from '../components/FundraisingView.vue';
 import FundraisingDetail from '../components/FundraisingDetail.vue';
-import DonateSuccessful from '../components/DonateSuccessful.vue'; 
-import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue'; 
-
+import DonateSuccessful from '../components/DonateSuccessful.vue';
+import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
+import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 
-//afsana changed
 const routes = [
-
-    { path: '/', 
-      component: aboutPage 
+    { path: '/', component: aboutPage },
+    { path: '/about', name: 'about', component: aboutPage },
+    { path: '/marketplacee', component: CreateDonationForm },
+    { path: '/marketplace', component: MarketplaceView },
+    { path: '/managepost', component: ManagePostView },
+    {
+        path: '/:id',
+        name: 'DonationDetails',
+        component: DonationDetails,
+        props: true,
     },
-    { path: '/about',
-      name:'about',
-      component: aboutPage 
-    },
-    { 
-      path: '/marketplacee', 
-      component: CreateDonationForm 
-  
-    },
-    { 
-      path: '/marketplace', 
-      component: MarketplaceView 
+    // Routes for fundraising
+    { path: '/fundraising/create', component: CreateFundraisingForm },
+    { path: '/fundraising', component: FundraisingView },
+    {
+        path: '/fundraising/:id',
+        name: 'FundraisingDetail',
+        component: FundraisingDetail,
+        props: true
     },
     {
-      path: '/managepost',
-      component: ManagePostView },
-  
-    {
-      path: '/:id', // Dynamic route for the full-screen donation view
-      name: 'DonationDetails',
-      component: DonationDetails,
-      props: true, // Allows the route parameter to be passed as a prop
+        path: '/donation-success',
+        name: 'DonationSuccess',
+        component: DonateSuccessful,
     },
-  
-   // Routes for fundraising
-    { path: '/fundraising/create', 
-      component: CreateFundraisingForm 
-    }, // Route to create a fundraising campaign
-  
-    { path: '/fundraising', 
-      component: FundraisingView 
-    }, // Route to list all fundraising campaigns
-  
+    { path: '/meetus', name: 'meetus', component: teamPage },
+    { path: '/login', name: 'Login', component: CombinedAuth },
+    { path: '/withdrawal/create', component: CreateWithdrawalForm },
     {
-      path: '/fundraising/:id',
-      name: 'FundraisingDetail',
-      component: FundraisingDetail,
-      props: true
-    },// Pass route params as props
-  
-  
-    {
-      path: '/donation-success',
-      name: 'DonationSuccess',
-      component: DonateSuccessful,
+        path: '/chats',
+        name: 'ChatView',
+        component: ChatView,
+        meta: {
+            requiresAuth: true,
+        },
     },
-    { path: '/meetus',
-      name:'meetus',
-      component: teamPage 
-    },
-
-    { path: '/login', 
-    name: 'Login', 
-    component: CombinedAuth },
-
-    {
-      path: '/withdrawal/create',
-      component: CreateWithdrawalForm,
-     
-    },
-    {
-      path: '/chats',
-      name: 'ChatView',
-      component: ChatView,
-      meta: {
-        requiresAuth: true, // Add this if authentication is required for accessing the chat view
-      },
-    },
+    // Route for testimonials
+    { path: '/testimonials', name: 'Testimonial', component: Testimonial },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 });
+
+// Uncomment if authentication guards are needed
 // router.beforeEach((to, from, next) => {
 //   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 //   const auth = getAuth();

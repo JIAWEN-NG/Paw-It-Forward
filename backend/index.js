@@ -11,6 +11,10 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 
+// thahmina added
+const multer = require('multer');
+const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimonialController');
+
 const PORT = 8000;
 const app = express();
 const server = http.createServer(app);
@@ -26,10 +30,21 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
-app.use('/api', dataRoutes);
-app.use('/api', imageRoutes);
-app.use('/api', userRoutes);
+
+// thahmina added
 app.use(bodyParser.json());
+const upload = multer({ storage: multer.memoryStorage() });
+
+
+// console.log('Router is being mounted');
+app.use('/api', dataRoutes); // Use the imported router
+app.use('/api', imageRoutes);
+app.use('/api', userRoutes); // Use the imported router
+app.use(bodyParser.json()); // To parse JSON request bodies
+
+// Testimonials routes
+app.get('/testimonials', getAllTestimonials);
+app.post('/upload-testimonial', upload.single('image'), uploadTestimonial);
 
 // Health check endpoint
 app.get('/get-data', async (req, res) => {

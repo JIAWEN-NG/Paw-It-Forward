@@ -15,6 +15,10 @@ const fundraisingController = require('../controllers/fundraisingController');
 const { registerUser } = require('../controllers/userController');
 const chatController = require('../controllers/chatController');
 
+//thahmina added
+const testimonialController = require('../controllers/testimonialController'); // Import the testimonial controller
+
+
 
 
 
@@ -168,5 +172,11 @@ router.put('/fundraising', upload, fundraisingController.editFundraising);
 // Withdrawal Routes
 router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
 router.get('/withdrawals', withdrawalController.getAllWithdrawals);
+
+
+// Testimonial routes
+// Testimonial routes
+router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
+router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Use the correct function name
 
 module.exports = router;
