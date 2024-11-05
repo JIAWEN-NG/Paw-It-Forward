@@ -33,20 +33,23 @@
       </div>
 
       <div class="col-auto d-flex align-items-center">
-        <template v-if="selectedChat?.requestedItem?.status === 'pending'">
-          <!-- Updated Accept and Decline buttons to open modal -->
+        <template v-if="isCurrentUserDonor && selectedChat?.requestedItem?.status === 'pending'">
           <button @click="setModalAction('accept')" class="btn accept-button me-2" data-bs-toggle="modal"
             data-bs-target="#confirmModal">Accept</button>
           <button @click="setModalAction('decline')" class="btn reject-button" data-bs-toggle="modal"
             data-bs-target="#confirmModal">Decline</button>
         </template>
         <template v-else>
-          <span :class="['status-label', selectedChat?.requestedItem?.status]">
-            {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' : 'Declined' }}
+          <span :class="['status-label']">
+            {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' :
+              selectedChat?.requestedItem?.status === 'declined' ? 'Declined' :
+                'Pending' }}
           </span>
         </template>
       </div>
     </div>
+
+
 
 
     <!-- Bootstrap Modal for Accept/Decline Confirmation -->
@@ -86,7 +89,7 @@
       <div v-if="systemMessage" class="system-message ">
         <div class="'row">
           <div class="col-auto">
-            <p>{{ this.selectedChat.systemMessage }}</p>
+            <p>{{ systemMessage }}</p>
           </div>
           <div class="col-auto">
             <small class="text-muted">{{ formatMessageTimestamp(lastMessageTimestamp) }}</small>
@@ -216,11 +219,11 @@ export default {
     },
     handleNewMessage(message) {
       console.log('New message received:', message); // Log the incoming message
-    if (message.requestId === this.selectedChat.requestId) {
+      if (message.requestId === this.selectedChat.requestId) {
         this.messages.push(message);
         this.selectedChat.lastMessage = message.message;
         this.lastMessageTimestamp = message.timestamp;
-    }
+      }
     },
     async fetchChatDetails() {
       console.log('Selected chat in ChatRoom:', this.selectedChat); // Right before fetching messages
@@ -266,18 +269,18 @@ export default {
     },
 
     async fetchMessages() {
-    try {
+      try {
         if (this.selectedChat && this.selectedChat.chatId) {
-            const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
-            console.log('Fetched messages:', response.data.messages); // Log the fetched messages
-            this.messages = response.data.messages;
+          const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
+          console.log('Fetched messages:', response.data.messages); // Log the fetched messages
+          this.messages = response.data.messages;
         } else {
-            console.error('No chatId found when fetching messages');
+          console.error('No chatId found when fetching messages');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching messages:', error);
-    }
-},
+      }
+    },
 
     setModalAction(action) {
       this.modalAction = action; // Set the action type
