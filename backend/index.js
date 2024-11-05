@@ -18,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:8080", // Allow the frontend to connect
+        origin: "http://localhost:3000", // Allow the frontend to connect
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ["my-custom-header"],
         credentials: true,

@@ -32,7 +32,7 @@
                     </ul>
                 </div>
             </div>
-            <router-link to="/chat" class="chat-button">
+            <router-link to="/chats" class="chat-button">
                 <img
                     :src="isHovered ? chatInvertImageUrl : chat3ImageUrl"
                     alt="chat"
