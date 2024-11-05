@@ -5,11 +5,11 @@ const { db } = require('../config/firebase'); // Adjust if necessary
 // Function to get a user by ID
 const getUserById = async (req, res) => {
     const userId = req.params.id;
-    console.log(`Received userId: ${userId}`); // Log the userId to verify // Assuming you're using the ID from the URL
+   // console.log(`Received userId: ${userId}`); // Log the userId to verify // Assuming you're using the ID from the URL
     try {
         const userRef = db.collection('Users').doc(userId); // Adjust if collection name is different
         const doc = await userRef.get();
-        console.log(doc.data());
+       
 
         if (!doc.exists) {
           console.log('User not found');
@@ -25,7 +25,6 @@ const getAllUsers = async (req, res) => {
   try {
       const snapshot = await db.collection('Users').get(); // Ensure collection name matches Firestore
       const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log('All users:', users); // Log all users for debugging
       res.status(200).json(users);
   } catch (error) {
       console.error('Error in getAllUsers:', error.message);

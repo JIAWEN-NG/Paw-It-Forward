@@ -16,7 +16,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Import Bootstrap JS
 import router from './router/routes'; // Import router
 import axios from 'axios';
-import { MotionPlugin } from '@vueuse/motion'
+import { MotionPlugin } from '@vueuse/motion';
+import './styles/style.css';
+
+
+
 
 // Import Firebase modules
 import { initializeApp } from 'firebase/app';  // Import Firebase App initialization

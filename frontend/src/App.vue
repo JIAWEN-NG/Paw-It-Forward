@@ -64,4 +64,7 @@ export default {
 #content {
   margin-top: 80px;
 }
+nav {
+  background-color: aqua;
+}
 </style>
