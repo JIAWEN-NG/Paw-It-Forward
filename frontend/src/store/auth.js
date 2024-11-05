@@ -15,6 +15,7 @@ export function setupAuthState(auth) {
       authState.isUserLoggedIn = true;
       authState.userProfilePicUrl = user.photoURL || null;
       console.log("User is logged in:", authState.isUserLoggedIn);
+      console.log("User UID:", user.uid);
       console.log("User Profile Picture URL:", authState.userProfilePicUrl);
 
     } else {

@@ -50,41 +50,75 @@
         <section class="last-section">
             <h1 style="display: block; text-align: center; font-weight: bold; font-size: 36px; padding: 10px;">How Paw-It-Forward Works</h1>
             <div class="container about-content">
-                <div class="text-content" style="width: 40%;">
-                    <h2>Pet Owners Seeking Support</h2>
-                
-                        <ol>
-                            <li>
-                                Create an Account: Sign up to become part of our community.
-                            </li>
-                            <li>
-                                Share Your Story: Explain your situation—whether you need help with medical bills, food, or other essential pet supplies. Let the community know how they can support you.
-                            </li>
-                            <li>
-                                Request Assistance: Post your needs directly, making it easy for donors to understand how they can help.
-                            </li>
-                        </ol>
-                    
-                </div>
+                <div class="container stepper-container">
+                    <h2 style="font-size: 24px;">Pet Owners Seeking Support</h2><br/>
 
+                    <div class="step">
+                    <div>
+                        <div class="circle">1</div>
+                    </div>
+                    <div>
+                        <div class="title">Create an Account</div>
+                        <div class="caption">Sign up to become part of our community.</div>
+                    </div>
+                    </div>
+                    <div class="step">
+                    <div>
+                        <div class="circle">2</div>
+                    </div>
+                    <div>
+                        <div class="title">Share Your Story</div>
+                        <div class="caption">Explain your situation—whether you need help with medical bills, food, or other essential pet supplies.</div>
+                    </div>
+                    </div>
+                    <div class="step">
+                    <div>
+                        <div class="circle">3</div>
+                    </div>
+                    <div>
+                        <div class="title">Request Assistance</div>
+                        <div class="caption">Post your needs directly, making it easy for donors to understand how they can help.</div>
+                    </div>
+                    </div>
+                </div>
+               
                 <div class="image-content" style="padding: 40px;">
                     <img :src="heartImageUrl" alt="heart" v-if="heartImageUrl" />
                 </div>
 
-                <div class="text-content" style="width: 40%;">
-                    <h2>Donors Offering Assistance</h2>
-                        <ol>
-                            <li>
-                                Create an Account: Sign up to become part of our community.
-                            </li>
-                            <li>
-                                Browse and Support: Explore posts from pet owners in need. Choose the stories or causes that resonate with you, and offer your support.
-                            </li>
-                            <li>
-                                Donate Unused Items: Have extra pet supplies? List them on our platform for others to claim, helping struggling pet owners access essentials without the added expense.
-                            </li>
-                        </ol>
+                                        
+                <div class="container stepper-container">
+                    <h2 style="font-size: 24px;">Donors Offering Assistance</h2><br/>
+
+                    <div class="step">
+                    <div>
+                        <div class="circle">1</div>
+                    </div>
+                    <div>
+                        <div class="title">Create an Account</div>
+                        <div class="caption">Sign up to become part of our community.</div>
+                    </div>
+                    </div>
+                    <div class="step">
+                    <div>
+                        <div class="circle">2</div>
+                    </div>
+                    <div>
+                        <div class="title">Browse and Support</div>
+                        <div class="caption">Explore posts from pet owners in need. Choose the stories or causes that resonate with you, and offer your support.</div>
+                    </div>
+                    </div>
+                    <div class="step">
+                    <div>
+                        <div class="circle">3</div>
+                    </div>
+                    <div>
+                        <div class="title">Donate Unused Items</div>
+                        <div class="caption">:Have extra pet supplies? List them on our platform for others to claim, helping struggling pet owners access essentials without the added expense.</div>
+                    </div>
+                    </div>
                 </div>
+                
             </div>
         </section>
     </div>
@@ -247,5 +281,74 @@ export default {
     .text-content h2 {
         font-size: 20px;
     }
+}
+
+/* Steps */
+
+.container.stepper-container {
+    display: flex;
+    flex-direction: column; /* Stack steps vertically */
+    align-items: flex-start; /* Align steps to the start */
+    padding: 20px;
+    width: 40%;
+}
+
+.step {
+  position: relative;
+  min-height: 1em;
+  color: black;
+}
+.step + .step {
+  margin-top: 1.5em
+}
+.step > div:first-child {
+  position: static;
+  height: 0;
+}
+.step > div:not(:first-child) {
+  margin-left: 1.5em;
+  padding-left: 1em;
+}
+
+/* Circle */
+.circle {
+  background: black;
+  position: relative;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  border-radius: 100%;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+/* Vertical Line */
+.circle:after {
+  content: ' ';
+  position: absolute;
+  display: block;
+  top: 1px;
+  right: 50%;
+  bottom: -10px;
+  left: 50%;
+  /* height: 100%; */
+  width: 1px;
+  transform: scale(1, 2);
+  transform-origin: 50% -100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: -1;
+}
+.step:last-child .circle:after {
+  display: none
+}
+
+/* Stepper Titles */
+.title {
+  line-height: 1.5em;
+  font-weight: bold;
+}
+.caption {
+  font-size: 0.8em;
 }
 </style>

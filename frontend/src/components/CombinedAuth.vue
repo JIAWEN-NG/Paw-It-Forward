@@ -88,7 +88,7 @@
         isRegisterActive: false,
         rememberMe: false,
         googleImageUrl:null,
-        defaultProfileImageUrl: null,
+        defaultProfileImageUrl: "https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/Profilephotos%2Fdefault-profile.png?alt=media&token=80695fdf-4059-4d7f-ad33-ed9c05386469",
       };
     },
     methods: {
@@ -102,12 +102,12 @@
             // Set persistence before registering the user
             await setPersistence(auth, persistenceType);
 
-            const defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
+            // const defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
             
-            if (!defaultProfileImageUrl) {
-                console.error('Default profile image URL could not be fetched');
-                return;
-            }
+            // if (!defaultProfileImageUrl) {
+            //     console.error('Default profile image URL could not be fetched');
+            //     return;
+            // }
 
             // Once persistence is set, create a new user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
@@ -121,7 +121,7 @@
             isPhotoVerified: false,
             petDescription: this.petDescription || '', // Store any pet description if provided
             role: 'user', // Default role is 'user'; can be changed to 'admin' if needed
-            profileImage: defaultProfileImageUrl,
+            profileImage: this.defaultProfileImageUrl,
             rejectionReason: "",
             });
 

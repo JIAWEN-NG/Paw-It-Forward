@@ -26,7 +26,7 @@
                         <li class="nav-item">
                             <router-link to="/testimonials" active-class="active-link" class="nav-link mx-lg-2">Testimonials</router-link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="isUserLoggedIn" class="nav-item">
                             <router-link to="/managepost" active-class="active-link" class="nav-link mx-lg-2">Manage Posts</router-link>
                         </li>
                     </ul>
@@ -50,6 +50,9 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                     <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
+                    </li>
+                    <li v-if="isAdmin">
+                    <router-link to="/manage-users" class="dropdown-item">Manage Users</router-link>
                     </li>
                     <li>
                     <button @click="handleSignOut" class="dropdown-item">Sign Out</button>
@@ -78,10 +81,10 @@ export default {
   data() {
     return {
         isHovered: false,
-        // showDropdown: false,
         pawlogoImageUrl: null,
         chatInvertImageUrl: null, 
         chat3ImageUrl: null,
+        userRole: null,
     };
   },
   methods: {
@@ -99,36 +102,45 @@ export default {
   async handleSignOut() {
     try {
       await signOut(auth); // This will trigger the onAuthStateChanged listener in auth.js
-      // No need to set isUserLoggedIn or userProfilePicUrl manually
     } catch (error) {
       console.error('Error signing out:', error.message);
     }
   },
+
   async loadUserProfilePic() {
-      const user = auth.currentUser;
-      console.log("123")
-      if (user) {
-        try {
-          const userDocRef = doc(db, "Users", user.uid);
-          const userDoc = await getDoc(userDocRef);
-          console.log(userDoc);
-          if (userDoc.exists()) {
-            authState.userProfilePicUrl = userDoc.data().profileImage; // Set the profile image URL from Firestore
-          } else {
-            console.log("No such user document!");
-          }
-        } catch (error) {
-          console.error("Error fetching user profile image:", error);
-        }
+  const currentUser = this.$auth.currentUser;
+  console.log("Attempting to load profile picture for user:", currentUser?.uid);
+  if (currentUser) {
+    try {
+      const userDocRef = doc(db, "Users", currentUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      console.log("Fetched user document:", userDoc.exists() ? userDoc.data() : "No document found");
+
+      if (userDoc.exists()) {
+        authState.userProfilePicUrl = userDoc.data().profileImage;
+        this.userRole = userDoc.data().role;
+        console.log(this.userRole);
+        console.log("Profile picture URL set to:", authState.userProfilePicUrl);
+      } else {
+        console.log("No user document found for UID:", currentUser.uid);
       }
-    },
+    } catch (error) {
+      console.error("Error fetching user profile image:", error);
+    }
+  } else {
+    console.log("No authenticated user found");
+  }
+}
+
+
   },
   async mounted() {
+    console.log("Navbar component mounted");
+
     this.pawlogoImageUrl = await this.fetchImage('about/paw-logo.png');
     this.chat3ImageUrl = await this.fetchImage('about/chat3.png');
     this.chatInvertImageUrl = await this.fetchImage('about/chatinvert.png');
 
-    // If the user is logged in, fetch the profile picture
     if (this.isUserLoggedIn) {
     console.log("User logged in, loading profile picture...");
     await this.loadUserProfilePic();
@@ -143,7 +155,19 @@ export default {
     userProfilePicUrl() {
       return authState.userProfilePicUrl;
     },
-},
+    isAdmin() {
+      return this.userRole === "admin"; // Check if the user is an admin
+    },
+  },
+  watch: {
+    isUserLoggedIn(newVal) {
+      if (newVal) {
+        console.log("User just logged in, attempting to load profile picture...");
+        this.loadUserProfilePic();
+      }
+    },
+  }
+
 };
 </script>
 
