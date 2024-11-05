@@ -290,3 +290,7 @@
     }
   };
   </script>
+
+<style scoped>
+  @import '../styles/testimonial.css';
+</style>

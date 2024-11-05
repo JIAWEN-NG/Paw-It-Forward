@@ -2,10 +2,9 @@
 // works like app.js
 
 import { createRouter, createWebHistory } from 'vue-router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 
 import ChatView from '../views/ChatView.vue';
-import ItemRequest from '@/components/ItemRequest.vue';
 import MarketplaceView from '../components/MarketplaceView.vue';
 import CreateDonationForm from '../components/CreateDonationForm.vue';
 import ManagePostView from '../components/ManagePostView.vue';

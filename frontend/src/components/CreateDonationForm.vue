@@ -204,7 +204,7 @@ export default {
 </script>
 
   
-<style>
+<style scoped>
 
 .create-listing-button {
     margin-top: 20px;

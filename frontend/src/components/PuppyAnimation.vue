@@ -42,7 +42,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* Reset default styling for all elements */
 *,
 *::after,

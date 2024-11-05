@@ -60,12 +60,12 @@
                 <div class="toggle-panel toggle-left" v-if="isRegisterActive">
                     <h1>Have an Account?</h1>
                     <p>Log back in and keep making a difference! </p>
-                    <button id="login" class="hidden"  @click="toggleAuth">Sign In</button>
+                    <button id="login" class="otherbtn"  @click="toggleAuth">Sign In</button>
                 </div>
                 <div class="toggle-panel toggle-right" v-if="!isRegisterActive">
                     <h1>New to Paw-it-Forward?</h1>
                     <p>Create an account today and start making a difference for pets in need!</p>
-                    <button id="register" class="hidden" @click="toggleAuth">Sign Up</button>
+                    <button id="register" class="otherbtn" @click="toggleAuth">Sign Up</button>
                 </div>
             </div>
         </div>
@@ -268,7 +268,7 @@
     cursor: pointer;
 }
 
-.container button.hidden{
+.container button.otherbtn{
     background-color: transparent;
     border-color: #fff;
 }
