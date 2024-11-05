@@ -197,7 +197,6 @@ io.on('connection', (socket) => {
 
 // app.listen(PORT, () => {
 //     console.log(`[SYSTEM] Server started on port ${PORT}...`);
-    
 // });
 // Only start the server if not in a test environment
 // if (process.env.NODE_ENV !== 'test') {
