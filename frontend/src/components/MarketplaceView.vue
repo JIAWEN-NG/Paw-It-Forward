@@ -6,12 +6,16 @@
     <div class="row">
       <!-- Sidebar Filter on the Left -->
       <div class="col-md-3 filter-container">
-        <CreateDonationForm />
+        <CreateDonationForm @notification="handleNotification" />
         <FilterSidebar @filter="applyFilters" />
       </div>
 
       <!-- Donation List in the Center with Pagination -->
       <div class="col-md-9">
+        <div v-if="notificationMessage" :class="`alert alert-${notificationType} alert-dismissible fade show`" role="alert">
+          {{ notificationMessage }}
+          <button type="button" class="btn-close" @click="clearNotification" aria-label="Close"></button>
+        </div>
         <!-- Direct Donation List -->
         <DonationList :donations="paginatedDonations" />
 
@@ -59,6 +63,8 @@ export default {
       currentPage: 1,
       itemsPerPage: 9,
       selectedFilters: {}, // Holds applied filters
+      notificationMessage: '',
+      notificationType: '', // success or error
     };
   },
   computed: {
@@ -74,6 +80,18 @@ export default {
     },
   },
   methods: {
+    clearNotification() {
+      this.notificationMessage = '';
+      this.notificationType = '';
+    },
+    // Add this method to handle emitted notifications
+    handleNotification({ type, message }) {
+      this.notificationMessage = message;
+      this.notificationType = type;
+      setTimeout(() => {
+        this.clearNotification();
+      }, 3000); // Auto-clear after 3 seconds
+    },
     // Fetch donations and set the full and filtered donations list
     async fetchDonations() {
       try {

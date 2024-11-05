@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button class="btn btn-primary create-listing-button" @click="showForm = true">
+        <button class="btn btn-primary create-listing-button" @click="checkAuthAndOpenForm">
             <span class="plus-sign">+</span>
             <span class="divider"></span>
             <span class="button-text">Create Listing</span>
@@ -79,116 +79,130 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import { authState } from '@/store/auth';
+import { useRouter } from 'vue-router';
+
 export default {
-    data() {
-        return {
-            submitting: false,
-            showForm: false,
-            donation: {
-                donorId: "p8v0JBWhlfNZ13DzpBFN",
-                donorName: '',
-                donorProfileImage: '',
-                itemsDonated: '',
-                condition: '',
-                itemCategory: '',
-                petType: '',
-                location: '', // Add location to data model
-                image: null
-            },
-            imagePreview: ''
-        };
-    },
-    methods: {
-        async submitForm() {
-            if (this.submitting) {
-                return;
-            }
-            this.submitting = true;
+   setup() {
+      const router = useRouter();
+      const showForm = ref(false);
+      const checkAuthAndOpenForm = () => {
+         if (!authState.isUserLoggedIn) {
+            // Redirect to login page if not logged in
+            router.push('/login');
+         } else {
+            // Show form if logged in
+            showForm.value = true;
+         }
+      };
 
-            // Fetch donor details
-            await this.fetchDonorDetails(this.donation.donorId);
+      return {
+         checkAuthAndOpenForm,
+         showForm,
+      };
+   },
+   data() {
+      return {
+         submitting: false,
+         donation: {
+            donorId: authState.userId,
+            donorName: '',
+            donorProfileImage: '',
+            itemsDonated: '',
+            condition: '',
+            itemCategory: '',
+            petType: '',
+            location: '',
+            image: null,
+         },
+         imagePreview: '',
+      };
+   },
+   methods: {
+       closeForm() {
+            this.showForm = false;
+            this.resetForm();
+        },
 
-            const formData = new FormData();
-            if (this.donation.image) {
-                formData.append('image', this.donation.image);
-            }
+      async submitForm() {
+         this.donation.donorId = authState.userId;
 
-            // Append all fields, including location
-            formData.append('donorId', this.donation.donorId);
-            formData.append('donorName', this.donation.donorName);
-            formData.append('donorProfileImage', this.donation.donorProfileImage);
-            formData.append('itemsDonated', this.donation.itemsDonated);
-            formData.append('condition', this.donation.condition);
-            formData.append('itemCategory', this.donation.itemCategory || "");
-            formData.append('petType', this.donation.petType);
-            formData.append('location', this.donation.location); // Append location
-            formData.append('receiverId', "");
-            formData.append('requestId', "");
+         const formData = new FormData();
+         formData.append('donorId', this.donation.donorId);
+         formData.append('donorName', this.donation.donorName);
+         formData.append('donorProfileImage', this.donation.donorProfileImage);
+         formData.append('itemsDonated', this.donation.itemsDonated);
+         formData.append('condition', this.donation.condition);
+         formData.append('itemCategory', this.donation.itemCategory);
+         formData.append('petType', this.donation.petType);
+         formData.append('location', this.donation.location);
 
-            try {
-                const response = await fetch(`http://localhost:8000/api/marketplace`, { 
-                    method: 'POST',
-                    body: formData
-                });
+         if (this.donation.image) {
+            formData.append('image', this.donation.image);
+         }
 
+         try {
+            const response = await fetch(`http://localhost:8000/api/marketplace`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                this.$emit('notification', { type: 'success', message: 'Donation created successfully!' });
+                this.showForm = false;
+                this.resetForm();
+            } else {
                 const data = await response.json();
-                if (response.ok) {
-                    alert('Donation created successfully!');
-                    this.showForm = false;
-                    this.resetForm();
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
-                } else {
-                    alert(`Error: ${data.message}`);
-                }
-            } catch (error) {
-                console.error('Error creating donation:', error);
-                alert('Error creating donation. Please try again.');
-            } finally {
-                this.submitting = false;
+                this.$emit('notification', { type: 'error', message: `Error: ${data.message}` });
             }
-        },
-
-        async fetchDonorDetails(donorId) {
-            try {
-                const response = await fetch(`http://localhost:8000/api/users/${donorId}`);
-                if (response.ok) {
-                    const user = await response.json();
-                    this.donation.donorName = user.name || '';
-                    this.donation.donorProfileImage = user.profileImage || '';
-                }
-            } catch (error) {
-                console.error('Error fetching donor details:', error);
-            }
-        },
-        handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.donation.image = file;
-                this.imagePreview = URL.createObjectURL(file);
-            }
-        },
-        triggerFileInput() {
-            this.$refs.fileInput.click(); 
-        },
-        resetForm() {
-            this.donation = {
-                donorId: "p8v0JBWhlfNZ13DzpBFN",
-                donorName: '',
-                donorProfileImage: '',
-                itemsDonated: '',
-                condition: 'Brand New',
-                itemCategory: '',
-                petType: '',
-                location: '', // Reset location
-                image: null 
-            };
-            this.imagePreview = ''; 
+        } catch (error) {
+            console.error('Error creating donation:', error);
+            this.$emit('notification', { type: 'error', message: 'Error creating donation. Please try again.' });
+        } finally {
+            this.submitting = false;
         }
-    }
+      },
+      resetForm() {
+         this.donation = {
+            donorId: authState.userId,
+            donorName: '',
+            donorProfileImage: '',
+            itemsDonated: '',
+            condition: '',
+            itemCategory: '',
+            petType: '',
+            location: '',
+            image: null,
+         };
+      },
+
+      async fetchDonorDetails(donorId) {
+         try {
+            const response = await fetch(`http://localhost:8000/api/users/${donorId}`);
+            if (response.ok) {
+               const user = await response.json();
+               this.donation.donorName = user.name || '';
+               this.donation.donorProfileImage = user.profileImage || '';
+            }
+         } catch (error) {
+            console.error('Error fetching donor details:', error);
+         }
+      },
+      handleImageUpload(event) {
+         const file = event.target.files[0];
+         if (file) {
+            this.donation.image = file;
+            this.imagePreview = URL.createObjectURL(file);
+         }
+      },
+      triggerFileInput() {
+         this.$refs.fileInput.click(); 
+      },
+   },
 };
 </script>
+
   
 <style>
 
