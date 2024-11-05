@@ -164,27 +164,6 @@ if (process.env.NODE_ENV !== 'test') {
     server.listen(PORT, () => {
         console.log(`[SYSTEM] Server started on port ${PORT}...`);
     });
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-    });
-};
-
-// In index.js or main server file
-io.on('connection', (socket) => {
-    console.log('Client connected');
-    socket.emit('testEvent', { message: 'Hello from server' });
-});
-
-
-// app.listen(PORT, () => {
-//     console.log(`[SYSTEM] Server started on port ${PORT}...`);
-// });
-// Only start the server if not in a test environment
-// if (process.env.NODE_ENV !== 'test') {
-//     server.listen(PORT, () => {
-//         console.log(`[SYSTEM] Server started on port ${PORT}...`);
-//     });
-// }
+}
 
 module.exports = app; // Export the app instance for testing
