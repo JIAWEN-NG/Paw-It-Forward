@@ -200,11 +200,11 @@ io.on('connection', (socket) => {
     
 // });
 // Only start the server if not in a test environment
-if (process.env.NODE_ENV !== 'test') {
-    server.listen(PORT, () => {
-        console.log(`[SYSTEM] Server started on port ${PORT}...`);
-    });
-}
+// if (process.env.NODE_ENV !== 'test') {
+//     server.listen(PORT, () => {
+//         console.log(`[SYSTEM] Server started on port ${PORT}...`);
+//     });
+// }
 
 module.exports = app; // Export the app instance for testing
 
