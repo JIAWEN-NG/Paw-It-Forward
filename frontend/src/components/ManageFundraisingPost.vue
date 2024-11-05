@@ -398,22 +398,10 @@ tbody tr:hover {
   border-radius:8px;
 }
 
-.thumbnail {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-}
 .listing-container {
   display: flex;
   align-items: stretch; /* Make items take full height of the container */
   gap: 15px; /* Spacing between image and text */
-}
-.listing-details p {
-  margin: 2px 0; /* Less margin between lines for a compact look */
-  font-size: 0.9rem;
-  color: #555; /* Soft gray text color */
 }
 
 .thumbnail {
@@ -426,6 +414,72 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 
+.listing-details p {
+  margin: 2px 0; /* Less margin between lines for a compact look */
+  font-size: 0.9rem;
+  color: #555; /* Soft gray text color */
+}
+
+/* button */
+
+/* Button styling for a cleaner look */
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+button.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+button.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+button.btn-danger:hover {
+  background-color: #c82333;
+}
+
+ 
+
+
+
+
+
+.image-upload-box {
+  width: 100%;
+  max-width: 200px;
+  height: 150px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+
+}
+
+#title {
+  font-weight: bold;
+}
 
 .pagination-container {
   display: flex;
@@ -450,17 +504,18 @@ tbody tr:hover {
   background-color: #2c3e50;
   color: #fff;
 }
-.action-buttons {
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  gap: 5px; 
-}
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.5rem;
-  color: #000;
-  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 /* Modal Styling */
 .modal-overlay {
@@ -533,26 +588,6 @@ tbody tr:hover {
   padding-top: 15px;
 }
 
-.image-upload-box {
-  width: 100%;
-  height: 200px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.image-upload-box:hover {
-  border-color: #007bff;
-}
-
-.image-preview {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
-}
 
 .upload-button {
   margin-top: 10px;
@@ -564,32 +599,17 @@ tbody tr:hover {
   cursor: pointer;
 }
 
-/* Button styling for a cleaner look */
-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
+
+.action-buttons {
+  display: flex;
+  gap: 5px; 
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: #000;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
-
-button.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-button.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-button.btn-danger {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-button.btn-danger:hover {
-  background-color: #c82333;
-}
-
 </style>

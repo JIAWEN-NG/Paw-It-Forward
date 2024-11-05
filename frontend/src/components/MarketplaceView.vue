@@ -19,6 +19,7 @@
         <!-- Direct Donation List -->
         <DonationList :donations="paginatedDonations" />
 
+        <br>
         <!-- Faint Divider Line -->
         <hr class="divider-line" />
 

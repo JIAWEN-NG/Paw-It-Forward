@@ -1,39 +1,44 @@
 <template>
   <div class="fundraising-list">
-    <div class="row justify-content-start">
-      <div
-        v-for="fundraiser in fundraisings"
-        :key="fundraiser.id"
-        class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center mb-2"
-      >
-        <router-link :to="{ name: 'FundraisingDetail', params: { id: fundraiser.id } }" class="card compact-card">
-          <img
-            class="card-img-top compact-img"
-            :src="fundraiser.fundraisingImg"
-            alt="Campaign Image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{ fundraiser.title }}</h5>
+    <div class="cards-container">
+      <div class="row gx-2">
+        <div
+          v-for="fundraiser in fundraisings"
+          :key="fundraiser.id"
+          class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center mb-2"
+        >
+          <router-link :to="{ name: 'FundraisingDetail', params: { id: fundraiser.id } }" class="card compact-card">
+            <img
+              class="card-img-top compact-img"
+              :src="fundraiser.fundraisingImg"
+              alt="Campaign Image"
+            />
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ fundraiser.title }}</h5>
+              <p class="card-description">{{ truncatedDescription(fundraiser.description) }}</p>
 
-            <!-- Fundraiser Description (truncated to 10 words) -->
-            <p class="card-description">{{ truncatedDescription(fundraiser.description) }}</p>
+              <!-- Progress Bar -->
+              <div class="progress-container">
+                <div
+                  class="progress-bar"
+                  :style="{ width: progressPercentage(fundraiser) + '%' }"
+                ></div>
+              </div>
 
-            <!-- Progress Bar -->
-            <div class="progress-container">
-              <div
-                class="progress-bar"
-                :style="{ width: progressPercentage(fundraiser) + '%' }"
-              ></div>
+              <p class="card-text goal-text">
+                {{ formattedCurrency(fundraiser.amountRaised) }} of {{ formattedCurrency(fundraiser.targetAmount) }}
+              </p>
+
+              <!-- Spacer to push content above the posted date -->
+              <div class="flex-spacer"></div>
+
+              <!-- Fixed "Posted on" date at the bottom -->
+              <p class="card-posted-date">
+                Posted {{ formattedDate(fundraiser.createdAt) }}
+              </p>
             </div>
-
-            <p class="card-text goal-text">
-              {{ formattedCurrency(fundraiser.amountRaised) }} of {{ formattedCurrency(fundraiser.targetAmount) }}
-            </p>
-            <p class="card-posted-date">
-              Posted: {{ formattedDate(fundraiser.createdAt) }}
-            </p>
-          </div>
-        </router-link>
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -75,19 +80,28 @@ export default {
 
 <style scoped>
 .fundraising-list {
-  margin-top: 20px;
   font-family: 'Montserrat', sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
 }
 
+.cards-container {
+  padding: 20px;
+  background-color: #F8F9FB;
+  border-radius: 20px;
+}
 .compact-card {
   width: 100%;
   max-width: 22rem;
+  height: 400px; /* Fixed height for uniform card size */
+  margin: 10px;
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
-  border-radius: 8px;
-  text-decoration: none;
-  margin: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .compact-card:hover {
@@ -95,47 +109,43 @@ export default {
 }
 
 .compact-img {
-  height: 220px;
+  height: 230px;
   width: 100%;
   object-fit: cover;
   background-color: #fff;
 }
 
-.card-title {
-  font-size: 16px;
-  margin-bottom: 4px;
-  text-align: left;
-  font-weight: bold;
-}
-.card-description {
-  font-size: 16px;
-  color: #333;
-  margin-bottom: 6px;
-  text-align: left;
-}
 .card-body {
-  padding: 8px;
-  text-align: left;
-  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 15px;
 }
 
-.card-posted-date {
-  font-size: 16px;
-  color: #555;
+.card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
   text-align: left;
+  height: 40px; /* Fixed height for uniform alignment */
+  margin-bottom: 4px; /* Small margin below title to reduce gap */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.goal-text {
-  font-size: 16px;
-  margin-bottom: 8px;
+.card-description {
+  font-size: 0.75rem;
   text-align: left;
+  margin-bottom: 8px; /* Adjusts spacing between elements */
+  overflow: hidden;
+  white-space: nowrap; /* Prevents text from wrapping */
+  text-overflow: ellipsis; /* Adds ellipsis (...) for overflow text */
 }
-
 .progress-container {
   background-color: #f0f0f0;
   border-radius: 4px;
   height: 10px;
-  margin-bottom: 10px;
 }
 
 .progress-bar {
@@ -143,4 +153,23 @@ export default {
   background-color: #4caf50;
   border-radius: 4px;
 }
+
+.goal-text {
+  text-align: left;
+  color:sienna;
+  font-weight: 650;
+  margin-top: 8px; /* Consistent spacing between elements */
+}
+
+.flex-spacer {
+  flex-grow: 1; /* Pushes "Posted on" text to the bottom */
+}
+
+.card-posted-date {
+  font-size: 0.75rem;
+  color: #555;
+  text-align: left;
+  margin-top: auto;
+}
+
 </style>

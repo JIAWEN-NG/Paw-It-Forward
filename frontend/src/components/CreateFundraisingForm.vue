@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-4">
+  <div>
     <button class="btn btn-primary create-fundraising-button" @click="handleCreateFundraising">
       <span class="plus-sign">+</span>
       <span class="divider"></span>
@@ -12,8 +12,8 @@
           <span class="close" @click="closeForm">&times;</span>
           <h5 class="modal-title">Start a Fundraising Post!</h5>
           <div class="modal-body">
+            <!-- Donation Form -->
             <form @submit.prevent="submitForm">
-
               <div class="form-group mb-3">
                 <label for="campaignName" class="form-label">Title</label>
                 <input type="text" id="campaignName" v-model="fundraising.campaignName" required class="form-control" />
@@ -52,7 +52,6 @@
                 <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
                 <button type="submit" class="btn btn-success" :disabled="submitting">Submit</button>
               </div>
-              <!-- Form Fields Here -->
             </form>
           </div>
         </div>
@@ -276,6 +275,10 @@ export default {
   cursor: pointer;
 }
 
+.close:hover {
+    color: black;
+}
+
 .modal-footer {
   display: flex;
   gap: 10px;
@@ -313,6 +316,7 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   text-align: left;
+  width: 130px;
 }
 
 .upload-button:hover {

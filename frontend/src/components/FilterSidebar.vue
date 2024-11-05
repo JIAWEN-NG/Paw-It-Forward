@@ -1,6 +1,7 @@
 <!-- FilterSidebar.vue -->
 <template>
   <div class="filter-sidebar">
+
     <!-- Sort by Date -->
     <h4 class="mt-4">Sort by Date</h4>
     <div class="filter-group">
@@ -14,14 +15,18 @@
       </label>
     </div>
 
+    
+
     <!-- Filter by Condition -->
-    <h4>Filter by Condition</h4>
+    <h4 class="mt-4">Filter by Condition</h4>
     <div class="filter-group">
       <label v-for="condition in conditions" :key="condition">
         <input type="checkbox" :value="condition" v-model="selectedConditions" />
         {{ condition }}
       </label>
     </div>
+
+   
 
     <!-- Filter by Item Category -->
     <h4 class="mt-4">Filter by Item Category</h4>
@@ -31,6 +36,8 @@
         {{ category }}
       </label>
     </div>
+
+    
 
     <!-- Filter by Pet Type -->
     <h4 class="mt-4">Filter by Pet Type</h4>
@@ -45,6 +52,8 @@
       </label>
     </div>
 
+    
+
     <!-- Filter by Location -->
     <h4 class="mt-4">Filter by Location</h4>
     <div class="filter-group">
@@ -53,6 +62,8 @@
         {{ location }}
       </label>
     </div>
+
+    
 
     <!-- Reset Filter Button -->
     <button class="reset-button" @click="resetFilters">Reset Filters</button>
@@ -137,7 +148,6 @@ export default {
 
 <style scoped>
 /* Existing styles */
-
 .filter-sidebar {
   padding: 25px;
   background-color: #ffffff;
@@ -160,26 +170,27 @@ h4 {
   margin-bottom: 18px;
 }
 
+
 label {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   color: #555;
+  font-weight: normal;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   margin-right: 10px;
   accent-color: #5a6e8c;
   transform: scale(1.1);
 }
-
 .divider {
   border-bottom: 1px solid #e2e2e2;
-  margin: 15px 0;
+  margin: 0;
 }
 
 .reset-button {
@@ -208,6 +219,7 @@ input[type="radio"] {
   transform: translateY(1px);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 @media (max-width: 768px) {
   .filter-sidebar {

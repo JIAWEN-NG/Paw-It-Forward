@@ -3,7 +3,7 @@
     
       <CarouselFundraising />
 
-    <div class="row fundraising-section">
+    <div class="row">
       <!-- Sidebar Filter on the Left, stacks above Fundraising List on small screens -->
       <div class="col-md-3 col-12 filter-container">
         <CreateFundraisingForm @postCreated="handlePostCreated" />
@@ -12,8 +12,6 @@
 
       <!-- Fundraising List in the Center with Pagination and Success Message -->
       <div class="col-md-9 col-12">
-   
-
         <!-- Success Message inside Fundraising List Container -->
         <div v-if="showSuccessMessage" class="alert alert-success" role="alert">
           Your fundraising post has been successfully created.
@@ -23,20 +21,21 @@
         <FundraisingList
           :fundraisings="paginatedFundraisings"
         />
+        <br>
         <hr class="divider-line" />
         <!-- Pagination Controls -->
         <div class="pagination-container">
           <button 
             @click="changePage(currentPage - 1)" 
             :disabled="currentPage === 1" 
-            class="btn btn-outline-primary pagination-button">
+            class="btn btn-outline-primary">
             Previous
           </button>
           <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
           <button 
             @click="changePage(currentPage + 1)" 
             :disabled="currentPage === totalPages" 
-            class="btn btn-outline-primary pagination-button">
+            class="btn btn-outline-primary">
             Next
           </button>
         </div>
@@ -137,11 +136,6 @@ export default {
   padding-top: 20px;
 }
 
-.alert {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
 .filter-container {
   background-color: #ffffff;
   padding: 20px;
@@ -163,6 +157,25 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
+}
+
+.card {
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card-title,
+.card-subtitle {
+  color: #2c3e50;
+}
+
+.card-text {
+  color: #5c4033;
 }
 
 .btn-outline-primary {

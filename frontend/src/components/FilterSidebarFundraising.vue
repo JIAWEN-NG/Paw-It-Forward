@@ -2,7 +2,7 @@
   <div class="filter-sidebar">
 
     <!-- Sort Options -->
-    <h4>Sort by Date</h4>
+    <h4 class="mt-4">Sort by Date</h4>
     <div class="filter-group">
       <label>
         <input type="radio" value="recent" v-model="sortOption" /> Most Recent
@@ -12,9 +12,9 @@
       </label>
     </div>
     
-    <div class="divider"></div>
     
-    <h4>Filter by Pet Type</h4>
+    
+    <h4 class="mt-4">Filter by Pet Type</h4>
     <div class="filter-group">
       <label>
         <input type="checkbox" value="Cat" v-model="selectedPetTypes" />
@@ -25,12 +25,11 @@
         Dog
       </label>
     </div>
-    <div class="divider"></div>
 
-
+   
 
     <!-- Reset Filter Button -->
-    <button class="reset-button w-100" @click="resetFilters">Reset Filters</button>
+    <button class="reset-button" @click="resetFilters">Reset Filters</button>
   </div>
 </template>
 
@@ -79,8 +78,7 @@ export default {
 }
 
 h4 {
-  margin-top: 2px; 
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   font-size: 1.1em;
   color: #444;
   font-weight: 600;
@@ -89,6 +87,9 @@ h4 {
   padding-bottom: 5px;
 }
 
+.filter-group {
+  margin-bottom: 18px;
+}
 
 
 label {
@@ -99,6 +100,7 @@ label {
   font-family: "Montserrat", sans-serif;
   font-size: 14px;
   color: #555;
+  font-weight: normal;
 }
 
 input[type='checkbox'],
@@ -137,6 +139,14 @@ input[type='radio'] {
 .reset-button:active {
   transform: translateY(1px);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+@media (max-width: 768px) {
+  .filter-sidebar {
+    padding: 15px;
+    border-radius: 10px;
+  }
 }
 
 </style>

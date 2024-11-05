@@ -33,7 +33,7 @@
 
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">{{ donation.itemsDonated }} | {{ donation.petType || 'N/A' }}</h5>
+                <h5 class="card-title">{{ donation.itemsDonated }} | {{ donation.petType || 'N/A' }}</h5>
                 <div class="location-container" v-if="donation.location">
                   <img src="../assets/location.png" alt="Location Icon" class="location-icon" />
                   <span class="card-location">{{ donation.location }}</span>
@@ -46,7 +46,7 @@
                 {{ donation.itemCategory || 'N/A' }}
               </p>
               <div class="d-flex justify-content-between align-items-center">
-                <span class="posted-on">Posted {{ donation.postedOn }}</span>
+                <span class="posted-on">Posted {{ formattedDate(donation.createdAt) }}</span>
                 <a
                   href="#"
                   class="btn btn-outline-primary btn-sm"
@@ -99,6 +99,14 @@ export default {
     };
   },
   methods: {
+    formattedDate(date) {
+      if (!date) return '';
+      const d = new Date(date);
+      const day = d.getDate();
+      const month = d.toLocaleString('default', { month: 'long' });
+      const year = d.getFullYear();
+      return `${day} ${month} ${year}`;
+    },
     openRequestModal(donation) {
       this.selectedDonation = donation;
       this.showModal = true;
@@ -164,18 +172,6 @@ export default {
   border-radius: 20px;
 }
 
-/* Align cards to the left */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.col-sm-6,
-.col-lg-4 {
-  display: flex;
-  justify-content: flex-start;
-}
 
 /* Adjusted Compact Card Styling for Wider Card */
 .compact-card {
@@ -191,6 +187,20 @@ export default {
 .compact-card:hover {
   transform: scale(1.02);
 }
+
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.col-sm-6,
+.col-lg-4 {
+  display: flex;
+  justify-content: flex-start;
+}
+
 
 /* Profile Image Styling */
 .donor-profile-img {
@@ -215,6 +225,7 @@ export default {
   font-size: 0.9rem;
   margin-bottom: 4px;
   text-align: left;
+  font-weight:600;
 }
 
 .card-header {
@@ -332,4 +343,5 @@ export default {
   font-size: 0.75rem;
   color: #555;
 }
+
 </style>

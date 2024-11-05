@@ -2,7 +2,7 @@
 <!-- has to be a scrollable function within ManagePostView's marketplace toggle background area  -->
 
 <template>
-  <div class="container">
+  <div class="container py-4">
     <!-- Notification for Success and Error Messages -->
     <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
       {{ successMessage }}
@@ -84,75 +84,86 @@
     </div>
 
     <!-- Edit Form Modal -->
-    <div v-if="showForm" class="modal">
-      <div class="modal-content">
-        <h2>Edit Listing</h2>
-        <form @submit.prevent="updateListing">
-          <div class="form-group">
-            <label for="itemsDonated">Item Description</label>
-            <textarea
-              v-model="listing.itemsDonated"
-              id="itemsDonated"
-              class="form-control"
-              rows="4"
-              required
-            ></textarea>
+    <div v-if="showForm" class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <span class="close" @click="closeEditForm">&times;</span>
+          <h5 class="modal-title text-center">Edit Listing</h5>
+          <div class="modal-body">
+            <form @submit.prevent="updateListing">
+              <div class="form-group mb-3">
+                <label for="itemsDonated" class="form-label">Item Description</label>
+                <textarea
+                  v-model="listing.itemsDonated"
+                  id="itemsDonated"
+                  class="form-control"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              
+              <div class="form-group mb-3">
+                <label for="itemCategory" class="form-label">Item Category</label>
+                <select v-model="listing.itemCategory" id="itemCategory" class="form-control" required>
+                  <option value="" disabled>Select Category</option>
+                  <option value="Food & Feeding Supplies">Food & Feeding Supplies</option>
+                  <option value="Toys">Toys</option>
+                  <option value="Bedding & Furniture">Bedding & Furniture</option>
+                  <option value="Grooming & Hygiene">Grooming & Hygiene</option>
+                  <option value="Clothing & Accessories">Clothing & Accessories</option>
+                  <option value="Health & Wellness">Health & Wellness</option>
+                  <option value="Travel & Carriers">Travel & Carriers</option>
+                </select>
+              </div>
+              
+              <div class="form-group mb-3">
+                <label for="condition" class="form-label">Condition</label>
+                <select v-model="listing.condition" id="condition" class="form-control" required>
+                  <option value="" disabled>Select Condition</option>
+                  <option value="Brand New">Brand New</option>
+                  <option value="Slightly Used">Slightly Used</option>
+                  <option value="Well Used">Well Used</option>
+                </select>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="petType" class="form-label">Pet Type</label>
+                <select v-model="listing.petType" id="petType" class="form-control" required>
+                  <option value="" disabled>Select Pet Type</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Dog">Dog</option>
+                </select>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="location" class="form-label">Location</label>
+                <select v-model="listing.location" id="location" class="form-control" required>
+                  <option value="" disabled>Select Location</option>
+                  <option value="West">West</option>
+                  <option value="East">East</option>
+                  <option value="Central">Central</option>
+                  <option value="North">North</option>
+                  <option value="North-east">North-east</option>
+                </select>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="imageUpload" class="form-label">Upload New Picture (Optional)</label>
+                <div class="image-upload-box" @click="triggerFileInput">
+                  <img v-if="imagePreview || listing.itemImage" :src="imagePreview || listing.itemImage" class="image-preview" />
+                  <span v-else class="placeholder">No Image Uploaded</span>
+                </div>
+                <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none;" />
+                <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{ listing.itemImage ? 'Reupload' : 'Choose File' }}</button>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="closeEditForm">Cancel</button>
+                <button type="submit" class="btn btn-success" :disabled="submitting">{{ submitting ? 'Saving...' : 'Save Changes' }}</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <label for="itemCategory">Item Category</label>
-            <select v-model="listing.itemCategory" id="itemCategory" class="form-select" required>
-              <option value="" disabled>Select Category</option>
-              <option value="Food & Feeding Supplies">Food & Feeding Supplies</option>
-              <option value="Toys">Toys</option>
-              <option value="Bedding & Furniture">Bedding & Furniture</option>
-              <option value="Grooming & Hygiene">Grooming & Hygiene</option>
-              <option value="Clothing & Accessories">Clothing & Accessories</option>
-              <option value="Health & Wellness">Health & Wellness</option>
-              <option value="Travel & Carriers">Travel & Carriers</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="condition">Condition</label>
-            <select v-model="listing.condition" id="condition" class="form-select" required>
-              <option value="" disabled>Select Condition</option>
-              <option value="Brand New">Brand New</option>
-              <option value="Slightly Used">Slightly Used</option>
-              <option value="Well Used">Well Used</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="petType">Pet Type</label>
-            <select v-model="listing.petType" id="petType" class="form-select" required>
-              <option value="" disabled>Select Pet Type</option>
-              <option value="Cat">Cat</option>
-              <option value="Dog">Dog</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="location">Location</label>
-            <select v-model="listing.location" id="location" class="form-select" required>
-              <option value="" disabled>Select Location</option>
-              <option value="West">West</option>
-              <option value="East">East</option>
-              <option value="Central">Central</option>
-              <option value="North">North</option>
-              <option value="North-east">North-east</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="imageUpload">Upload New Picture (Optional)</label>
-            <div class="image-upload-box d-flex justify-content-center align-items-center" @click="triggerFileInput">
-              <img v-if="imagePreview || listing.itemImage" :src="imagePreview || listing.itemImage" class="image-preview" />
-              <span v-else class="placeholder text-muted">No Image Uploaded</span>
-            </div>
-            <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none;" />
-            <button type="button" @click="triggerFileInput" class="btn btn-secondary mt-2">{{ listing.itemImage ? 'Reupload' : 'Choose File' }}</button>
-          </div>
-          <div class="form-actions d-flex justify-content-end mt-4">
-            <button type="button" @click="closeEditForm" class="btn btn-outline-secondary me-2">Cancel</button>
-            <button type="submit" class="btn btn-success">Save Changes</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -405,14 +416,53 @@ button.btn-danger:hover {
   z-index: 1000;
 }
 
-.modal-content {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
+
+.modal-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+}
+
+.modal-content {
+  border-radius: 8px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: relative;
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+
 
 .form-group {
   margin-bottom: 20px;
@@ -467,50 +517,53 @@ button.btn-danger:hover {
   color: #fff;
 }
 
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.modal-dialog {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 500px;
-  padding: 10px;
-}
-
-.modal-content {
-  border-radius: 8px;
-  background-color: white;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  position: relative;
-}
-
-.modal-body {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.modal-title {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+.form-label {
+  font-weight: 500;
   color: #2c3e50;
-  margin-bottom: 20px;
+  display: block;
+  text-align: left;
+}
+
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: #80bdff;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 15px;
+}
+
+.upload-button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.action-buttons {
+  display: flex;
+  gap: 5px; 
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: #000;
+  cursor: pointer;
 }
 
 </style>
