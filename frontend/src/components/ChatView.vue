@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import ChatList from '../components/ChatList.vue';
-import ChatRoom from '../components/ChatRoom.vue';
+import ChatList from './ChatList.vue';
+import ChatRoom from './ChatRoom.vue';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export default {
