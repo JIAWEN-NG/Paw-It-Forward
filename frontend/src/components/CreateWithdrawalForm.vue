@@ -40,7 +40,10 @@
   </div>
 </template>
 
+
 <script>
+import { authState } from '@/store/auth';
+
 export default {
   props: {
     postId: {
@@ -61,11 +64,6 @@ export default {
       imagePreview: ''
     };
   },
-  watch: {
-    postId(newPostId) {
-      this.withdrawal.postId = newPostId;
-    }
-  },
   methods: {
     async submitForm() {
       this.submitting = true;
@@ -75,6 +73,7 @@ export default {
       formData.append('postId', this.withdrawal.postId);
       formData.append('reason', this.withdrawal.reason);
       if (this.withdrawal.image) formData.append('image', this.withdrawal.image);
+      formData.append('userId', authState.userId); // Add logged-in userId from authState
 
       try {
         const response = await fetch('http://localhost:8000/api/withdrawals', {
