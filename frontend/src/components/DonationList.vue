@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import { authState } from '@/store/auth';
+const currentUserId = authState.userId;
 export default {
   props: {
     donations: {
@@ -120,12 +122,13 @@ export default {
         alert('Please enter a message.');
         return;
       }
+      console.log('receiver id sending from frontend', currentUserId);
 
       const requestPayload = {
         donorId: this.selectedDonation.donorId,
         itemImage: this.selectedDonation.itemImage,
         itemsDonated: this.selectedDonation.itemsDonated,
-        receiverId: "p8v0JBWhlfNZ13DzpBFN",
+        receiverId: currentUserId,
         requestMessage: this.requestMessage,
         status: "pending"
       };

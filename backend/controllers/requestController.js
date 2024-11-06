@@ -5,6 +5,7 @@ const { db } = require('../config/firebase');
 
 const createRequest = async (req, res) => {
     const { donorId, itemImage, itemsDonated, receiverId, requestMessage, status = "pending" } = req.body;
+    console.log("reciever id recieved from frontend", receiverId);
 
     try {
         // Check required fields and log any missing ones
@@ -21,6 +22,7 @@ const createRequest = async (req, res) => {
             console.error('Donor not found in Users collection for donorId:', donorId);
             return res.status(404).json({ message: 'Donor not found' });
         }
+        const donorData = donorDoc.data();
 
         // Create request document in Requests collection
         const newRequest = {
@@ -46,8 +48,10 @@ const createRequest = async (req, res) => {
                 image: itemImage,
                 status: 'pending',
             },
-            requestId: requestRef.id,
+            requestId: donorRef.id,
         });
+        console.log("doner", donorId);
+        console.log("receiver", receiverId);
 
         // Create the 'messages' sub-collection and add the initial message
         const messagesRef = chatRef.collection('messages');
@@ -56,9 +60,9 @@ const createRequest = async (req, res) => {
             receiverId: donorId,
             message: requestMessage,
             timestamp: new Date().toISOString(),
-            receiverName: receiverData.name,
-            receiverProfileImage: receiverData.profileImage,
-            requestId: requestRef.id
+            receiverName: donorData.name,
+            receiverProfileImage: donorData.profileImage,
+            requestId: donorRef.id
         });
 
         // Emit a 'newChat' event with the new chat data
@@ -74,7 +78,7 @@ const createRequest = async (req, res) => {
                 image: itemImage,
                 status: 'pending',
             },
-            requestId: requestRef.id,
+            requestId: donorRef.id,
             participants: [donorId, receiverId]
         });
 
