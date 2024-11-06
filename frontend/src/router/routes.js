@@ -21,6 +21,7 @@ import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 import AdminView from '@/components/AdminView.vue';
+import CancelDonation from '../components/CancelDonation.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -66,6 +67,12 @@ const routes = [
     { path: '/admin',
       name:'admin',
       component: AdminView, 
+    },
+
+    {
+        path: '/cancel',
+        name: 'CancelDonation',
+        component: CancelDonation,
     },
 ];
 
