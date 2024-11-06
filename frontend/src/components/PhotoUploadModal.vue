@@ -5,7 +5,6 @@
       <input type="file" accept="image/*" @change="onFileChange" />
       <div v-if="selectedImage" class="crop-container">
         <img :src="selectedImage" ref="image" class="crop-image" />
-        <button class="crop-button" @click="cropImage">Crop Image</button>
       </div>
       <div class="modal-buttons">
         <button class="cancel-button" @click="close">Cancel</button>
@@ -18,8 +17,7 @@
 <script>
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
-import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage'; // Keep storage imports
-
+import axios from 'axios';
 
 export default {
   name: 'PhotoUploadModal',
@@ -36,7 +34,6 @@ export default {
   data() {
     return {
       selectedImage: null,
-      croppedImage: null,
       cropper: null
     };
   },
@@ -65,36 +62,34 @@ export default {
         autoCropArea: 1
       });
     },
-    cropImage() {
-      if (this.cropper) {
-        this.croppedImage = this.cropper.getCroppedCanvas().toDataURL();
-        this.selectedImage = this.croppedImage;
-      }
-    },
     async savePhoto() {
-      if (this.croppedImage) {
-        try {
-          const storage = getStorage();
-          const storageRef = ref(storage, `profilePhotos/${this.userId}.png`);
+      if (this.cropper) {
+        this.cropper.getCroppedCanvas().toBlob(async blob => {
+          const formData = new FormData();
+          formData.append('image', blob, `${this.userId}.png`); // Append the blob with the userId as the file name
+          formData.append('userId', this.userId); // Include userId
 
-          // Upload the image
-          await uploadString(storageRef, this.croppedImage, 'data_url');
+          try {
+            const response = await axios.post(`http://localhost:8000/api/user/${this.userId}/upload`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data' // Set the appropriate header
+              }
+            });
 
-          // Get the download URL
-          const photoURL = await getDownloadURL(storageRef);
-
-          // Emit the new photo URL to the parent component
-          this.$emit('save', photoURL); 
-          this.close();
-        } catch (error) {
-          console.error("Error uploading photo:", error.message);
-        }
+            const photoURL = response.data.photoURL; // Get the URL from the response
+            this.$emit('save', photoURL); // Emit the new photo URL to the parent component
+            this.close();
+          } catch (error) {
+            console.error("Error uploading photo:", error.response.data); // Log error details
+          }
+        }, 'image/png'); // Specify the image format
       }
     },
     close() {
       this.selectedImage = null;
-      this.croppedImage = null;
-      this.cropper && this.cropper.destroy();
+      if (this.cropper) {
+        this.cropper.destroy();
+      }
       this.$emit('close');
     }
   }
@@ -162,21 +157,5 @@ export default {
   background-color: #e0e0e0;
   color: #999;
   cursor: not-allowed;
-}
-
-/* Crop button style */
-.crop-button {
-  background-color: #007bff; /* Blue color */
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 10px; /* Space above the button */
-}
-
-.crop-button:hover {
-  background-color: #0056b3; /* Darker blue */
 }
 </style>

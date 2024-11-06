@@ -1,6 +1,13 @@
 <template>
   <div class="account-page">
     <h1>Account Information</h1>
+    
+    <SuccessAlert 
+      v-if="showSuccessAlert" 
+      :message="successMessage" 
+      ref="successAlert" 
+    />
+
     <div class="profile-section">
       <div class="profile-photo-container">
         <img 
@@ -54,25 +61,28 @@
 import axios from 'axios';
 import PhotoUploadModal from './PhotoUploadModal.vue';
 import EditProfileModal from './EditProfileModal.vue';
-import { doc, updateDoc } from 'firebase/firestore'; // Ensure these are imported correctly
-import { db } from '@/firebase'; // Import your Firestore instance
+import SuccessAlert from './SuccessAlert.vue'; // Import SuccessAlert component
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 export default {
   name: 'UserAccount',
-  components: { PhotoUploadModal, EditProfileModal },
+  components: { PhotoUploadModal, EditProfileModal, SuccessAlert },
   data() {
     return {
       currentUser: {
-        id: '', // Ensure id is part of the currentUser object
+        id: '',
         role: '',
         profileImage: '',
         petDescription: '',
         name: '',
         email: '',
       },
-      defaultProfileImage: require('@/assets/noprofilepic.png'), // Default image if no profile image is available
-      showPhotoUploadModal: false, // Controls the visibility of the Photo Upload Modal
-      showEditProfileModal: false, // Controls the visibility of the Edit Profile Modal
+      defaultProfileImage: require('@/assets/noprofilepic.png'),
+      showPhotoUploadModal: false,
+      showEditProfileModal: false,
+      successMessage: '', // To hold the success message
+      showSuccessAlert: false // To control the visibility of the success alert
     };
   },
   computed: {
@@ -85,7 +95,7 @@ export default {
   },
   methods: {
     async fetchUserData() {
-      const userId = "TqTbV83gxtSTiGczXzybbyJR0AC2"; // Firestore user ID
+      const userId = "TqTbV83gxtSTiGczXzybbyJR0AC2"; 
       console.log("Fetching data for user ID:", userId);
 
       try {
@@ -98,25 +108,34 @@ export default {
     },
     async handlePhotoUpload(newPhotoURL) {
       console.log("New photo uploaded:", newPhotoURL);
-      this.currentUser.profileImage = newPhotoURL; // Update the profile image in local state
+      this.currentUser.profileImage = newPhotoURL;
 
-      // Now update Firestore with the new profile image URL
+      // Update Firestore with the new profile image URL
       try {
-        const userRef = doc(db, 'Users', this.currentUser.id); // Create a reference to the user's document
+        const userRef = doc(db, 'Users', this.currentUser.id);
         await updateDoc(userRef, {
-          profileImage: newPhotoURL // Update the user's profile image URL
+          profileImage: newPhotoURL
         });
         console.log("Profile image updated in Firestore");
       } catch (error) {
         console.error("Error updating profile image in Firestore:", error.message);
       }
 
+      // Show success message
+      this.successMessage = "Your account has been updated"; // Set the success message
+      this.showSuccessAlert = true; // Show the success alert
+      this.$refs.successAlert.show(); // Call the show method on the SuccessAlert component
       this.showPhotoUploadModal = false; // Close the modal after saving
     },
     handleProfileUpdate(updatedInfo) {
       console.log("Profile updated with:", updatedInfo);
-      this.showEditProfileModal = false; // Close the modal after saving
-      this.currentUser = { ...this.currentUser, ...updatedInfo }; // Update user data
+      this.showEditProfileModal = false;
+      this.currentUser = { ...this.currentUser, ...updatedInfo };
+      
+      // Show success message
+      this.successMessage = "Your account has been updated"; // Set the success message
+      this.showSuccessAlert = true; // Show the success alert
+      this.$refs.successAlert.show(); // Call the show method on the SuccessAlert component
     },
   },
 };

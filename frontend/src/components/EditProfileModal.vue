@@ -49,14 +49,13 @@ export default {
   },
   data() {
     return {
-      editableUser: { ...this.currentUser }, // Create a copy of the current user data
+      editableUser: { ...this.currentUser },
       hasChanges: false
     };
   },
   watch: {
     editableUser: {
       handler() {
-        // Check if there are any changes compared to the original user data
         this.hasChanges = JSON.stringify(this.editableUser) !== JSON.stringify(this.currentUser);
       },
       deep: true
@@ -65,19 +64,19 @@ export default {
   methods: {
     async saveProfile() {
       try {
-        const userId = this.editableUser.id; // Ensure this ID is being set correctly
+        const userId = this.editableUser.id; 
         console.log("Saving profile for user ID:", userId);
         console.log("User data to be updated:", this.editableUser);
         await axios.put(`http://localhost:8000/api/user/${userId}`, this.editableUser);
         
-        this.$emit('save', this.editableUser); // Emit the updated user data
-        this.close(); // Close the modal
+        this.$emit('save', this.editableUser); 
+        this.close(); 
       } catch (error) {
         console.error("Error updating profile:", error.response?.data || error.message);
       }
     },
     close() {
-      this.$emit('close'); // Emit close event to the parent
+      this.$emit('close'); 
     }
   }
 };
