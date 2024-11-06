@@ -129,6 +129,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
+import { authState } from '../store/auth.js';
 
 const stripePromise = loadStripe('pk_test_51Q7rxT084jqwzoKU1M4jawiKQFIgzZPyVMC4Hmq5BlynJ26b6G3ao7nJ1PPpR3CKsI22lWIPsXVcOgccOmeCxnUU00dud0pVzj');
 
@@ -141,6 +142,8 @@ export default {
     },
   },
   setup(props) {
+    const currentUser = computed(() => authState.userId); // Get the logged-in user's ID
+
     const fundraising = ref({});
     const loading = ref(true);
     const error = ref(null);
@@ -149,6 +152,7 @@ export default {
     const isCustomAmount = ref(false);
     const showShareModal = ref(false);
     const shareLink = ref(window.location.href);
+  
 
     const fetchFundraisingDetail = async () => {
       try {
@@ -196,12 +200,13 @@ export default {
 
     const startCheckout = async () => {
       const amountInCents = donationAmount.value * 100;
+      
 
       try {
         const response = await axios.post('http://localhost:8000/create-checkout-session', {
           postName: fundraising.value.title,
           price: amountInCents,
-          userId: fundraising.value.userId,
+          userId: currentUser.value,
           postId: fundraising.value.id,
           postImage: fundraising.value.fundraisingImg,
         });
