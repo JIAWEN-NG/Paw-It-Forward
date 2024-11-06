@@ -4,10 +4,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 
-import ChatView from '../views/ChatView.vue';
-import MarketplaceView from '../components/MarketplaceView.vue';
-import CreateDonationForm from '../components/CreateDonationForm.vue';
-import ManagePostView from '../components/ManagePostView.vue';
+
+//import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import ChatView from '../components/ChatView.vue'; // Chat view
+import MarketplaceView from '../components/MarketplaceView.vue'; // Marketplace layout
+import CreateDonationForm from '../components/CreateDonationForm.vue'; // Form to create a donation
+import ManagePostView from '../components/ManagePostView.vue'; //Manage Post layout
 import DonationDetails from '@/components/DonationDetails.vue';
 import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
 import FundraisingView from '../components/FundraisingView.vue';
