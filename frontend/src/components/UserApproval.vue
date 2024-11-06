@@ -18,14 +18,16 @@
                     <tbody>
                         <tr v-for="user in paginatedUsers" :key="user.id">
                             <td>
-                                <img :src="user.profileImage" alt="User Image" class="rounded-circle border shadow-sm"
-                                    style="width: 50px; height: 50px;" />
+                                <img :src="user.verificationPhoto" alt="User Image" class="shadow-sm user-image" />
                             </td>
                             <td class="fw-semibold">{{ user.name }}</td>
                             <td>{{ user.email }}</td>
-                            <td><span class="badge bg-info text-white px-3 py-1 rounded-pill">{{ user.role }}</span></td>
+                            <td><span class="badge bg-info text-white px-3 py-1 rounded-pill">{{ user.role }}</span>
+                            </td>
                             <td>
-                                <span :class="statusBadgeClass(user.status)" class="px-3 py-1 rounded-pill">{{ user.status }}</span>
+                                <span :class="statusBadgeClass(getUserStatus(user))" class="px-3 py-1 rounded-pill">
+                                    {{ getUserStatus(user) }}
+                                </span>
                             </td>
                             <td v-if="status === 'Rejected'">{{ user.rejectionReason }}</td>
                             <td>
@@ -71,14 +73,13 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header border-0 d-flex justify-content-between align-items-center">
-                        <h5 class="modal-title fw-bold text-primary">User Details</h5>
+                        <h5 class="modal-title fw-bold">User Details</h5>
                         <button type="button" class="btn-close" @click="closeModal"></button>
                     </div>
                     <div class="modal-body d-flex align-items-center">
                         <div class="me-4">
-                            <img :src="selectedUser.profileImage || 'path/to/default/image.jpg'" alt="User Image"
-                                class="rounded shadow"
-                                style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #007bff;">
+                            <img :src="selectedUser.verificationPhoto || 'path/to/default/image.jpg'" alt="User Image"
+                                class="rounded shadow" style="width: 150px; height: 150px; object-fit: cover; ">
                         </div>
 
                         <div class="user-info">
@@ -156,7 +157,7 @@ export default {
     data() {
         return {
             currentPage: 1,
-            itemsPerPage: 2,
+            itemsPerPage: 10,
             selectedUser: {},
             showViewModal: false,
             showRejectModal: false,
@@ -165,6 +166,7 @@ export default {
         };
     },
     computed: {
+      
         paginatedUsers() {
             const start = (this.currentPage - 1) * this.itemsPerPage;
             const end = start + this.itemsPerPage;
@@ -175,6 +177,15 @@ export default {
         }
     },
     methods: {
+        getUserStatus(user) {
+            if (!user.isPhotoVerified && !user.remarks) {
+                return 'Pending';
+            } else if (!user.isPhotoVerified && user.remarks) {
+                return 'Rejected';
+            } else if (user.isPhotoVerified) {
+                return 'Approved';
+            }
+        },
         statusBadgeClass(status) {
             return {
                 'badge bg-warning text-dark': status === 'Pending',
@@ -220,51 +231,15 @@ export default {
 
 
 <style scoped>
-.modal-header {
-    border-bottom: none;
+.admin-container {
+    padding: 0 5vw 4vw;
 }
 
-.modal-body {
-    padding: 20px;
-}
-
-.user-info h5 {
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
-}
-
-.user-info p {
-    font-size: 1rem;
-    color: #555;
-}
-
-.modal-footer {
-    padding-top: 0;
-}
-
-.modal-title {
-    font-size: 1.5rem;
-}
-
-.btn-primary {
-    border-radius: 20px;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.container-fluid {
-    padding-left: 10vw;
-    padding-right: 10vw;
-}
-
-.table-responsive {
-    border-radius: 12px;
-    background-color: #f8f9fa;
+.table-container {
+    background-color: #ffffff;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 2rem;
 }
 
 .table-header {
@@ -273,32 +248,56 @@ export default {
 
 .table th,
 .table td {
-    vertical-align: middle;
     padding: 1rem;
+    text-align: center;
+    vertical-align: middle;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #f1f5f9;
+.user-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10%;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-.fancy-btn {
-    transition: all 0.3s ease;
+.modal-user-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge {
+    padding: 0.3em 0.6em;
+    font-size: 0.875em;
+    color: #ffffff;
+    border-radius: 12px;
+}
+
+.status-badge-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-badge-approved {
+    background-color: #28a745;
+}
+
+.status-badge-rejected {
+    background-color: #dc3545;
+}
+
+.btn-fancy {
     padding: 0.4rem 0.8rem;
     border-radius: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.fancy-btn:hover {
+.btn-fancy:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.badge {
-    font-size: 0.875em;
-    padding: 0.4em 0.6em;
-    border-radius: 50px;
-}
-
-.modal.fade.show {
-    display: block !important;
 }
 </style>

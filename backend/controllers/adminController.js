@@ -73,16 +73,6 @@ const mockTransferMoney = async (userId, amount, accountDetails) => {
 
 // Approve a Withdrawal Request
 const approveWithdrawal = async (req, res) => {
-    // const requestId = req.params.requestId;
-    // try {
-    //     const withdrawalRef = db.collection('Withdrawals').doc(requestId);
-    //     await withdrawalRef.update({
-    //         status: "Approved"
-    //     });
-    //     res.status(200).json({ message: 'Withdrawal request approved.' });
-    // } catch (error) {
-    //     res.status(500).json({ error: error.message });
-    // }
     const { requestId } = req.params;
     const { amount, userId, accountDetails } = req.body;
 
@@ -122,6 +112,18 @@ const rejectWithdrawal = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// Get all withdrawal requests
+const getAllWithdrawals = async (req, res) => {
+    try {
+      const withdrawalsSnapshot = await db.collection('Withdrawals').get();
+      const withdrawals = withdrawalsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      res.status(200).json(withdrawals);
+    } catch (error) {
+      console.error('Error fetching withdrawals:', error);
+      res.status(500).json({ error: 'Failed to fetch withdrawals' });
+    }
+  };
+  
 
 // // process xfer 
 // // Example transfer function (using Stripe as an example)
@@ -152,6 +154,7 @@ module.exports = {
     rejectUser,
     approveWithdrawal,
     rejectWithdrawal,
-    getUserByStatus
+    getUserByStatus,
+    getAllWithdrawals
 
 };

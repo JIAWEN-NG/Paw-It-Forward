@@ -43,6 +43,7 @@ router.post('/requests', requestController.createRequest);
 router.put('/admin/users/:userId/approve', adminController.approveUser);
 router.put('/admin/users/:userId/reject', adminController.rejectUser);
 router.get('/admin/users', adminController.getUserByStatus);
+router.get('/admin/withdrawals', adminController.getAllWithdrawals);
 router.put('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
 router.put('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
 

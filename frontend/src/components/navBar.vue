@@ -52,7 +52,7 @@
                     <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
                     </li>
                     <li v-if="isAdmin">
-                    <router-link to="/manage-users" class="dropdown-item">Manage Users</router-link>
+                    <router-link to="/admin" class="dropdown-item">Manage Users</router-link>
                     </li>
                     <li>
                     <button @click="handleSignOut" class="dropdown-item">Sign Out</button>

@@ -1,112 +1,108 @@
 <template>
-    <div class="container-fluid py-4">
-      <!-- Header with Navigation -->
-      <header class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Admin Dashboard</h1>
-        <nav>
-          <a href="#" class="me-3 text-decoration-none text-dark">Registration</a>
-          <a href="#" class="text-decoration-none text-dark">Donations</a>
-        </nav>
-      </header>
-  
-      <!-- Tabs for User Status and Donation Requests -->
+  <div class="container-fluid py-4">
+    <!-- Header with Navigation -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Admin Dashboard</h1>
+    </header>
+
+    <!-- Tabs for User Status and Donation Requests -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <button class="nav-link" :class="{ active: activeTab !== 'Donations' }" @click="activeTab = 'Pending'">
+          User Verification
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" :class="{ active: activeTab === 'Donations' }" @click="activeTab = 'Donations'">
+          Withdrawal Requests
+        </button>
+      </li>
+    </ul>
+
+    <!-- Conditional Rendering Based on Active Tab -->
+    <div v-if="activeTab !== 'Donations'">
+      <!-- User Registration Tabs for Pending, Approved, and Rejected Users -->
       <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-          <button 
-            class="nav-link" 
-            :class="{ active: activeTab !== 'Donations' }"
-            @click="activeTab = 'Pending'"
-          >
-            User Registration
+          <button class="nav-link" :class="{ active: activeTab === 'Pending' }" @click="activeTab = 'Pending'">
+            Pending Users
           </button>
         </li>
         <li class="nav-item">
-          <button 
-            class="nav-link" 
-            :class="{ active: activeTab === 'Donations' }"
-            @click="activeTab = 'Donations'"
-          >
-            Donations
+          <button class="nav-link" :class="{ active: activeTab === 'Approved' }" @click="activeTab = 'Approved'">
+            Approved Users
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" :class="{ active: activeTab === 'Rejected' }" @click="activeTab = 'Rejected'">
+            Rejected Users
           </button>
         </li>
       </ul>
-  
-      <!-- Conditional Rendering Based on Active Tab -->
-      <div v-if="activeTab !== 'Donations'">
-        <!-- User Registration Tabs for Pending, Approved, and Rejected Users -->
-        <ul class="nav nav-tabs mb-4">
-          <li class="nav-item">
-            <button 
-              class="nav-link" 
-              :class="{ active: activeTab === 'Pending' }"
-              @click="activeTab = 'Pending'"
-            >
-              Pending Users
-            </button>
-          </li>
-          <li class="nav-item">
-            <button 
-              class="nav-link" 
-              :class="{ active: activeTab === 'Approved' }"
-              @click="activeTab = 'Approved'"
-            >
-              Approved Users
-            </button>
-          </li>
-          <li class="nav-item">
-            <button 
-              class="nav-link" 
-              :class="{ active: activeTab === 'Rejected' }"
-              @click="activeTab = 'Rejected'"
-            >
-              Rejected Users
-            </button>
-          </li>
-        </ul>
-        <div class="table-responsive">
-          <UserApproval 
-            :status="activeTab"
-            :users="users"
-            @approve="approveUser"
-            @reject="rejectUser"
-            @view="viewUser"
-          />
-        </div>
-      </div>
-  
-      <!-- Donation Requests Section -->
-      <div v-if="activeTab === 'Donations'">
-        <div class="table-responsive">
-          <DonationRequests 
-            :requests="donationRequests"
-            @transfer="transferDonation"
-            @reject="rejectDonation"
-            @view="viewDonation"
-          />
-        </div>
+      <div class="table-responsive">
+        <UserApproval :status="activeTab" :users="users" @approve="approveUser" @reject="rejectUser" @view="viewUser" />
       </div>
     </div>
-  </template>
-  
+
+    <!-- Withdrawal Requests Section -->
+    <div v-if="activeTab === 'Donations'">
+      <div class="table-responsive">
+        <WithdrawalRequests
+          :requests="paginatedRequests"
+          @transfer="transferDonation"
+          @reject="rejectDonation"
+          @view="viewDonation"
+        />
+      </div>
+
+      <!-- Pagination Controls for Withdrawals -->
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="goToPage(currentPage - 1)">Previous</button>
+          </li>
+          <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="goToPage(currentPage + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</template>
+
 <script>
 import UserApproval from './UserApproval.vue';
-import DonationRequests from './DonationRequest.vue';
+import WithdrawalRequests from './AdminWithdrawal.vue';
 import axios from 'axios';
 
 export default {
   components: {
     UserApproval,
-    DonationRequests,
+    WithdrawalRequests,
   },
   data() {
     return {
       activeTab: 'Pending', // Default to Pending Users
       users: [],
       donationRequests: [],
+      currentPage: 1,
+      itemsPerPage: 10,
     };
   },
+  computed: {
+    paginatedRequests() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.donationRequests.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.donationRequests.length / this.itemsPerPage);
+    },
+  },
   methods: {
-    // Fetch users based on their status
     async fetchUsers(status) {
       try {
         const response = await axios.get(`http://localhost:8000/api/admin/users?status=${status}`);
@@ -115,18 +111,19 @@ export default {
         console.error(`Error fetching ${status} users:`, error);
       }
     },
-    
-    // Fetch donation requests
     async fetchDonationRequests() {
       try {
-        const response = await axios.get('http://localhost:8000/api/admin/donations');
+        const response = await axios.get('http://localhost:8000/api/admin/withdrawals');
         this.donationRequests = response.data;
       } catch (error) {
         console.error('Error fetching donation requests:', error);
       }
     },
-
-    // Approve user
+    goToPage(page) {
+      if (page > 0 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
     async approveUser(userId) {
       try {
         await axios.put(`http://localhost:8000/api/admin/users/${userId}/approve`);
@@ -135,57 +132,40 @@ export default {
         console.error('Error approving user:', error);
       }
     },
-
-    // Reject user with reason
-    async rejectUser(userId) {
-      const reason = prompt("Enter rejection reason:");
+    async rejectUser(userId, reason) {
       if (reason) {
         try {
-          await axios.put(`http://localhost:8000/api/admin/users/${userId}/reject`, { reason });
+          await axios.put(`http://localhost:8000/api/admin/users/${userId}/reject`, { rejectionReason: reason });
           this.fetchUsers(this.activeTab);
         } catch (error) {
           console.error('Error rejecting user:', error);
         }
       }
     },
-
-    // View user details (optional implementation)
-    viewUser(userId) {
-      console.log('View user details:', userId);
-      // Display modal with user details (if required)
-    },
-
-    // Transfer donation request
     async transferDonation(requestId) {
       try {
-        await axios.put(`http://localhost:8000/api/admin/donations/${requestId}/transfer`);
-        this.fetchDonationRequests();
+        await axios.put(`http://localhost:8000/api/admin/withdrawals/${requestId}/approve`);
+        this.fetchDonationRequests(); // Refresh withdrawal list after approval
       } catch (error) {
         console.error('Error transferring donation:', error);
       }
     },
-
-    // Reject donation request
-    async rejectDonation(requestId) {
-      const reason = prompt("Enter rejection reason:");
+    async rejectDonation(requestId, reason) {
       if (reason) {
         try {
-          await axios.put(`http://localhost:8000/api/admin/donations/${requestId}/reject`, { reason });
-          this.fetchDonationRequests();
+          await axios.put(`http://localhost:8000/api/admin/withdrawals/${requestId}/reject`, { rejectionReason: reason });
+          this.fetchDonationRequests(); // Refresh withdrawal list after rejection
         } catch (error) {
           console.error('Error rejecting donation:', error);
         }
       }
     },
-
-    // View donation request details (optional implementation)
     viewDonation(requestId) {
       console.log('View donation details:', requestId);
       // Display modal with donation details (if required)
     },
   },
   watch: {
-    // Fetch users based on active user status tab
     activeTab(newTab) {
       if (newTab === 'Donations') {
         this.fetchDonationRequests();
@@ -195,7 +175,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchUsers(this.activeTab); // Initial fetch for 'Pending' users
+    this.fetchUsers(this.activeTab);
   },
 };
 </script>
@@ -203,29 +183,29 @@ export default {
 
 <style scoped>
 .container-fluid {
-    padding-left: 5vw;
-    padding-right: 5vw;
-    max-width: 100%;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  max-width: 100%;
 }
 
 .nav-tabs .nav-link {
-    color: #007bff;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  color: #007bff;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .nav-tabs .nav-link.active {
-    background-color: #007bff;
-    color: #fff;
+  background-color: #007bff;
+  color: #fff;
 }
 
 .nav-link:hover {
-    background-color: #e9ecef;
-    color: #0056b3;
+  background-color: #e9ecef;
+  color: #0056b3;
 }
 
 .table-responsive {
-    max-width: 100%;
-    overflow-x: auto;
+  max-width: 100%;
+  overflow-x: auto;
 }
 </style>
