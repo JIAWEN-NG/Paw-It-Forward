@@ -1,3 +1,4 @@
+const { request } = require('express');
 const { db } = require('../config/firebase');
 
 // Helper function to get user data
@@ -194,7 +195,8 @@ const getChatById = async (req, res) => {
             systemMessage: chatData.systemMessage,
             lastMessage: chatData.lastMessage,
             lastMessageTimestamp: chatData.lastMessageTimestamp,
-            requestedItem: chatData.requestedItem
+            requestedItem: chatData.requestedItem,
+            requestId: chatData.requestId,
         });
     } catch (error) {
         console.error('Error fetching chat details:', error);

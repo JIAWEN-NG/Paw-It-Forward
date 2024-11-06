@@ -3,16 +3,17 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* overflow: hidden; */
+  border: #d2d3d4 solid 1px;
+  background-color: #f9fafb;
 }
 
 .chat-header,
 .item-info {
   display: flex;
-  align-items: center;
   padding: 0.75rem 1rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: #fcfefb;
+  border-bottom: #d2d3d4 solid 1px;
+  
 }
 
 .profile-image {
@@ -41,15 +42,14 @@
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  background-color: #ffffff;
   scroll-behavior: smooth;
   display: flex;
   flex-direction: column;
-  /* Add this to ensure messages align properly */
+  padding-top: 5%;
 
-  background-image: url("https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/chatbg-final.png?alt=media&token=c7e507e1-178c-4faa-ac3c-18e54f71420f");
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/chat-bg.jpg?alt=media&token=9d3ddaf3-7286-48c0-ab8b-d3657ef4ea27");
   background-blend-mode: overlay;
-  background-color: rgba(221, 218, 218, 0.5);
+  background-color: rgba(236, 236, 236, 0.5);
   /* Overlay color with opacity */
 }
 
@@ -212,8 +212,9 @@
   text-align: center;
   font-size: 1rem;
   text-align: center;
-  margin-top: 30px;
-  font-weight: bold;
+  margin: 5px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .send-button {
@@ -225,18 +226,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   z-index: 1;
   position: relative;
   overflow: hidden;
+  box-shadow: 0px 4px 10px rgba(103, 113, 221, 0.3); /* Subtle shadow for depth */
+}
+
+/* Hover effect */
+.send-button:hover {
+  background-color: #404491; /* Darker shade on hover */
+  box-shadow: 0px 6px 12px rgba(90, 98, 212, 0.4); /* Stronger shadow on hover */
+  transform: scale(1.05); /* Slightly enlarge */
 }
 
 /* Scale and bounce effect on click */
 .send-button:active {
+  transform: scale(0.95); /* Shrink slightly */
   animation: bounce 0.4s ease;
 }
-
 
 /* Pulse effect that emanates from the button */
 .send-button::before {
@@ -244,12 +253,12 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(4, 7, 238, 0.3);
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: -1;
 }
+
 
 /* Show the pulse effect on click */
 .send-button:active::before {
@@ -257,7 +266,7 @@
   transform: scale(1.3);
 }
 
-/* Background inside the button */
+/* Inner background layer */
 .send-button::after {
   content: '';
   position: absolute;
@@ -267,22 +276,16 @@
   z-index: -1;
 }
 
-/* Bounce animation for the button */
+/* Bounce animation */
 @keyframes bounce {
-  0% {
-    transform: scale(1);
+  0%, 100% {
+    transform: scale(0.95);
   }
-
   50% {
-    transform: scale(1.1);
-    /* Slightly larger */
-  }
-
-  100% {
-    transform: scale(1);
-    /* Back to normal size */
+    transform: scale(1.05);
   }
 }
+
 
 
 .timeline-divider {
