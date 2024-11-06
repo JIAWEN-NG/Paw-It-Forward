@@ -19,7 +19,7 @@ const chatController = require('../controllers/chatController');
 const testimonialController = require('../controllers/testimonialController'); // Import the testimonial controller
 
 //jia wen added
-const adminController = require('../contollers/adminController');
+const adminController = require('../controllers/adminController');
 
 const app = express();
 app.use(cors());
