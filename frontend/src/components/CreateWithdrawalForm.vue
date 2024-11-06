@@ -26,7 +26,7 @@
                 <span v-else class="text-muted">No Image Uploaded</span>
               </div>
               <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none;" />
-              <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{ withdrawal.image ? 'Reupload' : 'Choose File' }}</button>
+              <button type="button" @click="triggerFileInput" class="upload-button">{{ withdrawal.image ? 'Reupload' : 'Choose File' }}</button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="$emit
@@ -73,7 +73,7 @@ export default {
       formData.append('postId', this.withdrawal.postId);
       formData.append('reason', this.withdrawal.reason);
       if (this.withdrawal.image) formData.append('image', this.withdrawal.image);
-      formData.append('userId', authState.userId); // Add logged-in userId from authState
+      formData.append('userId', authState.userId); 
 
       try {
         const response = await fetch('http://localhost:8000/api/withdrawals', {
@@ -120,6 +120,7 @@ export default {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .modal-dialog {
@@ -206,6 +207,7 @@ export default {
 .image-preview {
   max-width: 100%;
   max-height: 100%;
+  object-fit: cover;
   border-radius: 8px;
 }
 
@@ -217,7 +219,7 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  text-align: left;
+  width:35%;
 }
 
 .upload-button:hover {

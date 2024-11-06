@@ -471,9 +471,8 @@ button.btn-danger:hover {
 
 .image-upload-box {
   width: 100%;
-  max-width: 200px;
-  height: 150px;
-  border: 2px dashed #ddd;
+  height: 200px;
+  border: 2px dashed #ccc;
   border-radius: 8px;
   cursor: pointer;
   background-color: #fafafa;
@@ -550,6 +549,7 @@ button.btn-danger:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width:35%;
 }
 
 
