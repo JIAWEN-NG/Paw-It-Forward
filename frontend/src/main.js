@@ -18,8 +18,7 @@ import router from './router/routes'; // Import router
 import axios from 'axios';
 import { MotionPlugin } from '@vueuse/motion';
 import './styles/style.css';
-
-
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 // Import Firebase modules

@@ -20,6 +20,7 @@ import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
+import AdminView from '@/components/AdminView.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -47,9 +48,6 @@ const routes = [
         name: 'DonationSuccess',
         component: DonateSuccessful,
     },
-    { path: '/meetus', name: 'meetus', component: teamPage },
-    { path: '/login', name: 'Login', component: CombinedAuth },
-    { path: '/withdrawal/create', component: CreateWithdrawalForm },
     {
         path: '/chats',
         name: 'ChatView',
@@ -60,6 +58,15 @@ const routes = [
     },
     // Route for testimonials
     { path: '/testimonials', name: 'Testimonial', component: Testimonial },
+
+    { path: '/login', 
+    name: 'Login', 
+    component: CombinedAuth },
+
+    { path: '/admin',
+      name:'admin',
+      component: AdminView, 
+    },
 ];
 
 const router = createRouter({
