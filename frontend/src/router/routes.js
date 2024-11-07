@@ -79,6 +79,10 @@ const routes = [
         name: 'teamPage',
         component: teamPage,
     },
+    {
+        path: '/useraccount',
+        component: UserAccount
+    },
 ];
 
 const router = createRouter({

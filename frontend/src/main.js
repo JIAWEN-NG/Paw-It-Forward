@@ -1,4 +1,6 @@
 
+
+
 import { createApp } from 'vue';
 import App from './App.vue';
 // import 'bootstrap'; // Import Bootstrap JS
@@ -37,6 +39,7 @@ const auth = getAuth(firebaseApp);
 
 const db = getFirestore(firebaseApp);
 setupAuthState(auth);
+import { MotionPlugin } from '@vueuse/motion'
 
 const baseUrl = 'http://localhost:8000'; // Define your API base URL
 const axiosInstance = axios.create({
