@@ -16,7 +16,7 @@
         <thead>
           <tr>
             <th>My Posts</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
