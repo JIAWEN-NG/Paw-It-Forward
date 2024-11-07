@@ -18,10 +18,6 @@ const uploadTestimonial = async (req, res) => {
     const { animalName, background, donationJourney } = req.body;
     const file = req.file;
 
-    // Log body and file data for debugging
-    console.log('req.body:', req.body);
-    console.log('req.file:', req.file);
-
     // Check for required fields
     if (!donationJourney || !animalName || !background) {
         console.error("Missing required fields");
@@ -52,6 +48,7 @@ const uploadTestimonial = async (req, res) => {
         res.status(500).send("Error uploading testimonial.");
     }
 };
+
 
 module.exports = {
     getAllTestimonials,
