@@ -1,16 +1,14 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
 const { db } = require('./config/firebase'); // Firebase configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initialization
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
-const userRoutes = require('./routers/dataRoutes'); // Import the router
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
-const upload = require('./middleware/uploadImage'); // Import the Multer middleware
+// const upload = require('./middleware/uploadImage'); // Import the Multer middleware
 
 // thahmina added
 const multer = require('multer');
@@ -19,6 +17,8 @@ const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimo
 const PORT = 8000;
 const app = express();
 const server = http.createServer(app);
+
+
 
 const io = new Server(server, {
     cors: {
@@ -31,8 +31,7 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
-app.use(express.json());
-app.use(bodyParser.json({ limit: '10mb' })); // Adjust the limit as needed
+
 
 // thahmina added
 app.use(bodyParser.json());
@@ -42,7 +41,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 // console.log('Router is being mounted');
 app.use('/api', dataRoutes); // Use the imported router
 app.use('/api', imageRoutes);
-app.use('/api', userRoutes); // Use the imported router
+
 app.use(bodyParser.json()); // To parse JSON request bodies
 
 // Testimonials routes
@@ -195,58 +194,60 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = app; // Export the app instance for testing
+
+
 // Define route for updating user profile by ID
-app.put('/api/user/:id', async (req, res) => {
-  const userId = req.params.id;
-  const userData = req.body;
+// app.put('/api/user/:id', async (req, res) => {
+//   const userId = req.params.id;
+//   const userData = req.body;
 
-  try {
-    await db.collection('Users').doc(userId).update(userData);
-    res.status(200).send({ message: 'User updated successfully' });
-  } catch (error) {
-    console.error("Error updating user:", error.message);
-    res.status(500).send({ error: "Failed to update user" });
-  }
-});
+//   try {
+//     await db.collection('Users').doc(userId).update(userData);
+//     res.status(200).send({ message: 'User updated successfully' });
+//   } catch (error) {
+//     console.error("Error updating user:", error.message);
+//     res.status(500).send({ error: "Failed to update user" });
+//   }
+// });
 
-// Define route for uploading user profile photos
-app.post('/api/user/:id/upload', upload, async (req, res) => {
-  const userId = req.params.id; // Get user ID from request parameters
-  console.log(`Received upload request for user ID: ${userId}`);
+// // Define route for uploading user profile photos
+// app.post('/api/user/:id/upload', upload, async (req, res) => {
+//   const userId = req.params.id; // Get user ID from request parameters
+//   console.log(`Received upload request for user ID: ${userId}`);
 
-  try {
-    if (!req.file) {
-      console.error("No file uploaded!");
-      return res.status(400).json({ message: 'No file uploaded!' });
-    }
+//   try {
+//     if (!req.file) {
+//       console.error("No file uploaded!");
+//       return res.status(400).json({ message: 'No file uploaded!' });
+//     }
 
-    const fileBuffer = req.file.buffer; // Get the uploaded file buffer
-    console.log(`File uploaded successfully. File size: ${fileBuffer.length} bytes`);
+//     const fileBuffer = req.file.buffer; // Get the uploaded file buffer
+//     console.log(`File uploaded successfully. File size: ${fileBuffer.length} bytes`);
 
-    const fileName = `profilePhotos/${userId}.png`; // Create a file name based on user ID
-    const file = bucket.file(fileName); // Create a file object in the bucket
+//     const fileName = `profilePhotos/${userId}.png`; // Create a file name based on user ID
+//     const file = bucket.file(fileName); // Create a file object in the bucket
 
-    // Upload the file buffer to Firebase Storage
-    await file.save(fileBuffer, {
-      metadata: {
-        contentType: req.file.mimetype,
-      },
-      public: true // Make it public (optional)
-    });
+//     // Upload the file buffer to Firebase Storage
+//     await file.save(fileBuffer, {
+//       metadata: {
+//         contentType: req.file.mimetype,
+//       },
+//       public: true // Make it public (optional)
+//     });
 
-    const photoURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`; // Get the file's public URL
-    console.log(`Uploaded file URL: ${photoURL}`);
+//     const photoURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`; // Get the file's public URL
+//     console.log(`Uploaded file URL: ${photoURL}`);
 
-    // Update Firestore with the new photo URL
-    await db.collection('Users').doc(userId).update({
-      profileImage: photoURL // Update the user's profile image URL
-    });
+//     // Update Firestore with the new photo URL
+//     await db.collection('Users').doc(userId).update({
+//       profileImage: photoURL // Update the user's profile image URL
+//     });
 
-    res.status(200).json({ message: 'File uploaded and URL saved!', photoURL });
-  } catch (error) {
-    console.error("Error uploading photo:", error.message);
-    res.status(500).json({ message: 'Error uploading photo', error: error.message });
-  }
-});
+//     res.status(200).json({ message: 'File uploaded and URL saved!', photoURL });
+//   } catch (error) {
+//     console.error("Error uploading photo:", error.message);
+//     res.status(500).json({ message: 'Error uploading photo', error: error.message });
+//   }
+// });
 
 

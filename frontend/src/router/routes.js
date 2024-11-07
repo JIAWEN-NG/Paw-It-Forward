@@ -15,13 +15,14 @@ import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
 import FundraisingView from '../components/FundraisingView.vue';
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 import DonateSuccessful from '../components/DonateSuccessful.vue';
-import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
+//import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 import AdminView from '@/components/AdminView.vue';
 import CancelDonation from '../components/CancelDonation.vue';
+//import UserAccount from '../components/UserAccount.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -79,10 +80,10 @@ const routes = [
         name: 'teamPage',
         component: teamPage,
     },
-    {
-        path: '/useraccount',
-        component: UserAccount
-    },
+    // {
+    //     path: '/useraccount',
+    //     component: UserAccount
+    // },
 ];
 
 const router = createRouter({
