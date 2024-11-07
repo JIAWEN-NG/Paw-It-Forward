@@ -1,6 +1,5 @@
 // controllers/userController.js
 const { db } = require('../config/firebase'); // Adjust if necessary
-// const { db, admin } = require('../config/firebase'); // Import Firestore database and Firebase Admin SDK
 
 // Function to get a user by ID
 const getUserById = async (req, res) => {
@@ -53,9 +52,24 @@ const registerUser = async (req, res) => {
     }
   };
   
+  const updateUserPhotoVerification = async (userId, imageUrl) => {
+    try {
+        const userRef = db.collection('Users').doc(userId);
+        await userRef.update({
+            verificationPhotoUrl: imageUrl,
+            isPhotoVerified: false, // Mark as not verified by default
+        });
+        console.log(`Verification photo URL saved for user: ${userId}`);
+    } catch (error) {
+        console.error('Error updating user with verification photo:', error);
+        throw error;
+    }
+};
+
   
 module.exports = {
     getUserById,
     getAllUsers,
-    registerUser
+    registerUser,
+    updateUserPhotoVerification
 };
