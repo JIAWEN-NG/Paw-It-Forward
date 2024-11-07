@@ -2,33 +2,35 @@
   <div v-if="!loading && currentUserId" class="container-fluid chat-view">
     <div class="row h-100 gx-0">
       <!-- ChatList - Left Pane -->
-      <div class="col-12 col-md-6 col-lg-3 p-0 border-end chat-list-wrapper" v-show="showChatList || isLargeScreen">
-        <ChatList :currentUserId="currentUserId" @selectedChat ="setSelectedChat" />
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 p-0 border-end chat-list-wrapper" v-show="showChatList">
+        <ChatList :currentUserId="currentUserId" @selectedChat="setSelectedChat" />
       </div>
 
       <!-- ChatRoom - Right Pane -->
-      <div
-        class="col-12 col-md-6 col-lg-9 p-0 chat-room-wrapper"
-        v-show="selectedChat || isLargeScreen"
-      >
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-9 p-0 chat-room-wrapper" v-show="selectedChat || isLargeScreen">
         <ChatRoom v-if="selectedChat" :currentUserId="currentUserId" :selectedChat="selectedChat"
           @backToChatList="handleBackToChatList" />
 
-        <div v-else class="empty-space d-flex align-items-center justify-content-center">
-          <div class="h-full flex flex-col justify-center items-center">
-            <div class="w-10 h-10 mr-4 mb-4 flex justify-center items-center rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-              </svg>
-            </div>
+        <!-- <div v-else class="empty-space d-flex align-items-center justify-content-center position-relative">
+          <img src="https://media.giphy.com/media/PcEHGN6WvTO2ekGICI/giphy.gif" alt="No chat selected animation"
+            class="background-gif w-100 h-100 position-absolute" />
+          <div class="overlay-text d-flex flex-column justify-content-center align-items-center position-relative">
             <p class="heading-2 text-color mb-2">No chat selected</p>
-            <p class="body-2 text-color flex">
-              Select a chat from the chat list.
-            </p>
+            <p class="body-2 text-color">Select a chat from the chat list.</p>
+          </div>
+        </div> -->
+        <div v-else class="empty-space d-flex align-items-center justify-content-center position-relative">
+          <img src="https://media.giphy.com/media/PcEHGN6WvTO2ekGICI/giphy.gif" alt="No chat selected animation"
+            class="background-gif w-100 h-100 position-absolute" />
+
+          <!-- Speech bubble for the text -->
+          <div class="speech-bubble">
+            <p class="bubble-text">"No chat selected meow~~</p>
+            <p class="bubble-text">Paws select a chat from the chat list."</p>
           </div>
         </div>
+
+
       </div>
     </div>
   </div>
@@ -49,7 +51,6 @@ export default {
       currentUserId: null,
       selectedChat: null,
       showChatList: true,
-      isLargeScreen: window.innerWidth > 768, // Match large breakpoint
       loading: true,
     };
   },
@@ -76,11 +77,11 @@ export default {
       }
     },
 
-/**
- * Fetches the currently authenticated user and updates the component's state.
- * If a user is authenticated, their UID is stored in `currentUserId` and the loading state is set to false.
- * If no user is authenticated, `currentUserId` is set to null and the user is redirected to the login page.
- */
+    /**
+     * Fetches the currently authenticated user and updates the component's state.
+     * If a user is authenticated, their UID is stored in `currentUserId` and the loading state is set to false.
+     * If no user is authenticated, `currentUserId` is set to null and the user is redirected to the login page.
+     */
     fetchCurrentUser() {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
@@ -99,7 +100,7 @@ export default {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
     this.fetchCurrentUser();
-    
+
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.checkScreenSize);
@@ -111,6 +112,7 @@ export default {
 .chat-view {
   height: 100vh;
   overflow: hidden;
+  margin-bottom: 2%;
 }
 
 .chat-list-wrapper {
@@ -129,6 +131,68 @@ export default {
   color: #888;
   text-align: center;
   height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-gif {
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  width: 100%; /* Ensures GIF fills container width */
+  height: 100%;
+}
+
+.speech-bubble {
+  position: absolute;
+  top: 30%;
+  left: 70%; /* Default position for larger screens */
+  background-color: #fcf8f2;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 250px;
+  opacity: 0; /* Initially hidden */
+  transform: translateY(10px); /* Initial position for slight movement effect */
+  animation: fadeIn 0.5s ease-out forwards;
+  animation-delay: 3s; /* Delay for 3 seconds */
+  z-index: 1;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+}
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-right-color: #fcf8f2;
+  border-left: 0;
+  border-bottom: 0;
+  margin-top: -5px;
+}
+
+.bubble-text {
+  color: #333;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0;
+  text-align: left;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .speech-bubble {
+    top: 5%; /* Position bubble higher on smaller screens */
+    left: 10%; /* Center it more on smaller screens */
+    max-width: 200px; /* Reduce width on smaller screens */
+    padding: 8px 12px;
+  }
+
+  .bubble-text {
+    font-size: 0.9rem; /* Smaller font for smaller screens */
+  }
 }
 
 /* Hide scrollbar for WebKit browsers */
@@ -137,41 +201,16 @@ export default {
   display: none;
 }
 
-/* Media Queries for Responsiveness */
-@media (max-width: 480px) {
-
-  /* Small devices: Full width */
-  .chat-list-wrapper,
-  .chat-room-wrapper {
-    width: 100%;
+/* Keyframes for bubble fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
-
-  /* Medium devices: 50/50 split */
-  .chat-list-wrapper {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-
-  .chat-room-wrapper {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-}
-
-@media (min-width: 769px) {
-
-  /* Large devices: 30/70 split */
-  .chat-list-wrapper {
-    flex: 0 0 30%;
-    max-width: 30%;
-  }
-
-  .chat-room-wrapper {
-    flex: 0 0 70%;
-    max-width: 70%;
-  }
-}
 </style>

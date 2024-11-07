@@ -66,23 +66,7 @@
               <li><router-link to="/terms-of-service">Terms of Service</router-link></li>
             </ul>
           </div>
-  
-          <!-- Social Media Links -->
-          <!-- <div class="social-media">
-            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.linkedin.com" target="_blank" aria-label="LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-          </div> -->
-  
+
           <!-- Contact Info -->
           <div class="contact-info">
             <p>Email: <a href="mailto:support@pawitforward.com">support@pawitforward.com</a></p>
@@ -107,16 +91,16 @@
   }
   .footer {
     background-color: white;
-    padding: 1.5rem 0;
+    padding: 1rem 0;
     width: 100%;
     text-align: center;
+    font-size: 0.7rem;
   }
   
   .footer-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
   }
   
   .footer-info {
@@ -148,24 +132,11 @@
   .footer-links a:hover {
     text-decoration: underline;
   }
-  
-  .social-media {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .social-media a {
-    color: #666;
-    font-size: 1.2rem;
-  }
-  
-  .social-media a:hover {
-    color: #000;
-  }
-  
+
   .contact-info {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     color: #666;
+    gap:1rem;
   }
   
   .contact-info a {
@@ -185,7 +156,6 @@
     }
   
     .footer-info,
-    .social-media,
     .contact-info {
       text-align: left;
     }

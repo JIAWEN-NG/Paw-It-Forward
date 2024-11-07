@@ -1,5 +1,4 @@
 <!-- ManageMarketplace.vue -->
-<!-- has to be a scrollable function within ManagePostView's marketplace toggle background area  -->
 
 <template>
   <div class="container py-4">
@@ -17,7 +16,7 @@
         <thead>
           <tr>
             <th>My Posts</th>
-            <th>Action</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>

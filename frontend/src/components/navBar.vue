@@ -52,7 +52,7 @@
                     <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
                     </li>
                     <li v-if="isAdmin">
-                    <router-link to="/manage-users" class="dropdown-item">Manage Users</router-link>
+                    <router-link to="/admin" class="dropdown-item">Manage Users</router-link>
                     </li>
                     <li>
                     <button @click="handleSignOut" class="dropdown-item">Sign Out</button>
@@ -273,6 +273,8 @@ a.router-link.active{
   border:2px solid #fcae1e;
   cursor: pointer;
   transition: transform 0.3s ease;
+  display: inline;
+
 }
 
 .profile-pic:hover {
@@ -280,10 +282,10 @@ a.router-link.active{
 }
 
 .dropdown{
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .dropdown-menu{
-    position:auto;
+  position:auto;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="chat-room">
     <!-- Chat Header Section -->
-    <div class="chat-header row align-items-center p-3 border-bottom">
+    <div class="chat-header align-items-center ">
       <!-- Back arrow for small devices only -->
       <div class="col-auto d-flex align-items-center d-md-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -10,11 +10,11 @@
         </svg>
       </div>
 
-      <div class="col-auto d-flex align-items-center">
+      <div class="col-auto d-flex p-2 align-items-center">
         <img :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
           class="profile-image" />
       </div>
-      <div class="user-details col d-flex align-items-center">
+      <div class="user-details col-auto d-flex align-items-center">
         <div>
           <h5 class="mb-0">{{ selectedChat?.receiverName || 'Unknown User' }}</h5>
         </div>
@@ -22,13 +22,13 @@
     </div>
 
     <!-- Item Info Section with Accept and Decline buttons -->
-    <div class="item-info row align-items-center p-3 border-bottom">
-      <div class="col-auto d-flex align-items-center">
+    <div class="item-info align-items-center">
+      <div class="col-auto d-flex align-items-center p-2">
         <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/50'" alt="Item Image"
           class="item-image" />
       </div>
 
-      <div class="item-details col d-flex align-items-center">
+      <div class="item-details col-auto d-flex align-items-center">
         <h5 class="mb-0">{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}</h5>
       </div>
 
@@ -40,11 +40,16 @@
             data-bs-target="#confirmModal">Decline</button>
         </template>
         <template v-else>
-          <span :class="['status-label']">
+          <span :class="[
+            'status-label',
+            selectedChat?.requestedItem?.status === 'accepted' ? 'accepted' :
+              selectedChat?.requestedItem?.status === 'declined' ? 'declined' : ''
+          ]">
             {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' :
               selectedChat?.requestedItem?.status === 'declined' ? 'Declined' :
                 'Pending' }}
           </span>
+
         </template>
       </div>
     </div>
@@ -91,9 +96,9 @@
           <div class="col-auto">
             <p>{{ systemMessage }}</p>
           </div>
-          <div class="col-auto">
-            <small class="text-muted">{{ formatMessageTimestamp(lastMessageTimestamp) }}</small>
-          </div>
+          <!-- <div class="col-auto">
+            <small class="text-muted">{{ formatMessageTimestamp(systemMessageTimestamp) }}</small>
+          </div> -->
         </div>
       </div>
 
@@ -156,6 +161,7 @@ export default {
       systemMessage: '',
       lastMessageTimestamp: '', // For displaying system messages
       modalAction: '',
+      systemMessageTimestamp: '',
     };
   },
   mounted() {
@@ -186,7 +192,7 @@ export default {
   },
   computed: {
     isCurrentUserDonor() {
-      return this.currentUserId === this.selectedChat.donorId;
+      return this.currentUserId === this.selectedChat.participants[0];
     },
   },
   methods: {
@@ -226,7 +232,7 @@ export default {
       }
     },
     async fetchChatDetails() {
-      console.log('Selected chat in ChatRoom:', this.selectedChat); // Right before fetching messages
+  
 
       try {
         const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}`); // Ensure 'chatId' is consistent
@@ -237,6 +243,8 @@ export default {
         this.selectedChat.lastMessage = chatData.lastMessage || '';
         this.selectedChat.lastMessageTimestamp = chatData.lastMessageTimestamp || '';
         this.selectedChat.requestedItem = chatData.requestedItem || {};
+        this.selectedChat.requestId = chatData.requestId || '';
+
         console.log('Chat details:', chatData);
       } catch (error) {
         console.error('Error fetching chat details:', error);
@@ -269,14 +277,17 @@ export default {
     },
 
     async fetchMessages() {
+      if (!this.selectedChat || !this.selectedChat.chatId) {
+        console.error('No chatId found when fetching messages');
+        return;
+      }
+
+      this.messages = []; // Clear messages from previous chat
+
       try {
-        if (this.selectedChat && this.selectedChat.chatId) {
-          const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
-          console.log('Fetched messages:', response.data.messages); // Log the fetched messages
-          this.messages = response.data.messages;
-        } else {
-          console.error('No chatId found when fetching messages');
-        }
+        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
+        console.log('Fetched messages:', response.data.messages); // Debugging
+        this.messages = response.data.messages;
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
@@ -290,10 +301,13 @@ export default {
       if (this.modalAction === 'accept') {
         await this.acceptRequest();
         this.selectedChat.requestedItem.status = 'accepted';
+
       } else if (this.modalAction === 'decline') {
         await this.declineRequest();
         this.selectedChat.requestedItem.status = 'declined';
+
       }
+
       await this.fetchChatDetails(); // Refresh chat details after action
       const dismissButton = document.querySelector('#confirmModal .btn-close');
       dismissButton.click(); // Simulate a click on the close button
@@ -342,30 +356,35 @@ export default {
     },
   },
   watch: {
-    selectedChat: {
-      immediate: true,
-      handler(newChat) {
-        console.log('Selected chat:', newChat); // Log the new chat
-        if (newChat && newChat.chatId) { // Ensure chatId is defined
-          if (this.socket && this.socket.connected) {
-            this.joinChat(newChat.chatId);
-            this.fetchMessages(); // Fetch messages only if chatId is defined
-          } else {
-            console.warn("Socket is not connected yet. Retrying...");
-            const retryJoinChat = setInterval(() => {
-              if (this.socket && this.socket.connected) {
-                this.joinChat(newChat.chatId);
-                this.fetchMessages(); // Fetch messages when ready
-                clearInterval(retryJoinChat); // Stop retrying once successful
-              }
-            }, 100);
-          }
+  selectedChat: {
+    immediate: true,
+    handler(newChat) {
+      console.log('Selected chat:', newChat); // Log the new chat
+
+      if (newChat && newChat.chatId) { // Check for valid chatId
+        this.messages = []; // Clear previous messages
+        if (this.socket && this.socket.connected) {
+          this.joinChat(newChat.chatId);
+          this.fetchMessages(); // Fetch messages for the new chat
+          this.fetchChatDetails(); // Fetch chat details
         } else {
-          console.error('Selected chat is invalid or has no chatId');
+          console.warn("Socket is not connected yet. Retrying...");
+          const retryJoinChat = setInterval(() => {
+            if (this.socket && this.socket.connected) {
+              this.joinChat(newChat.chatId);
+              this.fetchMessages();
+              clearInterval(retryJoinChat); // Stop retrying once successful
+            }
+          }, 100);
         }
-      },
+      } else {
+        console.error('Selected chat is invalid or missing chatId');
+      }
     },
   },
+},
+
+
 };
 </script>
 

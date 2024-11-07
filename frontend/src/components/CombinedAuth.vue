@@ -33,7 +33,7 @@
                 </form>
         </div>
       
-        <div class="form-container sign-up" v-if="isRegisterActive">
+        <div class="form-container sign-up" v-if="isRegisterActive  && !showPhotoSubmission">
             <form @submit.prevent="register">
                 <h1>Create Account</h1>
                 <div class="social-icons">
@@ -53,8 +53,23 @@
                 </div>
                 <button type="submit">Sign Up</button>
             </form>
+       
+          
+        <!-- Photo Submission Form -->
+            <!-- <div class="form-container photo-submission" v-if="showPhotoSubmission">
+                <form @submit.prevent="submitPhotoForVerification">
+                    <h1>Submit Photo for Verification</h1>
+                    <div class="image-upload-box" @click="triggerFileInput">
+                    <img v-if="imagePreview" :src="imagePreview" class="image-preview" />
+                    <span v-else class="placeholder">Click to Upload Photo</span>
+                    </div>
+                    <input type="file" ref="fileInput" @change="handleImageUpload" accept="image/*" style="display: none;" />
+                    <button type="submit" class="btn btn-primary">Submit Photo</button>
+                </form>
+            </div> -->
+            
         </div>
-      
+
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left" v-if="isRegisterActive">
@@ -89,6 +104,9 @@
         rememberMe: false,
         googleImageUrl:null,
         defaultProfileImageUrl: "https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/Profilephotos%2Fdefault-profile.png?alt=media&token=80695fdf-4059-4d7f-ad33-ed9c05386469",
+        showPhotoSubmission: false,
+        photoFile: null,
+        imagePreview: '',
       };
     },
     methods: {
@@ -101,13 +119,6 @@
             try {
             // Set persistence before registering the user
             await setPersistence(auth, persistenceType);
-
-            // const defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
-            
-            // if (!defaultProfileImageUrl) {
-            //     console.error('Default profile image URL could not be fetched');
-            //     return;
-            // }
 
             // Once persistence is set, create a new user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
@@ -133,12 +144,57 @@
             this.email = ''; // Clear the email input
             this.password = ''; // Clear the password input
             this.name = '';
+            this.showPhotoSubmission = true;
+            console.log("Photo Submission Form Visible:", this.showPhotoSubmission);
+
             
         } catch (error) {
             console.error('Error during registration:', error.message);
             alert('Error creating account: ' + error.message);
         }
         },
+
+        async submitPhotoForVerification() {
+            if (!this.photoFile) {
+                alert('Please upload a photo.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('photo', this.photoFile); // Append the image file for Multer
+            formData.append('userId', this.userId); 
+
+            try {
+                const response = await fetch(`http://localhost:8000/api/photo-verification`, {
+                method: 'POST',
+                body: formData,
+                });
+
+                if (response.ok) {
+                alert('Photo submitted for verification!');
+                this.showPhotoSubmission = false; // Hide the form after submission
+                } else {
+                const data = await response.json();
+                alert(`Error: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error submitting photo for verification:', error);
+                alert('Error submitting photo. Please try again.');
+            }
+            },
+
+        handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.photoFile = file;
+                this.imagePreview = URL.createObjectURL(file); // Display a preview of the image
+            }
+        },
+
+        triggerFileInput() {
+            this.$refs.fileInput.click();
+        },
+
         login() {
             const persistenceType = this.rememberMe ? browserLocalPersistence : browserSessionPersistence;
 
@@ -224,7 +280,10 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-
+h1{
+    font-weight: 700;
+    font-size: 30px;
+}
 .container{
     margin-top: 80px;
     background-color: #fff;
@@ -311,6 +370,14 @@
 .container.active .sign-in{
     transform: translateX(100%);
 }
+/* 
+.sign-up, .photo-submission{
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+    text-align: center;
+} */
 
 .sign-up{
     left: 0;
@@ -319,7 +386,6 @@
     z-index: 1;
     text-align: center;
 }
-
 .container.active .sign-up{
     transform: translateX(100%);
     opacity: 1;
@@ -427,7 +493,6 @@ img{
 .remember-me {
   display: flex;
   align-items: center;
-  /* margin:5px 0; */
   font-size: 12px;
 }
 
@@ -441,5 +506,30 @@ img{
     align-items: center;
     justify-content: center;
 } 
+
+
+.photo-submission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.image-upload-box {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  cursor: pointer;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 100%;
+}
   </style>
   
