@@ -10,6 +10,8 @@ h2 {
   font-weight: bold;
   color: #3e2723;
   margin-bottom: 0.2rem;
+  text-align: center; /* Center the text */
+  margin: 0 auto; /* Center the block element if it has a width */
 }
 
 .subtext {
