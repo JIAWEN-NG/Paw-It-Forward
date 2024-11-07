@@ -4,10 +4,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 
-import ChatView from '../views/ChatView.vue';
-import MarketplaceView from '../components/MarketplaceView.vue';
-import CreateDonationForm from '../components/CreateDonationForm.vue';
-import ManagePostView from '../components/ManagePostView.vue';
+
+//import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import ChatView from '../components/ChatView.vue'; // Chat view
+import MarketplaceView from '../components/MarketplaceView.vue'; // Marketplace layout
+import CreateDonationForm from '../components/CreateDonationForm.vue'; // Form to create a donation
+import ManagePostView from '../components/ManagePostView.vue'; //Manage Post layout
 import DonationDetails from '@/components/DonationDetails.vue';
 import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
 import FundraisingView from '../components/FundraisingView.vue';
@@ -18,6 +20,8 @@ import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
+import AdminView from '@/components/AdminView.vue';
+import CancelDonation from '../components/CancelDonation.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -45,9 +49,6 @@ const routes = [
         name: 'DonationSuccess',
         component: DonateSuccessful,
     },
-    { path: '/meetus', name: 'meetus', component: teamPage },
-    { path: '/login', name: 'Login', component: CombinedAuth },
-    { path: '/withdrawal/create', component: CreateWithdrawalForm },
     {
         path: '/chats',
         name: 'ChatView',
@@ -58,6 +59,21 @@ const routes = [
     },
     // Route for testimonials
     { path: '/testimonials', name: 'Testimonial', component: Testimonial },
+
+    { path: '/login', 
+    name: 'Login', 
+    component: CombinedAuth },
+
+    { path: '/admin',
+      name:'admin',
+      component: AdminView, 
+    },
+
+    {
+        path: '/cancel',
+        name: 'CancelDonation',
+        component: CancelDonation,
+    },
 ];
 
 const router = createRouter({

@@ -3,11 +3,10 @@ const { db, admin } = require('../config/firebase');
 
 // Function to create a new withdrawal request
 const createWithdrawal = async (req, res) => {
-    const { accountNo, amountWithdraw, postId, reason } = req.body;
-    const userId = "p8v0JBWhlfNZ13DzpBFN"; // Default user ID for demonstration
+    const { accountNo, amountWithdraw, postId, reason, userId } = req.body; // Accept userId from frontend
 
     // Check for missing fields
-    if (!accountNo || !amountWithdraw || !postId || !reason) {
+    if (!accountNo || !amountWithdraw || !postId || !reason || !userId) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -17,6 +16,9 @@ const createWithdrawal = async (req, res) => {
     if (!userDoc.exists) {
         return res.status(404).json({ message: 'User not found' });
     }
+
+    // Retrieve the username from the user's document
+    const { name } = userDoc.data();
 
     // Handle image upload if provided
     let proofImg = '';
@@ -39,14 +41,16 @@ const createWithdrawal = async (req, res) => {
         return res.status(500).json({ message: 'Image upload failed', error: uploadError.message });
     }
 
-    // Create a new withdrawal document
+    // Create a new withdrawal document with status and username
     const newWithdrawal = {
         userId,
+        name, // Include username in the document
         accountNo,
         amountWithdraw: parseFloat(amountWithdraw),
         proofImg,
         postId,
         reason,
+        status: 'Pending', // Default status
         requestedAt: admin.firestore.Timestamp.now(),
     };
 

@@ -96,8 +96,8 @@ app.post('/create-checkout-session', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'http://localhost:8080/donation-success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url: 'http://localhost:8080/cancel',
+            success_url: 'http://localhost:3000/donation-success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'http://localhost:3000/cancel',
             payment_intent_data: {
                 metadata: {
                     userId: userId || 'unknown_user',

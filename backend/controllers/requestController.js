@@ -5,7 +5,7 @@ const { db } = require('../config/firebase');
 
 const createRequest = async (req, res) => {
     const { donorId, itemImage, itemsDonated, receiverId, requestMessage, status = "pending" } = req.body;
-
+   
     try {
         // Check required fields and log any missing ones
         if (!donorId || !itemImage || !itemsDonated || !receiverId || !requestMessage) {
@@ -21,6 +21,7 @@ const createRequest = async (req, res) => {
             console.error('Donor not found in Users collection for donorId:', donorId);
             return res.status(404).json({ message: 'Donor not found' });
         }
+        const donorData = donorDoc.data();
 
         // Create request document in Requests collection
         const newRequest = {
@@ -33,7 +34,8 @@ const createRequest = async (req, res) => {
             createdAt: new Date(),
         };
 
-        await db.collection('Requests').add(newRequest);
+        const requestRef = await db.collection('Requests').add(newRequest);
+       
 
         //jw added from here
         // Create a new chat in the 'Chats' collection
@@ -48,6 +50,7 @@ const createRequest = async (req, res) => {
             },
             requestId: requestRef.id,
         });
+    
 
         // Create the 'messages' sub-collection and add the initial message
         const messagesRef = chatRef.collection('messages');
@@ -56,8 +59,8 @@ const createRequest = async (req, res) => {
             receiverId: donorId,
             message: requestMessage,
             timestamp: new Date().toISOString(),
-            receiverName: receiverData.name,
-            receiverProfileImage: receiverData.profileImage,
+            receiverName: donorData.name,
+            receiverProfileImage: donorData.profileImage,
             requestId: requestRef.id
         });
 
@@ -65,7 +68,6 @@ const createRequest = async (req, res) => {
         const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
         io.emit('newChat', {
             chatId: chatRef.id,
-            donorId,
             receiverId,
             lastMessage: requestMessage,
             lastMessageTimestamp: new Date().toISOString(),
@@ -87,81 +89,6 @@ const createRequest = async (req, res) => {
         res.status(500).json({ error: 'Error creating request and chat' });
     }
 };
-
-
-// const createRequest = async (req, res) => {
-//     const { donorId, receiverId, itemId, requestMessage, itemImage, itemsDonated } = req.body;
-//     try {
-//         // Fetch receiver details from Firestore
-//         const receiverDoc = await db.collection('Users').doc(receiverId).get();
-//         if (!receiverDoc.exists) {
-//             return res.status(404).json({ error: 'Receiver not found' });
-//         }
-//         const receiverData = receiverDoc.data();
-
-//         // Save the request in the 'Requests' collection
-//         const requestRef = await db.collection('Requests').add({
-//             donorId,
-//             receiverId,
-//             itemId,
-//             itemImage,
-//             itemsDonated,
-//             requestMessage,
-//             status: 'pending',
-//             createdAt: new Date().toISOString()
-//         });
-
-//         // Create a new chat in the 'Chats' collection
-//         const chatRef = await db.collection('Chats').add({
-//             participants: [donorId, receiverId],
-//             lastMessage: requestMessage,
-//             lastMessageTimestamp: new Date().toISOString(),
-//             requestedItem: {
-//                 title: itemsDonated,
-//                 image: itemImage,
-//                 status: 'pending',
-//             },
-//             requestId: requestRef.id,
-//         });
-
-//         // Create the 'messages' sub-collection and add the initial message
-//         const messagesRef = chatRef.collection('messages');
-//         await messagesRef.add({
-//             senderId: receiverId,
-//             receiverId: donorId,
-//             message: requestMessage,
-//             timestamp: new Date().toISOString(),
-//             receiverName: receiverData.name,
-//             receiverProfileImage: receiverData.profileImage,
-//             requestId: requestRef.id
-//         });
-
-//         // Emit a 'newChat' event with the new chat data
-//         const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
-//         io.emit('newChat', {
-//             chatId: chatRef.id,
-//             donorId,
-//             receiverId,
-//             lastMessage: requestMessage,
-//             lastMessageTimestamp: new Date().toISOString(),
-//             requestedItem: {
-//                 title: itemsDonated,
-//                 image: itemImage,
-//                 status: 'pending',
-//             },
-//             requestId: requestRef.id,
-//             participants: [donorId, receiverId]
-//         });
-
-
-//         res.status(201).json({ message: 'Request and chat created successfully', chatId: chatRef.id });
-//     } catch (error) {
-//         console.error('Error creating request and chat:', error);
-//         res.status(500).json({ error: 'Error creating request and chat' });
-//     }
-// };
-
-
 
 // Accept request
 const acceptRequest = async (req, res) => {

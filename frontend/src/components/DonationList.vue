@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import { authState } from '@/store/auth';
+
 export default {
   props: {
     donations: {
@@ -96,7 +98,12 @@ export default {
       showModal: false,
       selectedDonation: null,
       requestMessage: '',
+      currentUserId: null,
     };
+  },
+  created() {
+    this.currentUserId = authState.userId;
+    console.log('currentUserId', this.currentUserId);
   },
   methods: {
     formattedDate(date) {
@@ -120,12 +127,13 @@ export default {
         alert('Please enter a message.');
         return;
       }
+      console.log('receiver id sending from frontend', this.currentUserId);
 
       const requestPayload = {
         donorId: this.selectedDonation.donorId,
         itemImage: this.selectedDonation.itemImage,
         itemsDonated: this.selectedDonation.itemsDonated,
-        receiverId: "p8v0JBWhlfNZ13DzpBFN",
+        receiverId: this.currentUserId,
         requestMessage: this.requestMessage,
         status: "pending"
       };

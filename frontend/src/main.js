@@ -1,13 +1,3 @@
-// import { createApp } from 'vue';
-// import App from './App.vue';
-// import 'bootstrap'; // Import Bootstrap JS
-// import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-// import router from './router/routes'; // Import router
-
-
-// const app = createApp(App); // Create the Vue app instance
-// app.use(router); // Use the router
-// app.mount('#app'); // Mount the app
 
 import { createApp } from 'vue';
 import App from './App.vue';
@@ -17,9 +7,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Import Bootstrap JS
 import router from './router/routes'; // Import router
 import axios from 'axios';
 import { MotionPlugin } from '@vueuse/motion';
-import './styles/style.css';
-
-
+import './styles/style.css';// 
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 // Import Firebase modules

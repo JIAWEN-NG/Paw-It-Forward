@@ -254,7 +254,7 @@ export default {
           } 
         });
         this.fundraisings = this.fundraisings.filter(f => f.id !== this.deletePostId);
-        this.setSuccessMessage('Listing deleted successfully.');
+        this.setSuccessMessage('Posting deleted successfully.');
       } catch (error) {
         this.error = 'Failed to delete the fundraising post. Please try again.';
       } finally {
@@ -458,9 +458,8 @@ button.btn-danger:hover {
 
 .image-upload-box {
   width: 100%;
-  max-width: 200px;
-  height: 150px;
-  border: 2px dashed #ddd;
+  height: 200px;
+  border: 2px dashed #ccc;
   border-radius: 8px;
   cursor: pointer;
   background-color: #fafafa;
@@ -597,6 +596,7 @@ button.btn-danger:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width:35%;
 }
 
 

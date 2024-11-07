@@ -1,12 +1,11 @@
 <template>
     <div class="chat-list-container d-flex flex-column h-100">
-        <!-- Inbox Header (Fixed in the left pane) -->
         <div class="inbox-header p-3 text-muted fw-bold border-bottom">
             <div class="d-flex align-items-center justify-content-between">
                 <p class="m-0">Chats</p>
             </div>
         </div>
-        <!-- Search Bar -->
+
         <div class="search-bar px-2 py-3">
             <div class="search-input-wrapper position-relative">
                 <input type="text" v-model="searchQuery" class="form-control search-input" placeholder="Search.."
@@ -20,28 +19,22 @@
         </div>
 
         <div ref="chatListContainer" v-if="!isLoadingChats" class="chat-items-wrapper flex-grow-1 overflow-auto">
-            <!-- No Chats Available Message -->
             <div v-if="chats.length === 0" class="no-chats-message text-muted p-4 text-center">
                 <p>You do not have any active chats.</p>
             </div>
-            <!-- Chat Items (Scrollable) with Inline Filtering -->
+
             <div v-else class="chat-items px-2">
                 <div v-for="chat in filteredChats" :key="chat.chatId"
-                    class="chat-item d-flex align-items-center p-3 mb-2 rounded cursor-pointer"
+                    :class="['chat-item', selectedChatId === chat.chatId ? 'active' : '']"
                     @click="handleSelectedChat(chat)">
-                    <!-- Profile Image -->
                     <img :src="chat.receiverProfileImage || 'default-avatar.png'" alt="avatar"
                         class="avatar me-3 rounded-circle" />
-
-                    <!-- Chat Details -->
                     <div class="chat-details-wrapper flex-grow-1 d-flex align-items-center justify-content-between">
                         <div class="chat-details">
-                            <!-- Username and Date Row -->
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <p class="chat-username fw-bold m-0">{{ chat.receiverName }}</p>
                                 <small class="chat-date text-muted">{{ formatDate(chat.lastMessageTimestamp) }}</small>
                             </div>
-                            <!-- Message Preview and Item Image Row -->
                             <div class="d-flex align-items-center">
                                 <small class="text-muted text-preview flex-grow-1">{{ truncatedMessage(chat.lastMessage)
                                     }}</small>
@@ -55,7 +48,7 @@
                 </div>
             </div>
         </div>
-        <!-- Loading Spinner -->
+
         <div v-else class="loading-container d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -78,40 +71,45 @@ export default {
             isLoadingChats: true,
             socket: null,
             updateKey: 0,
+            selectedChatId: null
         };
     },
     computed: {
         filteredChats() {
-        let chatsToDisplay = this.chats;
-        // Filter chats based on search query
-        if (this.searchQuery) {
-            chatsToDisplay = chatsToDisplay.filter((chat) =>
-                chat.receiverName && chat.receiverName.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
-        }
-        // Sort chats based on lastMessageTimestamp, descending order
-        return chatsToDisplay.sort((a, b) => {
-            // Convert timestamps to Date objects for comparison
-            const timeA = new Date(a.lastMessageTimestamp).getTime();
-            const timeB = new Date(b.lastMessageTimestamp).getTime();
-            return timeB - timeA; // Sort in descending order
-        });
-    },
-    },
-    watch: {
-    selectedChat: {
-        immediate: true,
-        handler(newChat) {
-            if (newChat && newChat.chatId) { // Ensure chatId is defined
-                this.fetchMessages(newChat.chatId); // Fetch messages using the valid chatId
-            } else {
-                console.error('Selected chat is invalid or has no chatId');
+            let chatsToDisplay = this.chats;
+            // Filter chats based on search query
+            if (this.searchQuery) {
+                chatsToDisplay = chatsToDisplay.filter((chat) =>
+                    chat.receiverName && chat.receiverName.toLowerCase().includes(this.searchQuery.toLowerCase())
+                );
             }
+            // Sort chats based on lastMessageTimestamp, descending order
+            return chatsToDisplay.sort((a, b) => {
+                // Convert timestamps to Date objects for comparison
+                const timeA = new Date(a.lastMessageTimestamp).getTime();
+                const timeB = new Date(b.lastMessageTimestamp).getTime();
+                return timeB - timeA; // Sort in descending order
+            });
         },
     },
-},
+    watch: {
+        selectedChat: {
+            immediate: true,
+            handler(newChat) {
+                if (newChat && newChat.chatId) { // Ensure chatId is defined
+                    this.fetchMessages(newChat.chatId); // Fetch messages using the valid chatId
+                } else {
+                    console.error('Selected chat is invalid or has no chatId');
+                }
+            },
+        },
+    },
 
     methods: {
+        handleSelectedChat(chat) {
+            this.selectedChatId = chat.chatId; // Set selected chat ID
+            this.$emit('selectedChat', chat);
+        },
         updateChatInList(chat) {
             const chatIndex = this.chats.findIndex(c => c.chatId === chat.chatId);
             if (chatIndex !== -1) {
@@ -177,10 +175,6 @@ export default {
             });
         },
 
-        handleSelectedChat(chat) { // Renamed method
-            this.$emit('selectedChat', chat);
-        },
-
         formatDate(date) {
             const options = { month: '2-digit', day: '2-digit' };
             return new Date(date).toLocaleDateString('en-GB', options);
@@ -239,6 +233,8 @@ export default {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    border: #d2d3d4 solid 1px;
+
 }
 
 /* Inbox Header */
@@ -305,12 +301,18 @@ export default {
 }
 
 /* Chat Items */
-.chat-items {
+.chat-item {
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.5rem;
     width: 100%;
-    padding: 0 1rem;
     box-sizing: border-box;
+    transition: background-color 0.3s;
 }
 
 .chat-item {
@@ -330,7 +332,9 @@ export default {
 .chat-item:hover {
     background-color: #e3edf7;
 }
-
+.chat-item.active {
+    background-color: #cfe2f3; /* Change this color as needed */
+}
 /* Avatar */
 .avatar {
     width: 48px;
@@ -403,24 +407,5 @@ export default {
     height: 100%;
     object-fit: cover;
     border-radius: 4px;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 480px) {
-    .chat-list-container {
-        max-width: 100vw;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    .chat-list-container {
-        max-width: 50vw;
-    }
-}
-
-@media (min-width: 769px) {
-    .chat-list-container {
-        max-width: 30vw;
-    }
 }
 </style>
