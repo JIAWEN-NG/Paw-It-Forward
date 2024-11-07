@@ -1,7 +1,7 @@
 <template>
     <div class="landing-page">
         <!-- first Section -->
-        <section class="hero-section">
+        <section class="hero-section full-screen">
             <div class="container hero-content">
                 <div class="text-content">
                     <h1>Paw-It-Forward</h1>
@@ -21,12 +21,13 @@
                     <img :src="petOwnerImageUrl" alt="paw" v-if="petOwnerImageUrl" />
                 </div>
             </div>
+            <div class="scroll-button" @click.prevent="scrollToSection('aboutSection')">▼</div>
         </section>
 
         <!-- Who We Are Section -->
-        <section class="about-section">
+        <section class="about-section full-screen" id="aboutSection">
             <div class="container about-content">
-                <div class="image-content">
+                <div class="image-content" style="padding-right: 30px;">
                     <img :src="supportImageUrl" alt="support" v-if="supportImageUrl" />
                 </div>
                 <div class="text-content">
@@ -44,12 +45,14 @@
                     </button>                
                 </div>
             </div>
+            <div class="scroll-button" @click.prevent="scrollToSection('howItWorksSection')">▼</div>
+
         </section>
 
-                <!-- How it works Section -->
-        <section class="last-section">
+        <!-- How it works Section -->
+        <section class="last-section full-screen" id="howItWorksSection">
             <h1 style="display: block; text-align: center; font-weight: bold; font-size: 36px; padding: 10px;">How Paw-It-Forward Works</h1>
-            <div class="container about-content">
+            <div class="container last-content">
                 <div class="container stepper-container">
                     <h2 style="font-size: 24px;">Pet Owners Seeking Support</h2><br/>
 
@@ -82,7 +85,7 @@
                     </div>
                 </div>
                
-                <div class="image-content" style="padding: 40px;">
+                <div class="image-content" style="padding: 30px; ">
                     <img :src="heartImageUrl" alt="heart" v-if="heartImageUrl" />
                 </div>
 
@@ -105,7 +108,7 @@
                     </div>
                     <div>
                         <div class="title">Browse and Support</div>
-                        <div class="caption">Explore posts from pet owners in need. Choose the stories or causes that resonate with you, and offer your support.</div>
+                        <div class="caption">Explore posts from pet owners in need. Choose the stories that resonate with you.</div>
                     </div>
                     </div>
                     <div class="step">
@@ -114,7 +117,7 @@
                     </div>
                     <div>
                         <div class="title">Donate Unused Items</div>
-                        <div class="caption">:Have extra pet supplies? List them on our platform for others to claim, helping struggling pet owners access essentials without the added expense.</div>
+                        <div class="caption">Have extra pet supplies? List them to help struggling pet owners access essentials without the added expense.</div>
                     </div>
                     </div>
                 </div>
@@ -146,6 +149,10 @@ export default {
         return null;
       }
     },
+    async scrollToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.scrollIntoView({ behavior: "smooth" });
+      },
   },
   async mounted() {
     // Fetch each image by its filename
@@ -172,13 +179,14 @@ export default {
 /* Hero Section */
 .hero-section {
     background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
-    padding: 50px 0;
     display: flex;
     align-items: center;
+    display: block;
 }
 .last-section {
     background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
     padding: 70px 0;
+
 }
 
 .container {
@@ -242,13 +250,15 @@ export default {
 /* About Section */
 .about-section {
     background-color: #f8f9fa;
-    padding: 100px 0;
+    /* padding: 100px 0;    */
 }
 
 .about-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 80px 0px;
+
 }
 
 
@@ -295,7 +305,7 @@ export default {
 
 .step {
   position: relative;
-  min-height: 1em;
+  min-height:2em;
   color: black;
 }
 .step + .step {
@@ -312,7 +322,8 @@ export default {
 
 /* Circle */
 .circle {
-  background: black;
+  background:linear-gradient(135deg, #1f2e3d 0%, #3a506b 100%);
+  ;
   position: relative;
   width: 1.5em;
   height: 1.5em;
@@ -350,5 +361,37 @@ export default {
 }
 .caption {
   font-size: 0.8em;
+}
+
+.full-screen {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px;
+    /* padding-bottom: 80px; */
+    /* Extra bottom padding  */
+  }
+
+  /* Downward Scroll Button */
+  .scroll-button {
+    display: block;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .scroll-button:hover {
+    color: #0044cc;
+    transform: translateY(5px);
+  }
+
+.stepper-container .step:hover {
+  color: #4747f3;
+  padding: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
+  transform: scale(1.02);
 }
 </style>

@@ -74,6 +74,11 @@ const routes = [
         name: 'CancelDonation',
         component: CancelDonation,
     },
+    {
+        path: '/meetus',
+        name: 'teamPage',
+        component: teamPage,
+    },
 ];
 
 const router = createRouter({

@@ -187,4 +187,44 @@ router.get('/withdrawals', withdrawalController.getAllWithdrawals);
 router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
 router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Use the correct function name
 
+
+// Photo verification route
+router.post('/photo-verification', upload, async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    try {
+        const userId = req.body.userId; // Assume `userId` is provided in the request body
+
+        console.log('Uploading verification photo for User ID:', userId);
+        
+        const blob = bucket.file(`verification/${userId}/${req.file.originalname}`);
+        const blobStream = blob.createWriteStream({
+            metadata: {
+                contentType: req.file.mimetype,
+            },
+        });
+
+        blobStream.on('error', (err) => {
+            console.error('Upload error:', err);
+            return res.status(500).send('Error uploading file.');
+        });
+
+        blobStream.on('finish', async () => {
+            const imageUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(blob.name)}`;
+            console.log('Verification photo uploaded successfully. Image URL:', imageUrl);
+
+            // Store the image URL in the user's profile in Firestore for admin verification
+            await userController.updateUserPhotoVerification(userId, imageUrl);
+            res.status(200).json({ message: 'Photo uploaded for verification.', imageUrl });
+        });
+
+        blobStream.end(req.file.buffer);
+    } catch (error) {
+        console.error('Error uploading verification photo:', error);
+        res.status(500).send('Server error: Unable to upload photo for verification.');
+    }
+});
+
 module.exports = router;

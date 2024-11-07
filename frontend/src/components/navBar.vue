@@ -273,6 +273,8 @@ a.router-link.active{
   border:2px solid #fcae1e;
   cursor: pointer;
   transition: transform 0.3s ease;
+  display: inline;
+
 }
 
 .profile-pic:hover {
@@ -280,10 +282,10 @@ a.router-link.active{
 }
 
 .dropdown{
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .dropdown-menu{
-    position:auto;
+  position:auto;
 }
 </style>
