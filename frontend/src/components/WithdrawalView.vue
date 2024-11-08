@@ -3,8 +3,8 @@
     <div v-if="loading" class="text-center">Loading withdrawals...</div>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
-    <div v-if="!loading && paginatedWithdrawals.length > 0">
-      <table class="compact-table">
+    <div v-if="!loading && paginatedWithdrawals.length > 0" class="table-responsive">
+      <table class="compact-table table">
         <thead>
           <tr>
             <th>Proof Image</th>
@@ -116,12 +116,20 @@ export default {
       try {
         const response = await axios.get(`http://localhost:8000/api/withdrawals/${authState.userId}`);
         if (response.status === 200) {
-          this.withdrawals = response.data.map(withdrawal => ({
-            ...withdrawal,
-            requestedAt: withdrawal.requestedAt?._seconds
-              ? new Date(withdrawal.requestedAt._seconds * 1000)
-              : null,
-          })).sort((a, b) => b.requestedAt - a.requestedAt); // Sort by latest date first
+          this.withdrawals = response.data.map(withdrawal => {
+            // Log each withdrawal to check the structure
+            console.log('Withdrawal object:', withdrawal);
+
+            return {
+              ...withdrawal,
+              requestedAt: withdrawal.requestedAt
+                ? new Date(withdrawal.requestedAt) // Directly parse the ISO string
+                : null, // Ensure null if the date is missing or invalid
+            };
+          }).sort((a, b) => b.requestedAt - a.requestedAt); // Sort by latest date first
+
+          // Log to ensure dates are correctly parsed
+          console.log('Formatted withdrawals:', this.withdrawals);
         } else {
           this.error = 'No withdrawals found.';
         }
@@ -138,7 +146,10 @@ export default {
     },
 
     formatDate(date) {
-      if (!date) return 'N/A'; // Provide a fallback if the date is invalid
+      if (!date) {
+        console.warn('Invalid date:', date); // Log to see which dates are invalid
+        return 'N/A'; // Provide a fallback if the date is invalid
+      }
       const options = { day: 'numeric', month: 'short', year: 'numeric' };
       return new Date(date).toLocaleDateString('en-GB', options);
     },
@@ -157,7 +168,7 @@ export default {
 </script>
 
 <style scoped>
-/* Table Styling */
+
 .compact-table {
   width: 100%;
   max-width: 100%;
@@ -165,6 +176,16 @@ export default {
   border-collapse: separate;
   border-spacing: 0 10px;
 }
+.table-responsive {
+  overflow-x: auto;
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+.table-responsive::-webkit-scrollbar {
+  display: none;
+}
+
 
 th, td {
   padding: 12px 16px;

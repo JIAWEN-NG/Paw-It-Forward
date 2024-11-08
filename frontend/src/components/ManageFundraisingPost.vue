@@ -10,6 +10,7 @@
     </div>
 
     <div v-if="!loading && paginatedFundraisings.length > 0">
+     <div class="table-responsive"> 
       <table class="compact-table">
         <thead>
           <tr>
@@ -39,13 +40,14 @@
               <div class="action-buttons">
                 <button @click="openEditForm(fundraising)" class="btn btn-outline-secondary btn-sm">Edit</button>
                 <button @click="confirmDeleteFundraising(fundraising.id)" class="btn btn-outline-danger btn-sm">Delete</button>
-                <button @click="openWithdrawalForm(fundraising.id)" class="btn btn-outline-primary btn-sm">Withdraw</button>
+                <button @click="openWithdrawalForm(fundraising.id)" class="btn btn-outline-primary btn-sm btn-withdraw">Withdraw</button>
               </div>  
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    </div> 
 
     <div v-if="!loading && paginatedFundraisings.length === 0" class="alert alert-warning text-center">
       No fundraising posts found.
@@ -364,10 +366,9 @@ export default {
 
 
 <style scoped>
-/* Table Styling */
+
 .compact-table {
   width: 100%;
-  max-width: 100%;
   margin: 0 auto;
   border-collapse: separate;
   border-spacing: 0 10px;
@@ -413,6 +414,12 @@ tbody tr:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
+.listing-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 15px;
+}
 
 .listing-details {
   display: flex;
@@ -426,32 +433,6 @@ tbody tr:hover {
   color: #555;
 }
 
-/* Responsive styling */
-@media screen and (max-width: 768px) {
-  .listing-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  .thumbnail {
-    width: 80%;
-    height: auto;
-  }
-  .listing-details {
-    text-align: center;
-    padding-top: 10px;
-  }
-  .action-buttons {
-    margin-top: 10px;
-    justify-content: center;
-    width: 100%;
-  }
-  .action-buttons button {
-    width: 100%;
-    margin-bottom: 5px;
-  }
-}
-
-/* Button styling */
 button {
   padding: 6px 12px;
   border: none;
@@ -497,6 +478,64 @@ button.btn-danger:hover {
   object-fit: cover;
   border-radius: 8px;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+
+.modal-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+}
+
+
+.modal-content {
+  border-radius: 8px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 20px;
+}
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+.modal-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+.btn.btn-outline-primary.btn-withdraw:hover {
+  background-color: #1280c9; 
+  color: #fff; 
+  border-color: #1280c9; 
+}
+
 
 .pagination-container {
   display: flex;
@@ -506,7 +545,7 @@ button.btn-danger:hover {
 }
 
 .pagination-button {
-  border: 1px solid #2c3e50;
+  border: 1px solid #2c3e50; /* Ensures a visible border */
   color: #2c3e50;
   border-radius: 5px;
   padding: 6px 12px;
@@ -515,6 +554,7 @@ button.btn-danger:hover {
 .btn-outline-primary {
   color: #2c3e50;
   border-color: #2c3e50;
+  
 }
 
 .btn-outline-primary:hover {
@@ -574,6 +614,7 @@ button.btn-danger:hover {
 .action-buttons {
   display: flex;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
 .close {
@@ -585,30 +626,29 @@ button.btn-danger:hover {
   cursor: pointer;
 }
 
-/* Responsive styling */
 @media screen and (max-width: 768px) {
   .listing-container {
     flex-direction: column;
     align-items: center;
   }
-  .thumbnail {
-    width: 80%;
-    height: auto;
-  }
   .listing-details {
     text-align: center;
-    padding-top: 10px;
   }
   .action-buttons {
     margin-top: 10px;
     justify-content: center;
     width: 100%;
-    flex-direction: column;
   }
-  .action-buttons button {
-    width: 100%;
-    margin-bottom: 5px;
-  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+.table-responsive::-webkit-scrollbar {
+  display: none;
 }
 
 </style>
