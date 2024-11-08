@@ -10,7 +10,7 @@
     </div>
 
     <div v-if="!loading && paginatedFundraisings.length > 0">
-     <div class="table-responsive"> 
+     <div class="table-responsive-md"> 
       <table class="compact-table">
         <thead>
           <tr>
@@ -641,14 +641,22 @@ button.btn-danger:hover {
   }
 }
 
-.table-responsive {
+.table-responsive-md {
   overflow-x: auto;
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .table-responsive::-webkit-scrollbar {
   display: none;
 }
+
+@media (min-width: 768px) {
+  .table-responsive-md {
+    overflow-x: visible; /* Remove scroll for larger screens */
+  }
+}
+
+
 
 </style>
