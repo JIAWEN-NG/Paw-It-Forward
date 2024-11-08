@@ -22,6 +22,7 @@ import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 import AdminView from '@/components/AdminView.vue';
 import CancelDonation from '../components/CancelDonation.vue';
+import WithdrawalView from '../components/WithdrawalView.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -78,6 +79,11 @@ const routes = [
         path: '/meetus',
         name: 'teamPage',
         component: teamPage,
+    },
+    {
+        path: '/withdrawalview',
+        name: 'WithdrawalView',
+        component: WithdrawalView,
     },
 ];
 

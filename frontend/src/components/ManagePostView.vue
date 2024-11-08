@@ -1,4 +1,3 @@
-<!-- ManagePostView.vue -->
 <template>
   <div class="manage-post-view">
     <!-- Toggle Button Area -->
@@ -8,6 +7,9 @@
       </button>
       <button @click="currentView = 'fundraising'" :class="{ active: currentView === 'fundraising' }">
         Manage Fundraising Posts
+      </button>
+      <button @click="currentView = 'withdrawRequests'" :class="{ active: currentView === 'withdrawRequests' }">
+        View Withdraw Requests
       </button>
     </div>
 
@@ -24,6 +26,12 @@
         <p>Here, you can manage your fundraising posts.</p>
         <ManageFundraisingPost :loadListings="currentView === 'fundraising'" />
       </div>
+
+      <!-- New Section: Withdraw Requests -->
+      <div class="right-section" v-if="currentView === 'withdrawRequests'">
+        <p>Here, you can view and manage withdraw requests.</p>
+        <WithdrawalView :loadListings="currentView === 'withdrawRequests'" />
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +39,7 @@
 <script>
 import ManageMarketplace from './ManageMarketplace.vue';
 import ManageFundraisingPost from './ManageFundraisingPost.vue';
+import WithdrawalView from './WithdrawalView.vue';
 
 export default {
   name: "ManagePostView",
@@ -41,33 +50,27 @@ export default {
   },
   components: { 
     ManageMarketplace,
-    ManageFundraisingPost
+    ManageFundraisingPost,
+    WithdrawalView
   }
 };
 </script>
 
 <style scoped>
-/* Font family for the entire component */
-/* body {
-  font-family: 'Montserrat', sans-serif;
-} */
-
 .manage-post-view {
   padding: 0;
   width: 100%;
   margin-top: 80px;
-
 }
 
-/* Toggle Buttons as Full-Width Navbar */
 .toggle-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
   padding: 15px 0;
-  background-color: #002A48; /* Navy blue background */
+  background-color: #002A48;
   width: 100%;
-  margin: 0 auto 0 auto;
+  margin: 0 auto;
 }
 
 .toggle-buttons button {
@@ -78,22 +81,22 @@ export default {
   color: white;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  background-color: transparent; /* Transparent background by default */
+  background-color: transparent;
 }
 
 .toggle-buttons button.active {
-  background-color: #34495e; /* lighter navy for active toggle */
+  background-color: #34495e;
 }
 
 .toggle-buttons button:hover {
-  background-color: #1f2e3d; /* Slightly darker shade on hover */
+  background-color: #1f2e3d;
 }
-/* Sections styled as extension of the navbar */
+
 .left-section, .right-section {
   flex: 1;
-  width: 90%; /* Take up 90% of the screen width */
+  width: 90%;
   min-width: 300px;
-  margin: 20px auto; /* Centered on the page */
+  margin: 20px auto;
   padding: 20px;
   border-radius: 8px;
 }
