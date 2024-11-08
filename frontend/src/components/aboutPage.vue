@@ -133,7 +133,6 @@
 
 <script>
 
-
 export default {
   name: "aboutPage",
   data() {
@@ -143,7 +142,6 @@ export default {
         heartImageUrl: null,
         sections: [],
         scrollTimeout: null,
-      
     };
   },
   methods: {
