@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
-const { db } = require('./config/firebase'); // Firebase configuration
+const { db , bucket } = require('./config/firebase'); // Firebase configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initialization
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
-// const upload = require('./middleware/uploadImage'); // Import the Multer middleware
+const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
 
 // thahmina added
 const multer = require('multer');
@@ -211,43 +211,39 @@ module.exports = app; // Export the app instance for testing
 // });
 
 // // Define route for uploading user profile photos
-// app.post('/api/user/:id/upload', upload, async (req, res) => {
-//   const userId = req.params.id; // Get user ID from request parameters
-//   console.log(`Received upload request for user ID: ${userId}`);
+app.post('/api/user/:id/upload', upload2, async (req, res) => {
+    const userId = req.params.id;
+    console.log(`Received upload request for user ID: ${userId}`);
 
-//   try {
-//     if (!req.file) {
-//       console.error("No file uploaded!");
-//       return res.status(400).json({ message: 'No file uploaded!' });
-//     }
+    try {
+        if (!req.file) {
+            console.error("No file uploaded!");
+            return res.status(400).json({ message: 'No file uploaded!' });
+        }
 
-//     const fileBuffer = req.file.buffer; // Get the uploaded file buffer
-//     console.log(`File uploaded successfully. File size: ${fileBuffer.length} bytes`);
+        const fileBuffer = req.file.buffer;
+        const fileName = `profilePhotos/${userId}-${Date.now()}.png`; // Add timestamp for uniqueness
+        const file = bucket.file(fileName);
 
-//     const fileName = `profilePhotos/${userId}.png`; // Create a file name based on user ID
-//     const file = bucket.file(fileName); // Create a file object in the bucket
+        // Upload the file buffer to Firebase Storage
+        await file.save(fileBuffer, {
+            metadata: {
+                contentType: req.file.mimetype,
+            },
+            public: true
+        });
 
-//     // Upload the file buffer to Firebase Storage
-//     await file.save(fileBuffer, {
-//       metadata: {
-//         contentType: req.file.mimetype,
-//       },
-//       public: true // Make it public (optional)
-//     });
+        const photoURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+        console.log(`Uploaded file URL: ${photoURL}`);
 
-//     const photoURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`; // Get the file's public URL
-//     console.log(`Uploaded file URL: ${photoURL}`);
+        // Update Firestore with the new photo URL
+        await db.collection('Users').doc(userId).update({
+            profileImage: photoURL
+        });
 
-//     // Update Firestore with the new photo URL
-//     await db.collection('Users').doc(userId).update({
-//       profileImage: photoURL // Update the user's profile image URL
-//     });
-
-//     res.status(200).json({ message: 'File uploaded and URL saved!', photoURL });
-//   } catch (error) {
-//     console.error("Error uploading photo:", error.message);
-//     res.status(500).json({ message: 'Error uploading photo', error: error.message });
-//   }
-// });
-
-
+        res.status(200).json({ message: 'File uploaded and URL saved!', photoURL });
+    } catch (error) {
+        console.error("Error uploading photo:", error.message);
+        res.status(500).json({ message: 'Error uploading photo', error: error.message });
+    }
+});

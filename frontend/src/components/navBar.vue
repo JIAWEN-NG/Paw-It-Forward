@@ -49,7 +49,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                    <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
+                    <router-link to="/manage-account" class="dropdown-item">Edit Profile</router-link>
                     </li>
                     <li v-if="isAdmin">
                     <router-link to="/admin" class="dropdown-item">Manage Users</router-link>
