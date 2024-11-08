@@ -132,7 +132,7 @@
 
 
 <script>
-import catarrowImage from '@/assets/catarrow.png';
+
 
 export default {
   name: "aboutPage",
@@ -143,7 +143,7 @@ export default {
         heartImageUrl: null,
         sections: [],
         scrollTimeout: null,
-        catarrowImage
+      
     };
   },
   methods: {
