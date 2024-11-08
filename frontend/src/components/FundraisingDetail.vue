@@ -52,7 +52,6 @@
           </div>
           <div class="donation-card-body">
             <!-- Donation Amount Input -->
-           
             <input
               type="number"
               v-model="donationAmount"
@@ -78,8 +77,7 @@
             <!-- Styled Donate Button -->
             <button
               class="donate-button"
-              @click="startCheckout"
-              :disabled="!isDonationValid"
+              @click="handleDonateClick"
             >
               <i class="fas fa-heart"></i> Donate Now
             </button>
@@ -122,6 +120,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Amount Required Modal -->
+    <div v-if="showAmountModal" class="share-modal-overlay">
+      <div class="share-modal">
+        <button @click="closeAmountModal" class="close-modal">&times;</button>
+        <h4>Enter a Donation Amount</h4>
+        <p>Please enter an amount to proceed with your donation.</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -151,9 +158,9 @@ export default {
     const presetAmounts = ref([5, 10, 20, 50, 100, 150]);
     const isCustomAmount = ref(false);
     const showShareModal = ref(false);
+    const showAmountModal = ref(false);
     const shareLink = ref(window.location.href);
   
-
     const fetchFundraisingDetail = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/Fundraising/${props.id}`);
@@ -198,10 +205,17 @@ export default {
       });
     };
 
+    const handleDonateClick = () => {
+      if (!donationAmount.value || donationAmount.value <= 0) {
+        showAmountModal.value = true;
+      } else {
+        startCheckout();
+      }
+    };
+
     const startCheckout = async () => {
       const amountInCents = donationAmount.value * 100;
       
-
       try {
         const response = await axios.post('http://localhost:8000/create-checkout-session', {
           postName: fundraising.value.title,
@@ -225,10 +239,12 @@ export default {
       }
     };
 
-    const isDonationValid = computed(() => donationAmount.value && donationAmount.value > 0);
-
     const closeShareModal = () => {
       showShareModal.value = false;
+    };
+
+    const closeAmountModal = () => {
+      showAmountModal.value = false;
     };
 
     const copyLink = () => {
@@ -274,11 +290,13 @@ export default {
       isCustomAmount,
       setDonationAmount,
       enableCustomAmount,
+      handleDonateClick,
       startCheckout,
-      isDonationValid,
       showShareModal,
+      showAmountModal,
       shareLink,
       closeShareModal,
+      closeAmountModal,
       copyLink,
       share,
     };
@@ -291,7 +309,7 @@ export default {
 
 body {
   background-color: #f5f7fa;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .fundraising-detail {
