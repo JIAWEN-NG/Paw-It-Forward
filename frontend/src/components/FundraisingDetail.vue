@@ -30,8 +30,8 @@
         <!-- Styled Goal Text -->
         <p class="goal-text">
           <span class="amount-raised">{{ formattedCurrency(fundraising.amountRaised) }}</span>
-          <span class="goal-divider"> of </span>
-          <span class="target-amount">{{ formattedCurrency(fundraising.targetAmount) }}</span>
+          <span class="goal-divider">raised of </span>
+          <span class="target-amount">{{ formattedCurrency(fundraising.targetAmount) }} goal</span>
         </p>
 
         <div class="progress my-3">
@@ -344,7 +344,7 @@ body {
 }
 
 .target-amount {
-  color: #999;
+ 
   font-size: 1em;
 }
 
