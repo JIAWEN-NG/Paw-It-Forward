@@ -30,10 +30,6 @@
       </table>
     </div>
 
-    <div v-if="!loading && paginatedWithdrawals.length === 0" class="alert alert-warning text-center">
-      No withdrawals found.
-    </div>
-
     <!-- Pagination Controls -->
     <div class="pagination-container">
       <button 

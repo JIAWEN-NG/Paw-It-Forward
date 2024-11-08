@@ -395,34 +395,63 @@ tbody tr {
 tbody tr:hover {
   transform: scale(1.02);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-radius:8px;
+  border-radius: 8px;
 }
 
 .listing-container {
   display: flex;
-  align-items: stretch; /* Make items take full height of the container */
-  gap: 15px; /* Spacing between image and text */
+  align-items: stretch;
+  gap: 15px;
 }
 
 .thumbnail {
-  width: 100px; /* Fixed width */
-  height: 100px; /* Remove fixed height */
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid #ddd; /* Light border for images */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for images */
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 
-.listing-details p {
-  margin: 2px 0; /* Less margin between lines for a compact look */
-  font-size: 0.9rem;
-  color: #555; /* Soft gray text color */
+.listing-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* button */
+.listing-details p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
 
-/* Button styling for a cleaner look */
+/* Responsive styling */
+@media screen and (max-width: 768px) {
+  .listing-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .thumbnail {
+    width: 80%;
+    height: auto;
+  }
+  .listing-details {
+    text-align: center;
+    padding-top: 10px;
+  }
+  .action-buttons {
+    margin-top: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+  .action-buttons button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+
+/* Button styling */
 button {
   padding: 6px 12px;
   border: none;
@@ -450,12 +479,6 @@ button.btn-danger:hover {
   background-color: #c82333;
 }
 
- 
-
-
-
-
-
 .image-upload-box {
   width: 100%;
   height: 200px;
@@ -473,11 +496,6 @@ button.btn-danger:hover {
   max-height: 100%;
   object-fit: cover;
   border-radius: 8px;
-
-}
-
-#title {
-  font-weight: bold;
 }
 
 .pagination-container {
@@ -485,18 +503,18 @@ button.btn-danger:hover {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  
 }
+
 .pagination-button {
-  border: 1px solid #2c3e50; /* Ensures a visible border */
+  border: 1px solid #2c3e50;
   color: #2c3e50;
   border-radius: 5px;
   padding: 6px 12px;
 }
+
 .btn-outline-primary {
   color: #2c3e50;
   border-color: #2c3e50;
-  
 }
 
 .btn-outline-primary:hover {
@@ -504,19 +522,6 @@ button.btn-danger:hover {
   color: #fff;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-/* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -548,45 +553,12 @@ button.btn-danger:hover {
   position: relative;
 }
 
-.modal-body {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-.modal-title {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 20px;
-}
-
-.form-label {
-  font-weight: 500;
-  color: #2c3e50;
-  display: block;
-  text-align: left;
-}
-
-.form-control {
-  border-radius: 5px;
-  border: 1px solid #ced4da;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.form-control:focus {
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  border-color: #80bdff;
-}
-
 .modal-footer {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
   padding-top: 15px;
 }
-
 
 .upload-button {
   margin-top: 10px;
@@ -596,14 +568,14 @@ button.btn-danger:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width:35%;
+  width: 35%;
 }
-
 
 .action-buttons {
   display: flex;
-  gap: 5px; 
+  gap: 5px;
 }
+
 .close {
   position: absolute;
   top: 10px;
@@ -612,4 +584,31 @@ button.btn-danger:hover {
   color: #000;
   cursor: pointer;
 }
+
+/* Responsive styling */
+@media screen and (max-width: 768px) {
+  .listing-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .thumbnail {
+    width: 80%;
+    height: auto;
+  }
+  .listing-details {
+    text-align: center;
+    padding-top: 10px;
+  }
+  .action-buttons {
+    margin-top: 10px;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+  }
+  .action-buttons button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
+
 </style>
