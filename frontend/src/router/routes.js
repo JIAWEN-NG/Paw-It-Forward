@@ -15,7 +15,7 @@ import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
 import FundraisingView from '../components/FundraisingView.vue';
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 import DonateSuccessful from '../components/DonateSuccessful.vue';
-import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
+//import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';

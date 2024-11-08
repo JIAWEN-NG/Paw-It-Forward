@@ -3,12 +3,6 @@
         <div class="form-container sign-in" v-if="!isRegisterActive && !showForgotPassword">
             <form @submit.prevent="login">
                 <h1>Sign In</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon" @click.prevent="signInWithGoogle">
-                        <img :src="googleImageUrl" alt="google"/>
-                    </a>
-                </div>
-                <span>----- or Sign In with Email -----</span>
                 <div>
                     <input type="email" placeholder="Email" v-model="email" required>
                 </div>
@@ -21,6 +15,12 @@
                 </div>
                 <a style="text-decoration: underline;" href="#" @click.prevent="toggleForgotPassword">Forgot Your Password?</a>
                 <button type="submit">Sign In</button>
+                <span style="padding:10px;"> OR </span>
+                <div class="social-icons">
+                    <a href="#" class="icon" @click.prevent="signInWithGoogle">
+                        <img :src="googleImageUrl" alt="google"/>Sign In With Google
+                    </a>
+                </div>
             </form>
         </div>
 
@@ -340,6 +340,7 @@ h1{
     flex-direction: column;
     padding: 0 40px;
     height: 100%;
+    
 }
 
 .container input{
@@ -404,24 +405,23 @@ h1{
     }
 }
 
-.social-icons{
-    margin: 20px 0;
-}
 
 img{
-    width: 20px;
+    width: auto;
     height: 20px;
+    padding-right: 10px;
 }
 
 .social-icons a{
     border: 1px solid #ccc;
-    border-radius: 20%;
+    border-radius: 10px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     margin: 0 3px;
-    width: 40px;
+    width: auto;
     height: 40px;
+    padding:20px;
 }
 
 .toggle-container{
@@ -491,13 +491,13 @@ img{
 }
 
 .remember-me {
-  display: flex;
-  align-items: center;
-  font-size: 12px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
 }
 
 .remember-me input {
-  margin-right:8px;
+    margin-right:8px;
 }
 
 .forgot-pw {
