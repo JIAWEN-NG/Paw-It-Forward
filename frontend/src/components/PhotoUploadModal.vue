@@ -38,6 +38,9 @@ export default {
     };
   },
   methods: {
+    created() {
+      console.log('User ID is:',this.userId)
+    },
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {

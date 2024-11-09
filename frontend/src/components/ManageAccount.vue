@@ -1,62 +1,67 @@
 <template>
   <div class="account-page">
-
-    <div class="row1">
-      <h1 class="page-title">Edit My Profile</h1>
+    <h1 class="page-title">Edit My Profile</h1>
     
-        <!-- Inline Success Alert -->
-        <div v-if="showSuccessAlert" class="success-alert">
-          <p>{{ successMessage }}</p>
-        </div>
-
-        <div class="profile-section" v-if="currentUserData">
-          <div class="profile-photo-container">
-            <img 
-              :src="currentUserData.profileImage || defaultProfileImage" 
-              alt="Profile Picture" 
-              class="profile-image" 
-            />
-          </div>
-          <p class="role-display">{{ formattedRole }}</p>
-        </div>
+    <!-- Inline Success Alert -->
+    <div v-if="showSuccessAlert==true" class="success-alert">
+      <p>{{ successMessage }}</p>
     </div>
 
-    <div class="row2">
-
-      <div class="details-section" v-if="currentUserData">
-        <div class="detail-item">
-          <span class="detail-title">Name:</span>
-          <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
+    <div class="profile-section" v-if="currentUserData">
+      <div class="profile-photo-container">
+        <img 
+          :src="currentUserData.profileImage || defaultProfileImage" 
+          alt="Profile Picture" 
+          class="profile-image" 
+        />
+        <div class="change-photo-overlay">
+          <button 
+            @click="showPhotoUploadModal = true" 
+            class="change-photo-button"
+          >
+            Change Photo
+          </button>
         </div>
-        <div class="detail-item">
-          <span class="detail-title">User ID:</span>
-          <span class="detail-value">{{ userId }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-title">Email:</span>
-          <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-title">Pet Description:</span>
-          <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
-        </div>
-        <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
       </div>
-
-      <p v-else>Loading user data...</p>
-
-      <!-- Edit Profile Modal -->
-      <EditProfileModal 
-        v-if="showEditProfileModal" 
-        :showModal="showEditProfileModal" 
-        :currentUser="currentUserData" 
-        @close="showEditProfileModal = false" 
-        @save="handleProfileUpdate" 
-      />
+      <p class="role-display"><b>Role:</b> {{ formattedRole }}</p>
+      <p class="role-display"><b>User ID:</b> {{userId}}</p>
     </div>
-    
 
-    
+    <div class="details-section" v-if="currentUserData">
+      <div class="detail-item">
+        <span class="detail-title">Name:</span>
+        <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-title">Email:</span>
+        <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-title">Pet Description:</span>
+        <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
+      </div>
+      <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
+    </div>
+
+    <p v-else>Loading user data...</p>
+
+    <!-- Edit Profile Modal -->
+    <EditProfileModal 
+      v-if="showEditProfileModal" 
+      :showModal="showEditProfileModal" 
+      :currentUser="currentUserData" 
+      @close="showEditProfileModal = false" 
+      @save="handleProfileUpdate" 
+    />
+
+    <!-- Photo Upload Modal -->
+   <PhotoUploadModal 
+    v-if="showPhotoUploadModal" 
+    :showModal="showPhotoUploadModal" 
+    :userId="userId"
+    @close="showPhotoUploadModal = false" 
+    @uploadSuccess="handlePhotoUploadSuccess"
+  />
   </div>
 </template>
 
@@ -66,11 +71,13 @@ import { doc, getDoc } from 'firebase/firestore';
 import { authState } from '../store/auth.js'; // Your global store for user data
 import defaultProfileImage from '@/assets/noprofilepic.png'; // Import the default image at the top
 import EditProfileModal from './EditProfileModal.vue'; // Import the EditProfileModal component
+import PhotoUploadModal from './PhotoUploadModal.vue'; // Import the PhotoUploadModal component
 
 export default {
   name: 'ManageAccount',
   components: {
-    EditProfileModal
+    EditProfileModal,
+    PhotoUploadModal
   },
   data() {
     return {
@@ -81,7 +88,9 @@ export default {
       defaultProfileImage, // Reference the imported image
       showSuccessAlert: false,
       successMessage: '',
-      showEditProfileModal: false // Control the modal visibility
+      showEditProfileModal: false, // Control the modal visibility
+      showPhotoUploadModal: false, // Control the photo upload modal visibility
+      hoveringPhoto: false // Track hover state for profile photo
     };
   },
   computed: {
@@ -93,6 +102,7 @@ export default {
   },
   async mounted() {
     // Check if the userId is already set in authState; otherwise, get it from auth.currentUser
+    console.log('Current user id: ', this.userId)
     if (!this.userId) {
       const currentUser = auth.currentUser;
       if (currentUser) {
@@ -132,41 +142,48 @@ export default {
 
       this.successMessage = "Your profile has been updated successfully.";
       this.showSuccessAlert = true;
+      console.log('showSuccessAlert set to true');
+
+      setTimeout(() => {
+        this.showSuccessAlert = false;
+        console.log('showSuccessAlert set to false after timeout');
+      }, 3000);
+    },
+    handlePhotoUploadSuccess(newPhotoUrl) {
+      this.currentUserData.profileImage = `${newPhotoUrl}?timestamp=${Date.now()}`;
+      authState.userProfilePicUrl = this.currentUserData.profileImage;
+      this.$forceUpdate();
+
+      this.successMessage = "Profile photo updated successfully.";
+      this.showSuccessAlert = true;
 
       setTimeout(() => {
         this.showSuccessAlert = false;
       }, 3000);
+    },
+    watch: {
+    'authState.userProfilePicUrl'(newUrl) {
+      this.currentUserData.profileImage = newUrl;
     }
   }
-};
+},
+}
 </script>
 
 <style scoped>
-/* Keep all your existing styles */
-.row1{
-  background-color: #ffffff;
-}
 .page-title {
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
-  color: rgb(22, 24, 63);
 }
-
-.row2 {
+.account-page {
   max-width: 600px;
+  min-width: 400px;
   margin: auto;
   padding: 20px;
-  text-align: center; 
+  text-align: center; /* Center the content */
 }
-
-/* .account-page {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  text-align: center; 
-} */
 
 .success-alert {
   position: fixed;
@@ -204,6 +221,45 @@ export default {
 .profile-image:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.change-photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.profile-photo-container:hover .change-photo-overlay {
+  opacity: 1;
+}
+
+.change-photo-button {
+  background-color: transparent;
+  color: white;
+  padding: 8px 16px;
+  border: 1px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.change-photo-button:hover {
+  background-color: darkgray;
+  color: white;
+}
+
+.profile-photo-container:hover .change-photo-button {
+  display: block;
 }
 
 .role-display {
