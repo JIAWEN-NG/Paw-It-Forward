@@ -273,7 +273,6 @@ export default {
   padding-top: 0px;
 }
 
-
 .detail-item {
   display: flex;
   justify-content: space-between;

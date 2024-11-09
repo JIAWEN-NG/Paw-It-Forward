@@ -17,7 +17,8 @@
           <button type="button" class="btn-close" @click="clearNotification" aria-label="Close"></button>
         </div>
         <!-- Direct Donation List -->
-        <DonationList :donations="paginatedDonations" />
+        <DonationList :donations="paginatedDonations" @notification="handleNotification" />
+
 
         <br>
         <!-- Faint Divider Line -->
@@ -90,9 +91,9 @@ export default {
       this.notificationMessage = message;
       this.notificationType = type;
       if (type === 'success') {
-        // Automatically refresh the page data when a new post is created successfully
-        this.fetchDonations();
-      }
+      // Automatically refresh the page data when a new post is created successfully
+      this.fetchDonations();
+    }
       setTimeout(() => {
         this.clearNotification();
       }, 3000); // Auto-clear after 3 seconds
