@@ -32,7 +32,7 @@
                     <div class="chat-details-wrapper flex-grow-1 d-flex align-items-center justify-content-between">
                         <div class="chat-details">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <p class="chat-username fw-bold m-0">{{ chat.receiverName }}</p>
+                                <p class="chat-username  m-0">{{ chat.receiverName }}</p>
                                 <small class="chat-date text-muted">{{ formatDate(chat.lastMessageTimestamp) }}</small>
                             </div>
                             <div class="d-flex align-items-center">
@@ -125,7 +125,7 @@ export default {
                     chatsData.map(async (chat) => {
                         const otherUserId = chat.participants.find((participant) => participant !== this.currentUserId);
                         chat.otherUserId = otherUserId;
-
+                        console.log("Other user ID:", otherUserId);
                         const userResponse = await axios.get(`http://localhost:8000/api/users/${otherUserId}`);
                         const userData = userResponse.data;
                         chat.receiverName = userData.name;
@@ -237,6 +237,7 @@ export default {
 
 }
 
+
 /* Inbox Header */
 .inbox-header {
     height: 60px;
@@ -244,7 +245,7 @@ export default {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #ffffff;
+    background-color: #f9fafb;
     border-bottom: 1px solid #e0e0e0;
     padding: 0.75rem 1rem;
     font-size: 1.5rem;
@@ -298,6 +299,9 @@ export default {
 .chat-items-wrapper {
     flex-grow: 1;
     overflow-y: auto;
+}
+.chat-items-wrapper::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }
 
 /* Chat Items */
@@ -365,9 +369,10 @@ export default {
 
 /* Chat Username */
 .chat-username {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin: 0;
     color: #111827;
+    font-weight: 500;
 }
 
 /* Text Preview */

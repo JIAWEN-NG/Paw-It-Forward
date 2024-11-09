@@ -1,109 +1,94 @@
 <template>
   <div class="chat-room">
-    <!-- Chat Header Section -->
-    <div class="chat-header align-items-center ">
+    <!-- Chat Header -->
+    <div class="chat-header d-flex align-items-center">
       <!-- Back arrow for small devices only -->
-      <div class="col-auto d-flex align-items-center d-md-none">
+      <div class="col-auto d-flex align-items-center d-md-none back-arrow">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="size-6" @click="goBackToChatList" style="cursor: pointer;">
+          class="size-6 " @click="goBackToChatList" style="cursor: pointer;">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
         </svg>
       </div>
-
-      <div class="col-auto d-flex p-2 align-items-center">
-        <img :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
-          class="profile-image" />
+      <!-- Username, centered -->
+      <div class="flex-grow-1 d-flex justify-content-center text-truncate">
+        <h5 class="mb-0">{{ selectedChat?.receiverName || 'Unknown User' }}</h5>
       </div>
-      <div class="user-details col-auto d-flex align-items-center">
-        <div>
-          <h5 class="mb-0">{{ selectedChat?.receiverName || 'Unknown User' }}</h5>
+      <!-- Profile image, aligned right -->
+      <div class="col-auto d-flex align-items-center">
+        <div class="profile-image-container">
+          <img :src="selectedChat?.receiverProfileImage || 'https://via.placeholder.com/50'" alt="User Image"
+            class="profile-image" />
         </div>
       </div>
     </div>
 
     <!-- Item Info Section with Accept and Decline buttons -->
-    <div class="item-info align-items-center">
+    <div class="item-info d-flex align-items-center flex-wrap">
+      <!-- Item Image -->
       <div class="col-auto d-flex align-items-center p-2">
         <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/50'" alt="Item Image"
           class="item-image" />
       </div>
 
-      <div class="item-details col-auto d-flex align-items-center">
-        <h5 class="mb-0">{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}</h5>
+      <!-- Title and Status Container -->
+      <div class="col d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+        <h5 class="mb-1 mb-md-0 text-truncate item-title">{{ selectedChat?.requestedItem?.title || 'Untitled Item' }}
+        </h5>
+
+        <!-- Status Tag -->
+        <div class="status-container mt-1 mt-md-0">
+          <template v-if="isCurrentUserDonor && selectedChat?.requestedItem?.status === 'pending'">
+            <button @click="setModalAction('accept')" class="btn accept-button me-2" data-bs-toggle="modal"
+              data-bs-target="#confirmModal">Accept</button>
+            <button @click="setModalAction('decline')" class="btn reject-button" data-bs-toggle="modal"
+              data-bs-target="#confirmModal">Decline</button>
+          </template>
+          <template v-else>
+            <span :class="[
+              'status-label',
+              selectedChat?.requestedItem?.status === 'accepted' ? 'accepted' :
+                selectedChat?.requestedItem?.status === 'declined' ? 'declined' : ''
+            ]">
+              {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' : selectedChat?.requestedItem?.status
+                === 'declined' ? 'Declined' : 'Pending' }}
+            </span>
+          </template>
+        </div>
       </div>
 
-      <div class="col-auto d-flex align-items-center">
-        <template v-if="isCurrentUserDonor && selectedChat?.requestedItem?.status === 'pending'">
-          <button @click="setModalAction('accept')" class="btn accept-button me-2" data-bs-toggle="modal"
-            data-bs-target="#confirmModal">Accept</button>
-          <button @click="setModalAction('decline')" class="btn reject-button" data-bs-toggle="modal"
-            data-bs-target="#confirmModal">Decline</button>
-        </template>
-        <template v-else>
-          <span :class="[
-            'status-label',
-            selectedChat?.requestedItem?.status === 'accepted' ? 'accepted' :
-              selectedChat?.requestedItem?.status === 'declined' ? 'declined' : ''
-          ]">
-            {{ selectedChat?.requestedItem?.status === 'accepted' ? 'Accepted' :
-              selectedChat?.requestedItem?.status === 'declined' ? 'Declined' :
-                'Pending' }}
-          </span>
-
-        </template>
-      </div>
     </div>
-
-
-
-
     <!-- Bootstrap Modal for Accept/Decline Confirmation -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content rounded-4 shadow-lg border-0">
+      <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
+        <div class="modal-content custom-modal-content">
 
           <!-- Illustration Section -->
           <div class="illustration-section">
             <img :src="selectedChat?.requestedItem?.image || 'https://via.placeholder.com/300x200'" alt="Item Image"
-              class="img-fluid rounded-top-4" style="width: 100%; height: auto;" />
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-              style="position: absolute; top: 10px; right: 10px;"></button>
+              class="modal-image" />
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <!-- Title Section -->
           <div class="text-section text-start px-4 pt-3">
-            <h5 class="fw-bold mb-2" style="font-size: 1.25rem;">{{ selectedChat?.requestedItem?.title || 'Cat Litter'
-              }}
-            </h5>
-            <p class="text-muted" style="font-size: 0.9rem;">Are you sure you want to <b> {{ modalAction }} </b> this
-              request?</p>
+            <h5 class="modal-title">{{ selectedChat?.requestedItem?.title || 'Cat Litter' }}</h5>
+            <p class="modal-text">Are you sure you want to <b>{{ modalAction }}</b> this request?</p>
           </div>
 
           <!-- Buttons Section -->
-          <div class="modal-footer modal-buttons d-flex justify-content-between border-0 p-4">
-            <button type="button" @click="confirmAction">Confirm</button>
-            <button type="button" data-bs-dismiss="modal">Cancel</button>
+          <div class="modal-footer modal-buttons d-flex justify-content-between">
+            <button type="button" @click="confirmAction" class="confirm-button">Confirm</button>
+            <button type="button" data-bs-dismiss="modal" class="cancel-button">Cancel</button>
           </div>
         </div>
       </div>
     </div>
 
+
     <!-- Messages Section -->
     <div class="messages">
-      <!-- System Message Section -->
-      <div v-if="systemMessage" class="system-message ">
-        <div class="'row">
-          <div class="col-auto">
-            <p>{{ systemMessage }}</p>
-          </div>
-          <!-- <div class="col-auto">
-            <small class="text-muted">{{ formatMessageTimestamp(systemMessageTimestamp) }}</small>
-          </div> -->
-        </div>
-      </div>
-
       <template v-for="(message, index) in messages" :key="message.id">
-        <!-- Display date divider -->
+        <!-- Date divider -->
         <div v-if="shouldShowDateDivider(message.timestamp, index)" class="timeline-divider">
           {{ formatDateDivider(message.timestamp) }}
         </div>
@@ -121,7 +106,7 @@
           </div>
 
           <!-- Timestamp -->
-          <small class="text-muted mx-2" :class="message.senderId === currentUserId ? 'me-2' : 'ms-2'">
+          <small class="text-muted mx-2 message-timestamp" :class="message.senderId === currentUserId ? 'me-2' : 'ms-2'">
             {{ formatMessageTimestamp(message.timestamp) }}
           </small>
         </div>
@@ -129,7 +114,7 @@
     </div>
 
     <!-- Message Input Section -->
-    <div class="message-input-container">
+    <div class="message-input-container d-flex align-items-center">
       <input v-model="newMessage" class="text-input" placeholder="Write your message here..."
         @keyup.enter="sendMessage" />
       <button @click="sendMessage" class="send-button">
@@ -197,7 +182,7 @@ export default {
   },
   methods: {
     goBackToChatList() {
-      console.log('Back button clicked'); // Debugging step
+
       this.$emit('backToChatList'); // Emit an event to notify the parent component
     },
     joinChat(chatId) {
@@ -224,7 +209,6 @@ export default {
       this.socket.off('newMessage', this.handleNewMessage);
     },
     handleNewMessage(message) {
-      console.log('New message received:', message); // Log the incoming message
       if (message.requestId === this.selectedChat.requestId) {
         this.messages.push(message);
         this.selectedChat.lastMessage = message.message;
@@ -232,7 +216,7 @@ export default {
       }
     },
     async fetchChatDetails() {
-  
+
 
       try {
         const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}`); // Ensure 'chatId' is consistent
@@ -286,7 +270,6 @@ export default {
 
       try {
         const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
-        console.log('Fetched messages:', response.data.messages); // Debugging
         this.messages = response.data.messages;
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -307,7 +290,6 @@ export default {
         this.selectedChat.requestedItem.status = 'declined';
 
       }
-
       await this.fetchChatDetails(); // Refresh chat details after action
       const dismissButton = document.querySelector('#confirmModal .btn-close');
       dismissButton.click(); // Simulate a click on the close button
@@ -315,7 +297,6 @@ export default {
     async acceptRequest() {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/accept`);
-        console.log('Request accepted');
         await this.fetchMessages(); // Refresh messages after accepting
       } catch (error) {
         console.error('Error accepting request:', error);
@@ -324,7 +305,6 @@ export default {
     async declineRequest() {
       try {
         await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/decline`);
-        console.log('Request declined');
         await this.fetchMessages(); // Refresh messages after declining
       } catch (error) {
         console.error('Error declining request:', error);
@@ -356,33 +336,31 @@ export default {
     },
   },
   watch: {
-  selectedChat: {
-    immediate: true,
-    handler(newChat) {
-      console.log('Selected chat:', newChat); // Log the new chat
-
-      if (newChat && newChat.chatId) { // Check for valid chatId
-        this.messages = []; // Clear previous messages
-        if (this.socket && this.socket.connected) {
-          this.joinChat(newChat.chatId);
-          this.fetchMessages(); // Fetch messages for the new chat
-          this.fetchChatDetails(); // Fetch chat details
+    selectedChat: {
+      immediate: true,
+      handler(newChat) {
+        if (newChat && newChat.chatId) { // Check for valid chatId
+          this.messages = []; // Clear previous messages
+          if (this.socket && this.socket.connected) {
+            this.joinChat(newChat.chatId);
+            this.fetchMessages(); // Fetch messages for the new chat
+            this.fetchChatDetails(); // Fetch chat details
+          } else {
+            console.warn("Socket is not connected yet. Retrying...");
+            const retryJoinChat = setInterval(() => {
+              if (this.socket && this.socket.connected) {
+                this.joinChat(newChat.chatId);
+                this.fetchMessages();
+                clearInterval(retryJoinChat); // Stop retrying once successful
+              }
+            }, 100);
+          }
         } else {
-          console.warn("Socket is not connected yet. Retrying...");
-          const retryJoinChat = setInterval(() => {
-            if (this.socket && this.socket.connected) {
-              this.joinChat(newChat.chatId);
-              this.fetchMessages();
-              clearInterval(retryJoinChat); // Stop retrying once successful
-            }
-          }, 100);
+          console.error('Selected chat is invalid or missing chatId');
         }
-      } else {
-        console.error('Selected chat is invalid or missing chatId');
-      }
+      },
     },
   },
-},
 
 
 };
@@ -391,5 +369,4 @@ export default {
 
 <style scoped>
 @import '../styles/chatroom.css';
-/* Adjust the path accordingly */
 </style>
