@@ -1,13 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
-const { db } = require('./config/firebase'); // Firebase configuration
+const { db , bucket } = require('./config/firebase'); // Firebase configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initialization
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
 const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
+const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
 // const upload = require('./middleware/uploadImage'); // Import the Multer middleware
 
 // thahmina added
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use(cors());
 
 
+
 // thahmina added
 app.use(bodyParser.json());
 const upload = multer({ storage: multer.memoryStorage() });
@@ -42,11 +44,32 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use('/api', dataRoutes); // Use the imported router
 app.use('/api', imageRoutes);
 
+
 app.use(bodyParser.json()); // To parse JSON request bodies
 
 // Testimonials routes
 app.get('/testimonials', getAllTestimonials);
 app.post('/upload-testimonial', upload.single('image'), uploadTestimonial);
+// Define route for fetching user data by ID
+app.get('/api/user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("Fetching user data for ID:", userId);
+
+    const userDoc = await db.collection('Users').doc(userId).get();
+
+    if (!userDoc.exists) {
+      console.error("No document found for ID:", userId);
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userData = userDoc.data();
+    const { role, profileImage, petDescription, name, email } = userData;
+    res.json({ role, profileImage, petDescription, name, email });
+  } catch (error) {
+    console.error("Error fetching user data:", error.message);
+    res.status(500).json({ error: 'Internal Server Error', message: error.message });
+  }});
 // Define route for fetching user data by ID
 app.get('/api/user/:id', async (req, res) => {
   try {
@@ -196,3 +219,54 @@ if (process.env.NODE_ENV !== 'test') {
 module.exports = app; // Export the app instance for testing
 
 
+// Define route for updating user profile by ID
+// app.put('/api/user/:id', async (req, res) => {
+//   const userId = req.params.id;
+//   const userData = req.body;
+
+//   try {
+//     await db.collection('Users').doc(userId).update(userData);
+//     res.status(200).send({ message: 'User updated successfully' });
+//   } catch (error) {
+//     console.error("Error updating user:", error.message);
+//     res.status(500).send({ error: "Failed to update user" });
+//   }
+// });
+
+// // Define route for uploading user profile photos
+app.post('/api/user/:id/upload', upload2, async (req, res) => {
+    const userId = req.params.id;
+    console.log(`Received upload request for user ID: ${userId}`);
+
+    try {
+        if (!req.file) {
+            console.error("No file uploaded!");
+            return res.status(400).json({ message: 'No file uploaded!' });
+        }
+
+        const fileBuffer = req.file.buffer;
+        const fileName = `profilePhotos/${userId}-${Date.now()}.png`; // Add timestamp for uniqueness
+        const file = bucket.file(fileName);
+
+        // Upload the file buffer to Firebase Storage
+        await file.save(fileBuffer, {
+            metadata: {
+                contentType: req.file.mimetype,
+            },
+            public: true
+        });
+
+        const photoURL = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+        console.log(`Uploaded file URL: ${photoURL}`);
+
+        // Update Firestore with the new photo URL
+        await db.collection('Users').doc(userId).update({
+            profileImage: photoURL
+        });
+
+        res.status(200).json({ message: 'File uploaded and URL saved!', photoURL });
+    } catch (error) {
+        console.error("Error uploading photo:", error.message);
+        res.status(500).json({ message: 'Error uploading photo', error: error.message });
+    }
+});

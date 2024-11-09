@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { doc, updateDoc } from 'firebase/firestore'; // Import Firestore functions
+import { db } from '../main'; // Ensure your Firebase config is correctly imported
 
 export default {
   name: 'EditProfileModal',
@@ -64,23 +65,30 @@ export default {
   methods: {
     async saveProfile() {
       try {
-        const userId = this.editableUser.id; 
-        console.log("Saving profile for user ID:", userId);
-        console.log("User data to be updated:", this.editableUser);
-        await axios.put(`http://localhost:8000/api/user/${userId}`, this.editableUser);
-        
-        this.$emit('save', this.editableUser); 
-        this.close(); 
+        // Firestore document reference
+        const userDocRef = doc(db, 'Users', this.editableUser.id); 
+
+        // Update the document in Firestore
+        await updateDoc(userDocRef, {
+          name: this.editableUser.name,
+          email: this.editableUser.email,
+          petDescription: this.editableUser.petDescription,
+        });
+
+        // Emit the updated user data to the parent component
+        this.$emit('save', this.editableUser);
+        this.close(); // Close the modal
       } catch (error) {
-        console.error("Error updating profile:", error.response?.data || error.message);
+        console.error("Error updating profile:", error.message);
       }
     },
     close() {
-      this.$emit('close'); 
+      this.$emit('close');
     }
   }
 };
 </script>
+
 
 <style scoped>
 .modal-overlay {
@@ -106,6 +114,8 @@ export default {
 h2 {
   margin-bottom: 20px;
   text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .form-group {

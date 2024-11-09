@@ -22,6 +22,8 @@ import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 import AdminView from '@/components/AdminView.vue';
 import CancelDonation from '../components/CancelDonation.vue';
+import ManageAccount from '../components/ManageAccount.vue'
+// import UserAccount from '../components/UserAccount.vue';
 import WithdrawalView from '../components/WithdrawalView.vue';
 
 const routes = [
@@ -30,6 +32,10 @@ const routes = [
     { path: '/marketplacee', component: CreateDonationForm },
     { path: '/marketplace', component: MarketplaceView },
     { path: '/managepost', component: ManagePostView },
+    {
+        path: '/manage-account',
+        name: 'ManageAccount',
+        component: ManageAccount },
     {
         path: '/:id',
         name: 'DonationDetails',

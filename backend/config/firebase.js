@@ -22,7 +22,3 @@ console.log("Bucket Name:", bucket.name);
 
 // Export the db and bucket references
 module.exports = { db, admin, bucket };
-
-
-// Export the db and bucket references
-module.exports = { db, admin, bucket };
