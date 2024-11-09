@@ -1,10 +1,11 @@
 <!-- FilterSidebar.vue -->
 <template>
   <div class="filter-sidebar">
-
     <!-- Sort by Date -->
-    <h4 class="mt-4">Sort by Date</h4>
-    <div class="filter-group">
+    <h4 class="mt-4" @click="toggleSection('isDateFilterOpen')">
+      Sort by Date
+    </h4>
+    <div v-show="isDateFilterOpen" class="filter-group">
       <label>
         <input type="radio" value="mostRecent" v-model="selectedSortOrder" />
         Most Recent
@@ -15,33 +16,33 @@
       </label>
     </div>
 
-    
-
     <!-- Filter by Condition -->
-    <h4 class="mt-4">Filter by Condition</h4>
-    <div class="filter-group">
+    <h4 class="mt-4" @click="toggleSection('isConditionFilterOpen')">
+      Filter by Condition
+    </h4>
+    <div v-show="isConditionFilterOpen" class="filter-group">
       <label v-for="condition in conditions" :key="condition">
         <input type="checkbox" :value="condition" v-model="selectedConditions" />
         {{ condition }}
       </label>
     </div>
 
-   
-
     <!-- Filter by Item Category -->
-    <h4 class="mt-4">Filter by Item Category</h4>
-    <div class="filter-group">
+    <h4 class="mt-4" @click="toggleSection('isItemCategoryFilterOpen')">
+      Filter by Item Category
+    </h4>
+    <div v-show="isItemCategoryFilterOpen" class="filter-group">
       <label v-for="category in itemCategories" :key="category">
         <input type="checkbox" :value="category" v-model="selectedItemCategories" />
         {{ category }}
       </label>
     </div>
 
-    
-
     <!-- Filter by Pet Type -->
-    <h4 class="mt-4">Filter by Pet Type</h4>
-    <div class="filter-group">
+    <h4 class="mt-4" @click="toggleSection('isPetTypeFilterOpen')">
+      Filter by Pet Type
+    </h4>
+    <div v-show="isPetTypeFilterOpen" class="filter-group">
       <label>
         <input type="checkbox" value="Cat" v-model="selectedPetTypes" />
         Cat
@@ -52,28 +53,32 @@
       </label>
     </div>
 
-    
-
     <!-- Filter by Location -->
-    <h4 class="mt-4">Filter by Location</h4>
-    <div class="filter-group">
+    <h4 class="mt-4" @click="toggleSection('isLocationFilterOpen')">
+      Filter by Location
+    </h4>
+    <div v-show="isLocationFilterOpen" class="filter-group">
       <label v-for="location in locations" :key="location">
         <input type="checkbox" :value="location" v-model="selectedLocations" />
         {{ location }}
       </label>
     </div>
 
-    
-
     <!-- Reset Filter Button -->
     <button class="reset-button" @click="resetFilters">Reset Filters</button>
   </div>
 </template>
 
+
 <script>
 export default {
   data() {
     return {
+      isDateFilterOpen: false,
+      isConditionFilterOpen: false,
+      isItemCategoryFilterOpen: false,
+      isPetTypeFilterOpen: false,
+      isLocationFilterOpen: false,
       selectedConditions: [],
       selectedItemCategories: [],
       selectedPetTypes: [],
@@ -125,12 +130,27 @@ export default {
     },
   },
   methods: {
+    toggleSection(section) {
+      if (Object.prototype.hasOwnProperty.call(this, section)) {
+        this[section] = !this[section];
+      } else {
+        console.error(`Section ${section} not found in data properties`);
+      }
+    },
+    checkScreenSize() {
+      const isLargeScreen = window.innerWidth >= 992;
+      this.isDateFilterOpen = isLargeScreen;
+      this.isConditionFilterOpen = isLargeScreen;
+      this.isItemCategoryFilterOpen = isLargeScreen;
+      this.isPetTypeFilterOpen = isLargeScreen;
+      this.isLocationFilterOpen = isLargeScreen;
+    },
     emitFilters() {
       this.$emit("filter", {
         conditions: this.selectedConditions,
         itemCategories: this.selectedItemCategories,
         petTypes: this.selectedPetTypes,
-        locations: this.selectedLocations, // Include selected locations in the emitted data
+        locations: this.selectedLocations,
         sortOrder: this.selectedSortOrder,
       });
     },
@@ -138,16 +158,24 @@ export default {
       this.selectedConditions = [];
       this.selectedItemCategories = [];
       this.selectedPetTypes = [];
-      this.selectedLocations = []; // Reset selected locations
-      this.selectedSortOrder = []; // Reset sort order
+      this.selectedLocations = [];
+      this.selectedSortOrder = [];
       this.emitFilters();
     },
+  },
+  created() {
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkScreenSize);
   },
 };
 </script>
 
 <style scoped>
 /* Existing styles */
+/* Optionally, hide filter options on xs screens */
 .filter-sidebar {
   padding: 25px;
   background-color: #ffffff;
@@ -161,6 +189,7 @@ h4 {
   font-size: 1.1em;
   color: #444;
   font-weight: 600;
+  cursor: pointer; /* Added for clarity */
   font-family: "Montserrat", sans-serif;
   border-bottom: 2px solid #ececec;
   padding-bottom: 5px;
@@ -169,7 +198,6 @@ h4 {
 .filter-group {
   margin-bottom: 18px;
 }
-
 
 label {
   display: flex;
@@ -188,10 +216,6 @@ input[type='radio'] {
   accent-color: #5a6e8c;
   transform: scale(1.1);
 }
-.divider {
-  border-bottom: 1px solid #e2e2e2;
-  margin: 0;
-}
 
 .reset-button {
   margin-top: 20px;
@@ -203,28 +227,17 @@ input[type='radio'] {
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   width: 100%;
   text-align: center;
   font-size: medium;
 }
 
-.reset-button:hover {
-  background: linear-gradient(135deg, #8b5726 0%, #b3573d 100%);
-  transform: translateY(-2px);
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.reset-button:active {
-  transform: translateY(1px);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-
-@media (max-width: 768px) {
-  .filter-sidebar {
-    padding: 15px;
-    border-radius: 10px;
+@media (max-width: 300px) {
+  .filter-group {
+    display: none;
+  }
+  .filter-group[v-show="true"] {
+    display: block;
   }
 }
 </style>

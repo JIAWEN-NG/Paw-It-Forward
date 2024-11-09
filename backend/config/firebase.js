@@ -1,4 +1,3 @@
-
 // firebase.js
 var admin = require("firebase-admin");
 require('dotenv').config(); // Load environment variables
@@ -23,5 +22,3 @@ console.log("Bucket Name:", bucket.name);
 
 // Export the db and bucket references
 module.exports = { db, admin, bucket };
-
-

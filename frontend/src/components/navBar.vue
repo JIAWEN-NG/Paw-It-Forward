@@ -26,8 +26,11 @@
                         <li class="nav-item">
                             <router-link to="/testimonials" active-class="active-link" class="nav-link mx-lg-2">Testimonials</router-link>
                         </li>
-                        <li v-if="isUserLoggedIn" class="nav-item">
+                        <li v-if="isUserLoggedIn && !isAdmin" class="nav-item">
                             <router-link to="/managepost" active-class="active-link" class="nav-link mx-lg-2">Manage Posts</router-link>
+                        </li>
+                        <li v-if="isAdmin" class="nav-item">
+                            <router-link to="/admin" active-class="active-link" class="nav-link mx-lg-2">Manage Users</router-link>
                         </li>
                     </ul>
                 </div>
@@ -49,10 +52,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                    <router-link to="/profile" class="dropdown-item">Edit Profile</router-link>
-                    </li>
-                    <li v-if="isAdmin">
-                    <router-link to="/admin" class="dropdown-item">Manage Users</router-link>
+                    <router-link to="/manage-account" class="dropdown-item">Edit Profile</router-link>
                     </li>
                     <li>
                     <button @click="handleSignOut" class="dropdown-item">Sign Out</button>

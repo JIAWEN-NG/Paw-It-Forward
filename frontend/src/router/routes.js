@@ -15,13 +15,16 @@ import CreateFundraisingForm from '../components/CreateFundraisingForm.vue';
 import FundraisingView from '../components/FundraisingView.vue';
 import FundraisingDetail from '../components/FundraisingDetail.vue';
 import DonateSuccessful from '../components/DonateSuccessful.vue';
-import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
+//import CreateWithdrawalForm from '../components/CreateWithdrawalForm.vue';
 import CombinedAuth from '../components/CombinedAuth.vue';
 import aboutPage from '../components/aboutPage.vue';
 import teamPage from '../components/teamPage.vue';
 import Testimonial from '../components/Testimonial.vue'; // Import the Testimonial page
 import AdminView from '@/components/AdminView.vue';
 import CancelDonation from '../components/CancelDonation.vue';
+import ManageAccount from '../components/ManageAccount.vue'
+// import UserAccount from '../components/UserAccount.vue';
+import WithdrawalView from '../components/WithdrawalView.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -29,6 +32,10 @@ const routes = [
     { path: '/marketplacee', component: CreateDonationForm },
     { path: '/marketplace', component: MarketplaceView },
     { path: '/managepost', component: ManagePostView },
+    {
+        path: '/manage-account',
+        name: 'ManageAccount',
+        component: ManageAccount },
     {
         path: '/:id',
         name: 'DonationDetails',
@@ -78,6 +85,11 @@ const routes = [
         path: '/meetus',
         name: 'teamPage',
         component: teamPage,
+    },
+    {
+        path: '/withdrawalview',
+        name: 'WithdrawalView',
+        component: WithdrawalView,
     },
 ];
 

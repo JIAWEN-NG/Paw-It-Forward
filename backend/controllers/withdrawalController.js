@@ -78,7 +78,51 @@ const getAllWithdrawals = async (req, res) => {
     }
 };
 
+// Function to get all withdrawals by userId
+const getAllWithdrawalsByUserId = async (req, res) => {
+    const { userId } = req.params; // Expect userId to be in the URL parameters
+
+    // Check if userId is provided
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    try {
+        // Query withdrawals collection for documents matching the userId
+        const withdrawalsRef = db.collection('Withdrawals').where('userId', '==', userId);
+        const snapshot = await withdrawalsRef.get();
+
+        if (snapshot.empty) {
+            return res.status(404).json({ message: 'No withdrawals found for this user' });
+        }
+
+        const userWithdrawals = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                userId: data.userId,
+                name: data.name,
+                accountNo: data.accountNo,
+                amountWithdraw: data.amountWithdraw,
+                proofImg: data.proofImg || '',
+                postId: data.postId,
+                reason: data.reason,
+                status: data.status,
+                requestedAt: data.requestedAt ? data.requestedAt.toDate().toISOString() : null,
+            };
+        });
+
+        res.status(200).json(userWithdrawals);
+    } catch (error) {
+        console.error('Error fetching withdrawals by user ID:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
 module.exports = {
     createWithdrawal,
     getAllWithdrawals,
+    getAllWithdrawalsByUserId,
 };

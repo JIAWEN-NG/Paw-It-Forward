@@ -1,19 +1,39 @@
-
+/* General Layout */
 .chat-room {
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: #d2d3d4 solid 1px;
+  border: 1px solid #d2d3d4;
   background-color: #f9fafb;
 }
 
+/* Header and Item Info */
 .chat-header,
 .item-info {
   display: flex;
-  padding: 0.75rem 1rem;
-  background-color: #fcfefb;
-  border-bottom: #d2d3d4 solid 1px;
-  
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #d2d3d4;
+  position: relative;
+  min-height: 80px;
+}
+
+.back-arrow {
+  position: absolute;
+}
+
+.chat-header h5 {
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+/* Profile Images */
+.profile-image-container {
+  position: absolute;
+  top: 50%;
+  right: 1rem; /* Moves profile image to the right side */
+  transform: translateY(-50%);
 }
 
 .profile-image {
@@ -26,19 +46,66 @@
 .item-image {
   width: 60px;
   height: 60px;
-  /* Optional for styling */
   object-fit: cover;
 }
 
-.user-details,
+/* Item Details */
 .item-details {
   flex-grow: 1;
   overflow: hidden;
   font-size: 1.2rem;
   text-align: left;
 }
+/* Custom modal dialog width */
+.custom-modal-dialog {
+  max-width: 400px;
+}
+
+/* Modal content styling */
+.custom-modal-content {
+  border-radius: 1rem;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+/* Illustration section styling */
+.modal-image {
+  width: 100%;
+  height: auto;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Title section styling */
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.modal-text {
+  font-size: 0.9rem;
+  color: #6c757d; /* Bootstrap text-muted color */
+}
+
+/* Footer button section styling */
+.modal-buttons {
+  padding: 1.5rem;
+  border-top: none;
+}
+
+.confirm-button, .cancel-button {
+  padding: 0.5rem 1rem;
+}
 
 
+/* Messages List */
 .messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -46,13 +113,18 @@
   display: flex;
   flex-direction: column;
   padding-top: 5%;
-
   background-image: url("https://firebasestorage.googleapis.com/v0/b/purrfessorpaws-40ca2.appspot.com/o/chat-bg.jpg?alt=media&token=9d3ddaf3-7286-48c0-ab8b-d3657ef4ea27");
+  background-size: cover; /* Ensure the image covers the entire area */
+  background-position: center; /* Center the image within the container */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
   background-blend-mode: overlay;
   background-color: rgba(236, 236, 236, 0.5);
-  /* Overlay color with opacity */
+}
+.messages::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }
 
+/* Message Bubble */
 .message {
   display: flex;
   align-items: center;
@@ -61,9 +133,9 @@
 
 .message.received {
   align-self: flex-start;
-  font-size: 1rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
 }
-
 
 .message.received .avatar {
   width: 40px;
@@ -73,53 +145,45 @@
   margin-right: 0.75rem;
 }
 
-.message.sent .message-content {
-  background-color: #d1f7c4;
-  align-self: flex-end;
-  /* Additional styling to ensure alignment */
-  margin-left: auto;
-  border-radius: 10px;
-
-
-}
-
-.message-content {
-  background-color: #ffffff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  max-width: 60%;
-  display: flex;
-  flex-direction: column;
-  ;
-}
-
-.message-content p {
-  margin: 0;
-  font-size: 1.2rem;
-  text-align: left;
-}
-
-.message-content small {
-  font-size: 0.75rem;
-  color: #999;
-  margin-top: 0.25rem;
-}
-
-.message-text {
-  font-size: 0.875rem;
-  color: #333333;
-  margin: 0;
-}
-
 .message.received .message-content {
   background-color: #e9e9e9;
 }
 
+.message.sent .message-content {
+  background-color: #d1f7c4;
+  align-self: flex-end;
+  margin-left: auto;
+  border-radius: 10px;
+}
+
+.message-content {
+  background-color: #ffffff;
+  padding: 0.5rem 0.5rem;
+  border-radius: 8px;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  text-align: left;
+}
 .message-timestamp {
-  font-size: 0.75rem;
+  font-size: 0.85rem; /* Ensure a consistent size */
+  color: #6c757d; /* Consistent color */
+  font-weight: normal; /* Ensure it's not bold */
+  white-space: nowrap; /* Prevent the timestamp from wrapping to a new line */
+}
+
+
+.message-timestamp {
+  font-size: 0.6rem;
   color: #999999;
 }
 
+/* Message Input */
 .message-input-container {
   display: flex;
   align-items: center;
@@ -135,28 +199,32 @@
   outline: none;
 }
 
-
-
+/* Buttons */
 .button-group {
   display: flex;
   gap: 0.5rem;
+  padding: 5px;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
 
-.accept-button {
+.accept-button,
+.reject-button {
   position: relative;
-  padding: 10px 25px;
+  padding: 8px 25px;
   background: transparent;
   border-radius: 10px;
-  border: 2px solid #2aaa3f;
-  outline: 2px solid #2aaa3f;
-  outline-offset: -2px;
   font-size: 1rem;
-  color: #2aaa3f;
   font-weight: 500;
   cursor: pointer;
   transition: outline-offset 200ms ease;
+}
+
+.accept-button {
+  border: 2px solid #2aaa3f;
+  outline: 2px solid #2aaa3f;
+  outline-offset: -2px;
+  color: #2aaa3f;
 }
 
 .accept-button:hover {
@@ -169,18 +237,10 @@
 }
 
 .reject-button {
-  position: relative;
-  padding: 10px 15px;
-  background: transparent;
-  border-radius: 10px;
   border: 2px solid #f54500;
   outline: 2px solid #f54500;
   outline-offset: -2px;
-  font-size: 1rem;
   color: #f54500;
-  font-weight: 500;
-  cursor: pointer;
-  transition: outline-offset 200ms ease;
 }
 
 .reject-button:hover {
@@ -192,10 +252,35 @@
   transform: scale(0.95);
 }
 
+
+/* Button styles for default */
+.status-container {
+  display: flex;
+  gap: 10px;
+}
+
+.status-container .btn {
+  width: auto; /* Default width for larger screens */
+  font-size: 16px;
+}
+
+/* Responsive adjustments for medium screens */
+@media (min-width: 768px) and (max-width: 991px) {
+  .status-container {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 5px; /* Add some space between the buttons */
+  }
+  .status-container .btn {
+    width: 100%; /* Make buttons take full width */
+  }
+}
+/* Status Labels */
 .status-label {
-  font-weight: bold;
-  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+  padding: 0.5rem 0.5rem;
   border-radius: 0.25rem;
+  color: rgb(112, 112, 112);
+  background-color: #dddddd;
 }
 
 .status-label.accepted {
@@ -207,16 +292,16 @@
   color: red;
   background-color: #fce8e8;
 }
-
+/* System Message */
 .system-message {
   text-align: center;
   font-size: 1rem;
-  text-align: center;
-  margin: 5px;
+  margin-bottom: 3%;
   color: #6b7280;
   font-weight: 500;
 }
 
+/* Send Button */
 .send-button {
   background: #6771dd;
   color: #ffffff;
@@ -231,23 +316,23 @@
   z-index: 1;
   position: relative;
   overflow: hidden;
-  box-shadow: 0px 4px 10px rgba(103, 113, 221, 0.3); /* Subtle shadow for depth */
+  box-shadow: 0px 4px 10px rgba(103, 113, 221, 0.3);
 }
 
 /* Hover effect */
 .send-button:hover {
-  background-color: #404491; /* Darker shade on hover */
-  box-shadow: 0px 6px 12px rgba(90, 98, 212, 0.4); /* Stronger shadow on hover */
-  transform: scale(1.05); /* Slightly enlarge */
+  background-color: #404491;
+  box-shadow: 0px 6px 12px rgba(90, 98, 212, 0.4);
+  transform: scale(1.05);
 }
 
 /* Scale and bounce effect on click */
 .send-button:active {
-  transform: scale(0.95); /* Shrink slightly */
+  transform: scale(0.95);
   animation: bounce 0.4s ease;
 }
 
-/* Pulse effect that emanates from the button */
+/* Pulse effect */
 .send-button::before {
   content: '';
   position: absolute;
@@ -258,7 +343,6 @@
   transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: -1;
 }
-
 
 /* Show the pulse effect on click */
 .send-button:active::before {
@@ -278,7 +362,8 @@
 
 /* Bounce animation */
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(0.95);
   }
   50% {
@@ -286,8 +371,7 @@
   }
 }
 
-
-
+/* Timeline Divider */
 .timeline-divider {
   text-align: center;
   color: #6b7280;
@@ -307,10 +391,12 @@
   margin: 0 0.5rem;
 }
 
+/* Modal Buttons */
 .modal-buttons {
   display: flex;
   text-align: center;
   width: 380px;
+  flex-wrap: wrap;
   gap: 10px;
   --b: 2px;   /* the border thickness */
   --h: 1.5em; /* the height */
@@ -318,59 +404,79 @@
 
 .modal-buttons button {
   --_c: green;
-  flex: calc(1.25 + var(--_s,0));
+  flex: calc(1.25 + var(--_s, 0));
   min-width: 0;
   font-size: 20px;
   height: var(--h);
   cursor: pointer;
   color: var(--_c);
   border: var(--b) solid var(--_c);
-  background: 
-    conic-gradient(at calc(100% - 1.3*var(--b)) 0,var(--_c) 209deg, #0000 211deg) 
+  background:
+    conic-gradient(at calc(100% - 1.3 * var(--b)) 0, var(--_c) 209deg, #0000 211deg)
     border-box;
-  clip-path: polygon(0 0,100% 0,calc(100% - 0.577*var(--h)) 100%,0 100%);
-  padding: 0 calc(0.288*var(--h)) 0 0;
-  margin: 0 calc(-0.288*var(--h)) 0 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * var(--h)) 100%, 0 100%);
+  padding: 0 calc(0.288 * var(--h)) 0 0;
+  margin: 0 calc(-0.288 * var(--h)) 0 0;
   box-sizing: border-box;
-  transition: flex .4s;
+  transition: flex 0.4s;
 }
+
 .modal-buttons button + button {
   --_c: red;
-  flex: calc(.75 + var(--_s,0));
-  background: 
-    conic-gradient(from -90deg at calc(1.3*var(--b)) 100%,var(--_c) 119deg, #0000 121deg) 
+  flex: calc(0.75 + var(--_s, 0));
+  background:
+    conic-gradient(from -90deg at calc(1.3 * var(--b)) 100%, var(--_c) 119deg, #0000 121deg)
     border-box;
-  clip-path: polygon(calc(0.577*var(--h)) 0,100% 0,100% 100%,0 100%);
-  margin: 0 0 0 calc(-0.288*var(--h));
-  padding: 0 0 0 calc(0.288*var(--h));
+  clip-path: polygon(calc(0.577 * var(--h)) 0, 100% 0, 100% 100%, 0 100%);
+  margin: 0 0 0 calc(-0.288 * var(--h));
+  padding: 0 0 0 calc(0.288 * var(--h));
 }
+
 .modal-buttons button:focus-visible {
-  outline-offset: calc(-2*var(--b));
-  outline: calc(var(--b)/2) solid #000;
+  outline-offset: calc(-2 * var(--b));
+  outline: calc(var(--b) / 2) solid #000;
   background: none;
   clip-path: none;
   margin: 0;
   padding: 0;
 }
+
 .modal-buttons button:focus-visible + button {
   background: none;
   clip-path: none;
   margin: 0;
   padding: 0;
 }
+
 .modal-buttons button:has(+ button:focus-visible) {
   background: none;
   clip-path: none;
   margin: 0;
   padding: 0;
 }
+
 button:hover,
 button:active:not(:focus-visible) {
-  --_s: .75;
+  --_s: 0.75;
 }
+
 button:active {
   box-shadow: inset 0 0 0 100vmax var(--_c);
   color: #fff;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 576px) {
+  .modal-buttons {
+    flex-direction: column; /* Stack buttons vertically on extra-small screens */
+    gap: 5px;
+  }
+  .modal-buttons button {
+    width: 100%;
+    height: 2.5em;
+    font-size: 1.1rem; /* Slightly larger font for better readability */
+    padding: 0;
+  }
 }
 
 

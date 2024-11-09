@@ -71,15 +71,22 @@
           rows="4"
         ></textarea>
         <div class="modal-buttons">
-          <button @click="sendRequest" class="btn btn-outline-primary">
-            Send Request
-          </button>
           <button @click="closeRequestModal" class="btn btn-secondary">
             Cancel
+          </button>
+          <button @click="sendRequest" class="btn btn-outline-primary">
+            Send Request
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Notification Message Modal -->
+    <div v-if="notificationMessage" class="notification-modal" :class="notificationType">
+      <p>{{ notificationMessage }}</p>
+    </div>
+
+    
   </div>
 </template>
 
@@ -99,6 +106,8 @@ export default {
       selectedDonation: null,
       requestMessage: '',
       currentUserId: null,
+      notificationMessage: '',      // For displaying notifications
+      notificationType: '',         // "success" or "error"
     };
   },
   created() {
@@ -124,7 +133,10 @@ export default {
     },
     async sendRequest() {
       if (!this.requestMessage) {
-        alert('Please enter a message.');
+        this.notificationMessage = "Please enter a message.";
+        this.notificationType = "error";
+        // added
+        this.$emit('notification', { type: 'error', message: this.notificationMessage }); // Emit event
         return;
       }
       console.log('receiver id sending from frontend', this.currentUserId);
@@ -138,6 +150,15 @@ export default {
         status: "pending"
       };
 
+      console.log('Request Payload:', requestPayload);
+
+      if (Object.values(requestPayload).includes(null)) {
+        this.notificationMessage = "Missing required fields.";
+        this.notificationType = "error";
+        this.$emit('notification', { type: 'error', message: this.notificationMessage });
+        return;
+      }
+
       try {
         const response = await fetch('http://localhost:8000/api/requests', {
           method: 'POST',
@@ -150,14 +171,18 @@ export default {
         if (!response.ok) {
           const errorData = await response.json();
           console.error('Server error response:', errorData);
+          this.notificationMessage = "Error sending request.";
+          this.notificationType = "error";
+          this.$emit('notification', { type: 'error', message: this.notificationMessage }); // Emit event
           throw new Error('Error sending request');
         }
-
-        alert('Request sent successfully!');
+        console.log("Open notif");
+        this.notificationMessage = "Request sent successfully!";
+        this.notificationType = "success";
+        this.$emit('notification', { type: 'success', message: this.notificationMessage }); // Emit event
         this.closeRequestModal();
       } catch (error) {
         console.error('Error sending request:', error);
-        alert('There was an error sending your request.');
       }
     },
   },
@@ -165,6 +190,32 @@ export default {
 </script>
 
 <style scoped>
+/* Notification Modal Styling */
+.notification-modal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  font-size: 0.875rem;
+  max-width: 90%;
+  text-align: center;
+}
+
+.notification-modal.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.notification-modal.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 .donation-list {
   font-family: 'Montserrat', sans-serif;
   position: relative;
@@ -340,6 +391,7 @@ export default {
 .modal-content textarea {
   width: 100%;
   margin-bottom: 15px;
+  padding: 10px; /* Add padding to the left */
 }
 
 .modal-buttons {

@@ -22,10 +22,10 @@
                             </td>
                             <td class="fw-semibold">{{ user.name }}</td>
                             <td>{{ user.email }}</td>
-                            <td><span class="badge bg-info text-white px-3 py-1 rounded-pill">{{ user.role }}</span>
+                            <td><span class="badge bg-info text-white px-3 py-1 fs-7">{{ user.role }}</span>
                             </td>
                             <td>
-                                <span :class="statusBadgeClass(getUserStatus(user))" class="px-3 py-1 rounded-pill">
+                                <span :class="statusBadgeClass(getUserStatus(user))">
                                     {{ getUserStatus(user) }}
                                 </span>
                             </td>
@@ -33,8 +33,8 @@
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <button v-if="status === 'Pending'" @click="openApproveModal(user)"
-                                        class="btn btn-outline-success btn-sm fancy-btn">
-                                        <i class="bi bi-check-circle me-1"></i> Approve
+                                        class="btn btn-outline-success btn-sm fancy-btn  ">
+                                        <i class="bi bi-check-circle me-1 "></i> Approve
                                     </button>
                                     <button v-if="status === 'Pending'" @click="openRejectModal(user)"
                                         class="btn btn-outline-danger btn-sm fancy-btn">
@@ -68,9 +68,9 @@
         </div>
 
         <!-- User Details Modal -->
-        <div v-if="showViewModal" class="modal fade show" tabindex="-1"
+        <div v-if="showViewModal" class="modal fade show custom-modal" tabindex="-1"
             style="display: block; background-color: rgba(0, 0, 0, 0.5);" @click.self="closeModal">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header border-0 d-flex justify-content-between align-items-center">
                         <h5 class="modal-title fw-bold">User Details</h5>
@@ -79,15 +79,15 @@
                     <div class="modal-body d-flex align-items-center">
                         <div class="me-4">
                             <img :src="selectedUser.verificationPhoto || 'path/to/default/image.jpg'" alt="User Image"
-                                class="rounded shadow" style="width: 150px; height: 150px; object-fit: cover; ">
+                                class="user-image-view">
                         </div>
 
                         <div class="user-info">
-                            <h5 class="fw-semibold">{{ selectedUser.name }}</h5>
+                            <h5 class="details-title">Details</h5>
+                            <p><strong>Name:</strong> {{ selectedUser.name }}</p>
                             <p><strong>Email:</strong> {{ selectedUser.email }}</p>
                             <p><strong>Role:</strong> {{ selectedUser.role }}</p>
-                            <p><strong>Status:</strong> {{ selectedUser.status }}</p>
-                            <p v-if="selectedUser.rejectionReason"><strong>Reason:</strong> {{
+                            <p v-if="selectedUser.rejectionReason"><strong>Rejected Reason:</strong> {{
                                 selectedUser.rejectionReason }}</p>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                         <button type="button" class="btn-close" @click="closeModal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Provide a reason for rejecting {{ selectedUser.name }}:</p>
+                        <p>Provide a reason for rejecting <b>@{{ selectedUser.name }}</b>:</p>
                         <textarea v-model="rejectionReason" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="modal-footer">
@@ -129,7 +129,7 @@
                         <button type="button" class="btn-close" @click="closeModal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to approve {{ selectedUser.name }}?</p>
+                        <p>Are you sure you want to approve <b>@{{ selectedUser.name }}</b>?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
@@ -166,7 +166,7 @@ export default {
         };
     },
     computed: {
-      
+
         paginatedUsers() {
             const start = (this.currentPage - 1) * this.itemsPerPage;
             const end = start + this.itemsPerPage;
@@ -187,12 +187,18 @@ export default {
             }
         },
         statusBadgeClass(status) {
-            return {
-                'badge bg-warning text-dark': status === 'Pending',
-                'badge bg-success text-white': status === 'Approved',
-                'badge bg-danger text-white': status === 'Rejected'
-            }[status];
+            switch (status) {
+                case 'Pending':
+                    return 'badge text-warning fs-6 fw-normal'; // Yellow badge
+                case 'Approved':
+                    return 'badge text-success fs-6 fw-normal'; // Green badge
+                case 'Rejected':
+                    return 'badge text-danger fs-6 fw-normal'; // Red badge
+                default:
+                    return 'badge text-white fs-6 fw-normal'; // Default badge if status is unknown
+            }
         },
+
         goToPage(page) {
             if (page >= 1 && page <= this.totalPages) {
                 this.currentPage = page;
@@ -201,6 +207,7 @@ export default {
         openModal(user) {
             this.selectedUser = user;
             this.showViewModal = true;
+            this.$emit('view', user.id); // Emit the view event
         },
         openRejectModal(user) {
             this.selectedUser = user;
@@ -270,25 +277,6 @@ export default {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.status-badge {
-    padding: 0.3em 0.6em;
-    font-size: 0.875em;
-    color: #ffffff;
-    border-radius: 12px;
-}
-
-.status-badge-pending {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.status-badge-approved {
-    background-color: #28a745;
-}
-
-.status-badge-rejected {
-    background-color: #dc3545;
-}
 
 .btn-fancy {
     padding: 0.4rem 0.8rem;
@@ -299,5 +287,53 @@ export default {
 .btn-fancy:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal background overlay */
+.custom-modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Larger modal dialog */
+.custom-modal-dialog {
+    max-width: 800px;
+    /* Adjust this size as needed */
+}
+
+/* Image styling */
+.user-image-view {
+    width: 400px;
+    /* Adjust for desired size */
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* User info styling */
+.user-info p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.user-info {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.details-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* Styling for individual detail items */
+.user-info p {
+    margin: 0.25rem 0;
+}
+
+.user-info p strong {
+    color: #555;
 }
 </style>

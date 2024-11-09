@@ -41,12 +41,12 @@ router.post('/requests', requestController.createRequest);
 
 
 // Admin routes
-router.put('/admin/users/:userId/approve', adminController.approveUser);
-router.put('/admin/users/:userId/reject', adminController.rejectUser);
+router.patch('/admin/users/:userId/approve', adminController.approveUser);
+router.patch('/admin/users/:userId/reject', adminController.rejectUser);
 router.get('/admin/users', adminController.getUserByStatus);
 router.get('/admin/withdrawals', adminController.getAllWithdrawals);
-router.put('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
-router.put('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
+router.patch('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
+router.patch('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
 
 
 
@@ -72,7 +72,7 @@ router.post('/marketplace', upload, async (req, res) => {
 
     try {
         // Ensure userId is sent in the request body
-        const userId = req.body.userId || "p8v0JBWhlfNZ13DzpBFN"; // Use default if not provided
+        const userId = req.body.userId ; 
 
         // Log request body and userId to verify
         console.log('Request Body:', req.body);
@@ -181,7 +181,7 @@ router.put('/fundraising', upload, fundraisingController.editFundraising);
 // Withdrawal Routes
 router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
 router.get('/withdrawals', withdrawalController.getAllWithdrawals);
-
+router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserId);
 
 // thahmina added
 // Testimonial routes
