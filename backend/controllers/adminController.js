@@ -64,7 +64,7 @@ const rejectUser = async (req, res) => {
 };
 // Define mock transfer function above the controller
 const mockTransferMoney = async (userId, amount, accountDetails) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             resolve({ success: true, transferId: `mock_transfer_${Date.now()}` });
         }, 1000);
@@ -79,12 +79,15 @@ const approveWithdrawal = async (req, res) => {
     try {
         const transferResult = await mockTransferMoney(userId, amount, accountDetails);
         if (transferResult.success) {
-            await Withdrawal.updateOne({ _id: requestId }, { 
-                status: 'approved', 
-                processedAt: new Date(), 
-                transactionId: transferResult.transferId 
+            // Update the withdrawal request in Firestore
+            const withdrawalRef = db.collection('Withdrawals').doc(requestId);
+            await withdrawalRef.update({
+                status: 'Approved',
+                processedAt: new Date(),
+                transactionId: transferResult.transferId,
             });
-            return res.status(200).json({ message: 'Withdrawal approved and transferred successfully.' });
+
+            return res.status(200).json({ message: 'Withdrawal approved and processed successfully.' });
         } else {
             return res.status(500).json({ message: 'Transfer failed.' });
         }
@@ -92,7 +95,6 @@ const approveWithdrawal = async (req, res) => {
         console.error('Error approving withdrawal:', error);
         return res.status(500).json({ message: 'Internal server error.' });
     }
-   
 };
 
 
