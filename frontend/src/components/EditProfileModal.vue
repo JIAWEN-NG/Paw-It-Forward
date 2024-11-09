@@ -106,8 +106,6 @@ export default {
 h2 {
   margin-bottom: 20px;
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
 }
 
 .form-group {

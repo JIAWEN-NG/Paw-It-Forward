@@ -1,5 +1,5 @@
 <template>
-    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="1000">
       <div class="carousel-inner">
         <div class="carousel-item" v-for="(item, index) in carouselItems" :key="item.id" :class="{ active: index === 0 }">
           <img :src="item.image" class="d-block w-100" :alt="item.alt" />
