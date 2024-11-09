@@ -1,9 +1,9 @@
 <template>
     <div class="landing-page">
         <!-- first Section -->
-        <section class="hero-section full-screen">
-            <div class="container hero-content">
-                <div class="text-content">
+        <section class="hero-section full-screen align-items-center">
+            <div class="container">
+                <div class="col-md-6 text-content">
                     <h1>Paw-It-Forward</h1>
                     <h2>Helping One Paw At A Time</h2>
                     <p>
@@ -17,20 +17,21 @@
                         <router-link to="/fundraising" style="color:white; text-decoration: none;">Donate Now</router-link>
                     </button>
                 </div>
-                <div class="image-content">
-                    <img :src="petOwnerImageUrl" alt="paw" v-if="petOwnerImageUrl" />
+                <div class="col-md-5 image-content d-block">
+                    <img :src="petOwnerImageUrl" alt="paw" class="img-fluid d-md-block" />
                 </div>
             </div>
-            <div class="scroll-button" @click.prevent="scrollToSection('aboutSection')">▼</div>
+            <div class="scroll-button" @click.prevent="scrollToSection('aboutSection')">▼
+            </div>
         </section>
 
         <!-- Who We Are Section -->
-        <section class="about-section full-screen" id="aboutSection">
-            <div class="container about-content">
-                <div class="image-content" style="padding-right: 30px;">
+        <section class="about-section full-screen-middle" id="aboutSection">
+            <div class="container-fluid about-content row align-items-center">
+                <div class="col-md-6 image-content mb-4 mb-md-0 d-md-block" style="padding-right: 30px;">
                     <img :src="supportImageUrl" alt="support" v-if="supportImageUrl" />
                 </div>
-                <div class="text-content">
+                <div class="col-md-6 text-content">
                     <h1>Who We're Here For</h1>
                     <h2>Never Alone</h2>
                     <p>
@@ -45,17 +46,18 @@
                     </button>                
                 </div>
             </div>
-            <div class="scroll-button" @click.prevent="scrollToSection('howItWorksSection')">▼</div>
+            <div class="scroll-button py-2" @click.prevent="scrollToSection('howItWorksSection')">▼</div>
 
         </section>
 
         <!-- How it works Section -->
-        <section class="last-section full-screen" id="howItWorksSection">
-            <h1 style="display: block; text-align: center; font-weight: bold; font-size: 36px; padding: 10px;">How Paw-It-Forward Works</h1>
-            <div class="container last-content">
-                <div class="container stepper-container">
-                    <h2 style="font-size: 24px;">Pet Owners Seeking Support</h2><br/>
-
+        <section class="last-section full-screen-last" id="howItWorksSection">
+            <div class="text-center text-content">
+                <h1>How Paw-It-Forward Works</h1>
+            </div>
+            <div class="container">
+                <div class=" stepper-container text-content col-md-4 d-md-block">
+                    <h2>Pet Owners Seeking Support</h2>
                     <div class="step">
                     <div>
                         <div class="circle">1</div>
@@ -65,6 +67,7 @@
                         <div class="caption">Sign up to become part of our community.</div>
                     </div>
                     </div>
+
                     <div class="step">
                     <div>
                         <div class="circle">2</div>
@@ -85,13 +88,13 @@
                     </div>
                 </div>
                
-                <div class="image-content" style="padding: 30px; ">
+                <div class="image-content col-md-4 d-md-block" style="padding: 30px; ">
                     <img :src="heartImageUrl" alt="heart" v-if="heartImageUrl" />
                 </div>
 
                                         
-                <div class="container stepper-container">
-                    <h2 style="font-size: 24px;">Donors Offering Assistance</h2><br/>
+                <div class="stepper-container text-content col-md-4 d-md-block">
+                    <h2 style="padding-bottom: 15px;">Donors Offering Assistance</h2>
 
                     <div class="step">
                     <div>
@@ -129,13 +132,16 @@
 
 
 <script>
+
 export default {
   name: "aboutPage",
   data() {
     return {
-      petOwnerImageUrl: null,
-      supportImageUrl: null,
-      heartImageUrl: null,
+        petOwnerImageUrl: null,
+        supportImageUrl: null,
+        heartImageUrl: null,
+        sections: [],
+        scrollTimeout: null,
     };
   },
   methods: {
@@ -150,15 +156,57 @@ export default {
       }
     },
     async scrollToSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        section.scrollIntoView({ behavior: "smooth" });
-      },
+      const section = document.getElementById(sectionId);
+      section.scrollIntoView({ behavior: "smooth" });
+    },
+    detectScroll() {
+      if (this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout);
+      }
+    // Check if the user has scrolled past a certain threshold
+    if (window.scrollY > 10) {
+      this.scrollTimeout = setTimeout(() => {
+        this.snapToNearestSection();
+      }, 150); // Adjust timeout as needed
+    }
+    },
+  snapToNearestSection() {
+    const scrollPosition = window.scrollY + window.innerHeight / 3;
+    let closestSection = null;
+    let minDistance = Infinity;
+
+    // Exclude the last section to avoid snapping to it
+    this.sections.slice(0, -1).forEach((section) => {
+      const sectionTop = section.offsetTop;
+      const distance = Math.abs(scrollPosition - sectionTop);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestSection = section;
+      }
+    });
+
+    // Check if the scroll position is close to the bottom of the document
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+    if (!nearBottom && closestSection) {
+      closestSection.scrollIntoView({ behavior: "smooth" });
+    }
   },
+  },
+
   async mounted() {
+    // Store references to each section
+    this.sections = Array.from(document.querySelectorAll(".full-screen, .full-screen-other"));
+
+    // Add scroll event listener
+    window.addEventListener("scroll", this.detectScroll);
     // Fetch each image by its filename
     this.petOwnerImageUrl = await this.fetchImage('about/petowner.png');
     this.supportImageUrl = await this.fetchImage('about/support.png');
     this.heartImageUrl = await this.fetchImage('about/heart.png');
+  },
+  beforeDestroy() {
+    // Remove scroll event listener when the component is destroyed
+    window.removeEventListener("scroll", this.detectScroll);
   },
 };
 </script>
@@ -167,8 +215,6 @@ export default {
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 *{
-    /* margin: 0;
-    padding: 0; */
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
@@ -181,51 +227,88 @@ export default {
     background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
     display: flex;
     align-items: center;
-    display: block;
+    flex-direction: column;
+    margin-top: 80px;
 }
 .last-section {
     background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
     padding: 70px 0;
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
 }
-
+/* 
 .hero-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
+} */
 
-.text-content{
-    width: 60%;
-}
 
 .text-content h1 {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: bold;
-    max-width: 100%;
+    /* max-width: 100%; */
 }
 
 .text-content h2 {
     font-size: 24px;
     margin: 10px 0;
-    max-width: 100%;
-
+    /* max-width: 100%; */
 }
 
-.text-content p {
+.text-content p, .caption{
     font-size: 16px;
     margin: 15px 0;
-    max-width: 100%;
+    /* max-width: 100%; */
 }
 
+.title {
+  line-height: 1.5em;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+
+@media (min-width: 768px) {
+    .text-content h1 {
+        font-size: 30px;
+    }
+    .text-content h2 {
+        font-size:24px;
+    }
+    .text-content p, .caption{
+        font-size:16px;
+    }
+    .title{
+        font-size: 18px;
+        line-height: 1em;
+    }
+}
+
+@media (min-width: 1400px) {
+    .text-content h1 {
+        font-size: 40px;
+    }
+    .text-content h2 {
+        font-size:32px;
+    }
+    .text-content p, .caption {
+        font-size:22px;
+    }
+    .title{
+        font-size: 22px;
+    }
+}
 .cta-button {
-    background-color: #0044cc;
+    background: linear-gradient(135deg, #1f2e3d 0%, #3a506b 100%);
     color: white;
     padding: 10px 20px;
     border: none;
@@ -233,74 +316,39 @@ export default {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+
     text-decoration: none;
 }
 
 .cta-button:hover {
-    background-color: #0033a3;
+    background: linear-gradient(135deg, #2c3e50 0%, #506c8a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
+
 
 .image-content img {
     width: 100%;
-    height: auto;
-    max-width: 400px;
-    border-radius: 20px;
+    display: block;
 }
 
-/* About Section */
+
 .about-section {
     background-color: #f8f9fa;
-    /* padding: 100px 0;    */
-}
-
-.about-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 80px 0px;
-
 }
 
-
-
-.about-content .image-content img {
-    max-width: 400px;
-    border-radius: 20px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .about-content,
-    .hero-content {
-        flex-direction: column-reverse;
-        text-align: center;
-    }
-
-    .text-content,
-    .image-content {
-        max-width: 100%;
-    }
-
-    .text-content h1 {
-        font-size: 28px;
-    }
-
-    .text-content h2 {
-        font-size: 20px;
-    }
-}
 
 /* Steps */
 
-.container.stepper-container {
+.stepper-container {
     display: flex;
-    flex-direction: column; /* Stack steps vertically */
-    align-items: flex-start; /* Align steps to the start */
+    flex-direction: column; 
+    align-items: flex-start;
     padding: 20px;
-    width: 40%;
 }
 
 .step {
@@ -354,24 +402,34 @@ export default {
   display: none
 }
 
-/* Stepper Titles */
-.title {
-  line-height: 1.5em;
-  font-weight: bold;
-}
-.caption {
-  font-size: 0.8em;
-}
 
 .full-screen {
     min-height: calc(100vh - 80px);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     padding: 40px;
-    /* padding-bottom: 80px; */
-    /* Extra bottom padding  */
+    padding-bottom: 80px;
   }
+
+  .full-screen-middle{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 40px;
+    padding-top: 80px;
+  }
+
+  .full-screen-last{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    padding-top: 80px;
+  }
+  
 
   /* Downward Scroll Button */
   .scroll-button {
@@ -382,7 +440,9 @@ export default {
     padding: 10px;
     cursor: pointer;
     transition: color 0.3s ease, transform 0.3s ease;
+    animation: wiggle 1s infinite ease-in-out;
   }
+
   .scroll-button:hover {
     color: #0044cc;
     transform: translateY(5px);
@@ -393,5 +453,14 @@ export default {
   padding: 10px;
   transition: transform 0.3s ease, color 0.3s ease;
   transform: scale(1.02);
+}
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
 }
 </style>
