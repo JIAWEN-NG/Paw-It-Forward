@@ -181,7 +181,7 @@ router.put('/fundraising', upload, fundraisingController.editFundraising);
 // Withdrawal Routes
 router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
 router.get('/withdrawals', withdrawalController.getAllWithdrawals);
-
+router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserId);
 
 // thahmina added
 // Testimonial routes

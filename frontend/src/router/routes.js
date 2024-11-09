@@ -24,6 +24,7 @@ import AdminView from '@/components/AdminView.vue';
 import CancelDonation from '../components/CancelDonation.vue';
 import ManageAccount from '../components/ManageAccount.vue'
 // import UserAccount from '../components/UserAccount.vue';
+import WithdrawalView from '../components/WithdrawalView.vue';
 
 const routes = [
     { path: '/', component: aboutPage },
@@ -85,10 +86,11 @@ const routes = [
         name: 'teamPage',
         component: teamPage,
     },
-    // {
-    //     path: '/useraccount',
-    //     component: UserAccount
-    // },
+    {
+        path: '/withdrawalview',
+        name: 'WithdrawalView',
+        component: WithdrawalView,
+    },
 ];
 
 const router = createRouter({
