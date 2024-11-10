@@ -124,6 +124,11 @@ export default {
       return `${day} ${month} ${year}`;
     },
     openRequestModal(donation) {
+      if (!this.currentUserId) {
+        // Redirect to login if user is not logged in
+        this.$router.push('/login');
+        return;
+      }
       this.selectedDonation = donation;
       this.showModal = true;
     },
