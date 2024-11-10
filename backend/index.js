@@ -5,21 +5,22 @@ const { db , bucket } = require('./config/firebase'); // Firebase configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initialization
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
-const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
 // const upload = require('./middleware/uploadImage'); // Import the Multer middleware
-
+require("dotenv").config();
 // thahmina added
 const multer = require('multer');
 const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimonialController');
 
-const PORT = 8000;
+// const PORT = 8000;
 const app = express();
 const server = http.createServer(app);
+app.use(express.json());
+app.use(cors());
 
-
+const port = process.env.PORT || 8000;
 
 const io = new Server(server, {
     cors: {
@@ -30,46 +31,18 @@ const io = new Server(server, {
     },
 });
 
-app.use(express.json());
-app.use(cors());
-
-
-
 // thahmina added
-app.use(bodyParser.json());
 const upload = multer({ storage: multer.memoryStorage() });
-
 
 // console.log('Router is being mounted');
 app.use('/api', dataRoutes); // Use the imported router
 app.use('/api', imageRoutes);
 
 
-app.use(bodyParser.json()); // To parse JSON request bodies
-
 // Testimonials routes
 app.get('/testimonials', getAllTestimonials);
 app.post('/upload-testimonial', upload.single('image'), uploadTestimonial);
-// Define route for fetching user data by ID
-app.get('/api/user/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    console.log("Fetching user data for ID:", userId);
 
-    const userDoc = await db.collection('Users').doc(userId).get();
-
-    if (!userDoc.exists) {
-      console.error("No document found for ID:", userId);
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const userData = userDoc.data();
-    const { role, profileImage, petDescription, name, email } = userData;
-    res.json({ role, profileImage, petDescription, name, email });
-  } catch (error) {
-    console.error("Error fetching user data:", error.message);
-    res.status(500).json({ error: 'Internal Server Error', message: error.message });
-  }});
 // Define route for fetching user data by ID
 app.get('/api/user/:id', async (req, res) => {
   try {
@@ -209,29 +182,7 @@ async function updateFundraisingAmount(postId, amount) {
     }
 }
 
-// Start server only if not in a test environment
-if (process.env.NODE_ENV !== 'test') {
-    server.listen(PORT, () => {
-        console.log(`[SYSTEM] Server started on port ${PORT}...`);
-    });
-}
 
-module.exports = app; // Export the app instance for testing
-
-
-// Define route for updating user profile by ID
-// app.put('/api/user/:id', async (req, res) => {
-//   const userId = req.params.id;
-//   const userData = req.body;
-
-//   try {
-//     await db.collection('Users').doc(userId).update(userData);
-//     res.status(200).send({ message: 'User updated successfully' });
-//   } catch (error) {
-//     console.error("Error updating user:", error.message);
-//     res.status(500).send({ error: "Failed to update user" });
-//   }
-// });
 
 // // Define route for uploading user profile photos
 app.post('/api/user/:id/upload', upload2, async (req, res) => {
@@ -270,3 +221,10 @@ app.post('/api/user/:id/upload', upload2, async (req, res) => {
         res.status(500).json({ message: 'Error uploading photo', error: error.message });
     }
 });
+
+
+server.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+
+module.exports = app; // Export the app instance for testing

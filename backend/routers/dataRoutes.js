@@ -29,7 +29,6 @@ app.use(cors());
 router.get('/users/:id', userController.getUserById); // Use the controller's function
 // You can add more routes related to users here using the same controller
 router.post('/register', registerUser);
-
 //request routes
 //router.post('/requests/sendRequest', requestController.createRequest); // Create a new request
 router.put('/requests/:requestId/accept', requestController.acceptRequest); // Accept a request
@@ -41,21 +40,13 @@ router.post('/requests', requestController.createRequest);
 
 
 // Admin routes
-router.put('/admin/users/:userId/approve', adminController.approveUser);
-router.put('/admin/users/:userId/reject', adminController.rejectUser);
+router.patch('/admin/users/:userId/approve', adminController.approveUser);
+router.patch('/admin/users/:userId/reject', adminController.rejectUser);
 router.get('/admin/users', adminController.getUserByStatus);
 router.get('/admin/withdrawals', adminController.getAllWithdrawals);
-router.put('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
-router.put('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
+router.patch('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
+router.patch('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
 
-
-
-
-router.get("/users", (req, res) => {
-    console.log('GET /users route hit');
-    userController.getAllUsers(req, res);
-});
-// You can add more routes related to users here using the same controller
 
 //Afsana added 
 // Donation Routes
@@ -72,7 +63,7 @@ router.post('/marketplace', upload, async (req, res) => {
 
     try {
         // Ensure userId is sent in the request body
-        const userId = req.body.userId || "p8v0JBWhlfNZ13DzpBFN"; // Use default if not provided
+        const userId = req.body.userId ; 
 
         // Log request body and userId to verify
         console.log('Request Body:', req.body);
@@ -177,7 +168,6 @@ router.post('/fundraising', upload, async (req, res) => {
 // The route stays the same as it doesn't need to specify param handling in the URL
 router.put('/fundraising', upload, fundraisingController.editFundraising);
 
-
 // Withdrawal Routes
 router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
 router.get('/withdrawals', withdrawalController.getAllWithdrawals);
@@ -187,8 +177,6 @@ router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserI
 // Testimonial routes
 router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
 router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Upload a new testimonial with an image
-
-
 
 // Photo verification route
 router.post('/photo-verification', upload, async (req, res) => {

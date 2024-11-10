@@ -109,6 +109,9 @@ const getAllWithdrawalsByUserId = async (req, res) => {
                 reason: data.reason,
                 status: data.status,
                 requestedAt: data.requestedAt ? data.requestedAt.toDate().toISOString() : null,
+                processedAt: data.processedAt ? data.processedAt.toDate().toISOString() : null, // Include processedAt
+                transactionId: data.transactionId || null, // Include transactionId
+                rejectionReason: data.rejectionReason || null,
             };
         });
 

@@ -110,9 +110,12 @@ export default {
 
 <style scoped>
 .chat-view {
-  height: 100vh;
+  height: 85vh;
   overflow: hidden;
-  margin-bottom: 2%;
+  background-color: #f8f9fb;
+}
+.chat-view::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }
 
 .chat-list-wrapper {

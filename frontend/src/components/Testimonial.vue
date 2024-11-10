@@ -1,19 +1,15 @@
 <template>
   <div class="wrapper">
-      <!-- Button to add story, now positioned in the top right corner -->
-      <!-- Button to add a testimonial that redirects to fundraising -->
-      <button class="add-testimonial wave-button" @click="openModal">
-        Add Your Story
-      </button>
-      
+        <!-- Text and button displayed side by side -->
+        <div class="text-container" style="margin-right: 20px;">
+          <h2>Stories of Hope</h2>
+          <p class="subtext">Share your story of how donations brought hope and healing to your pet in need.</p>
+        </div>
 
-      <h2>Stories of Hope</h2>
-      <p class="subtext">Share your story of how donations brought hope and healing to your pet in need.</p>
-
-      <!-- Animal animation section generated in JavaScript -->
-      <div class="animal-runner">
-          <div class="animal-strip" v-html="animalBanner"></div>
-      </div>
+        <!-- Centralizing the button -->
+        <button class="add-testimonial wave-button" style="align-self: center;" @click="openModal">
+          Add Your Story
+        </button>
 
       <div class="cols">
       <div class="col" v-for="(testimonial, index) in paginatedTestimonials" :key="index" @click="showExpandedModal(testimonial)">
@@ -29,9 +25,6 @@
               <span class="pet-problem">{{ testimonial.background }}</span>
             </div>
           </div>
-          <div class="card-back">
-            <p>{{ testimonial.donationJourney }}</p>
-          </div>
         </div>
       </div>
     </div>
@@ -42,102 +35,94 @@
       <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
     </div>
 
+    <!-- Animal animation section generated in JavaScript -->
+    <div class="animal-runner">
+          <div class="animal-strip" v-html="animalBanner"></div>
+      </div>
 
-    <!-- Modal for expanded testimonial -->
-    <div v-if="expandedTestimonial" class="modal-backdrop" @click.self="expandedTestimonial = null">
-      <div class="modal-content">
-        <span class="close-btn" @click="expandedTestimonial = null">&times;</span>
-        <h2>{{ expandedTestimonial.animalName }}</h2>
-        <p>{{ expandedTestimonial.donationJourney }}</p>
+  
+     <!-- back of card-->
+    <div class="card-back">
+      <div v-if="expandedTestimonial" class="modal-backdrop" @click.self="closeExpandedModal">
+        <div class="modal-content" 
+            :style="{ 
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${expandedTestimonial.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              // backgroundBlendMode: 'overlay' /* Ensures blend of the gradient and the image */
+            }">
+          <span class="close-btn" @click="closeExpandedModal">&times;</span>
+          <h2 class="petname">{{ expandedTestimonial.animalName }}</h2>
+          <div class="animated-quotes">
+            <div class="quote-container">
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-start" />
+              <p class="journey">{{ expandedTestimonial.donationJourney }}</p>
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-end flip-quote" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+      
+
 
       <!-- Modal for adding testimonials -->
-      <div v-if="showModal" class="modal-backdrop" @click.self="closeModal">
-          <div class="modal-content animated-modal">
-              <span class="close" @click="closeModal">&times;</span>
-              <h2>Add Your Story</h2>
-              <form @submit.prevent="submitForm" class="styled-form">
-                  <div class="form-group">
-                      <label for="animalName">Animal Name:</label>
-                      <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
-                  </div>
-                  <div class="form-group">
-                      <label for="image">Add a Photo of the Animal:</label>
-                      <div class="file-upload">
-                          <label class="upload-button" for="imageUpload">Choose File</label>
-                          <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" required />
-                          <span class="file-name">{{ imagePreview ? 'Image Selected' : 'No file chosen' }}</span>
-                      </div>
-                      <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" class="image-preview" />
-                  </div>
-                  <div class="form-group">
-                      <label for="background">Background:</label>
-                      <input type="text" id="background" v-model="newTestimonial.background" required />
-                  </div>
-                  <div class="form-group">
-                      <label for="donationJourney">How the Donation Helped:</label>
-                      <textarea id="donationJourney" v-model="newTestimonial.donationJourney" required></textarea>
-                  </div>
-                  <button
-                      type="button"
-                      @click="submitForm"
-                      :disabled="isSubmitting"
-                      :class="{ 'success': uploadSuccess, 'loading': isSubmitting }"
-                      class="submit-button"
-                  >
-                      <span v-if="isSubmitting" class="loading-icon"></span>
-                      <span v-else-if="uploadSuccess" class="checkmark-icon">
-                          <svg viewBox="0 0 52 52">
-                              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                              <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
-                          </svg>
-                      </span>
-                      <span v-else>Upload</span>
-                  </button>
-              </form>
-          </div>
+      <div v-if="showModal" class="form-backdrop" @click.self="closeModal">
+        <div class="form-content animated-modal">
+          <span class="close" @click="closeModal">&times;</span>
+          <h2>Add Your Story</h2>
+          <form @submit.prevent="submitForm" class="styled-form">
+            <div class="form-group">
+              <label for="animalName">Animal Name:</label>
+              <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
+            </div>
+            <div class="form-group">
+              <label for="image">Add a Photo of the Animal:</label>
+              <div class="file-upload">
+                <label class="upload-button" for="imageUpload">Choose File</label>
+                <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" required />
+                <span class="file-name">{{ imagePreview ? 'Image Selected' : 'No file chosen' }}</span>
+              </div>
+              <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" class="image-preview" />
+            </div>
+            <div class="form-group">
+              <label for="background">Background:</label>
+              <input type="text" id="background" v-model="newTestimonial.background" required />
+            </div>
+            <div class="form-group">
+              <label for="donationJourney">How the Donation Helped:</label>
+              <textarea id="donationJourney" v-model="newTestimonial.donationJourney" required></textarea>
+            </div>
+            <button
+              type="button"
+              @click="submitForm"
+              :disabled="isSubmitting"
+              :class="{ 'success': uploadSuccess, 'loading': isSubmitting }"
+              class="submit-button"
+            >
+              <span v-if="isSubmitting" class="loading-icon"></span>
+              <span v-else-if="uploadSuccess" class="checkmark-icon">
+                <svg viewBox="0 0 52 52">
+                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                  <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+                </svg>
+              </span>
+              <span v-else>Upload</span>
+            </button>
+          </form>
+        </div>
       </div>
-
       <!-- Floating Donate Now Button -->
-      
       <div class="donate-popup-container">
-    <div class="heartfelt-message-container">
-      <p class="heartfelt-message">
-        "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
-      </p>
-    </div>
-    <router-link to="/fundraising" class="donate-popup animated-donate-button">
-      Donate Now <i class="fas fa-heart heart-icon"></i>
-    </router-link>
-
-    <!-- Star SVGs -->
-    <div class="star-1">
-      <svg viewBox="0 0 784.11 815.53">
-        <path d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z" class="fil0"></path>
-      </svg>
-    </div>
-    <div class="star-2">
-      <svg viewBox="0 0 784.11 815.53">
-        <path d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z" class="fil0"></path>
-      </svg>
-    </div>
-    <div class="star-3">
-      <svg viewBox="0 0 784.11 815.53">
-        <path d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z" class="fil0"></path>
-      </svg>
-    </div>
-    <div class="star-4">
-      <svg viewBox="0 0 784.11 815.53">
-        <path d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z" class="fil0"></path>
-      </svg>
-    </div>
-    <div class="star-5">
-      <svg viewBox="0 0 784.11 815.53">
-        <path d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z" class="fil0"></path>
-      </svg>
-    </div>
-      </div>
+        <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
+              <p class="heartfelt-message">
+                "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
+              </p>
+            </div>
+            <router-link to="/fundraising" class="donate-popup animated-donate-button">
+              Donate Now <i class="fas fa-heart heart-icon"></i>
+            </router-link>
+          </div>
   </div>
   </template>
   
@@ -148,25 +133,28 @@ import pixdog from '@/assets/pixdog.png';
 export default {
   props: ['testimonial'],
   data() {
-    return {
-      expandedTestimonial: null,
-      hoveredIndex: null,
-      expandedIndex: null,
-      showModal: false, // Keep this for modal visibility
-      newTestimonial: {
-        animalName: '',
-        image: null,
-        background: '',
-        donationJourney: ''
-      },
-      imagePreview: '',
-      isSubmitting: false,
-      uploadSuccess: false,
-      testimonials: [],
-      currentPage: 1,
-      itemsPerPage: 9
-    };
-  },
+  return {
+    expandedTestimonial: null,
+    hoveredIndex: null,
+    expandedIndex: null,
+    showModal: false, // Keep this for modal visibility
+    newTestimonial: {
+      animalName: '',
+      image: null,
+      background: '',
+      donationJourney: ''
+    },
+    imagePreview: '',
+    isSubmitting: false,
+    uploadSuccess: false,
+    testimonials: [],
+    currentPage: 1,
+    itemsPerPage: 9,
+    showHeartfeltMessage: false, // Initially set to false
+    isFading: false
+  };
+},
+
   computed: {
     animalBanner() {
       let bannerContent = '';
@@ -190,13 +178,22 @@ export default {
   },
   methods: {
     showExpandedModal(testimonial) {
-        this.expandedTestimonial = testimonial; // Set the expanded testimonial
+    this.expandedTestimonial = testimonial; // Set the selected testimonial
+    this.showModal = false; // Ensure form modal is closed when viewing testimonial
+  },
+    closeExpandedModal() {
+      this.expandedTestimonial = null; // Close the expanded testimonial modal
     },
     showModal(index) {
       this.expandedIndex = index;
     },
-    closeModal2() {
-      this.expandedIndex = null;
+    closeModal() {
+      this.showModal = false; // Close the form modal
+      this.resetForm(); // Reset the form fields
+    },
+    openModal() {
+    this.showModal = true; // Show the form modal
+    this.expandedTestimonial = null; // Ensure testimonial modal is closed
     },
     async fetchTestimonials() {
       console.log("Fetching testimonials...");
@@ -216,13 +213,6 @@ export default {
       } catch (error) {
         console.error('Error fetching testimonials:', error);
       }
-    },
-    openModal() {
-      this.showModal = true;
-    },
-    closeModal() {
-      this.showModal = false;
-      this.resetForm();
     },
     handleImageUpload(event) {
       const file = event.target.files[0];
@@ -283,35 +273,49 @@ export default {
     }
   },
   mounted() {
-    console.log("Component mounted, fetching testimonials...");
-    this.fetchTestimonials();
-  },
-  redirectToDonation() {
-    this.$router.push({ name: 'fundraising' }); // Replace 'donate' with the name of your route
-  }
+  console.log("Component mounted, fetching testimonials...");
+  this.fetchTestimonials();
+
+  // Show heartfelt message immediately
+  this.showHeartfeltMessage = true;
+
+  // After 3 seconds, start fade out
+  setTimeout(() => {
+    this.isFading = true; // Start fading out
+    // Hide message after fade out duration
+    setTimeout(() => {
+    this.showHeartfeltMessage = false; // Hide the message
+    }, 1000); // Fade out duration (matches CSS)
+  }, 3000); // Total time before starting to fade out
+},
+
 };
+
 </script>
 
 <style scoped>
 
+
 .wrapper {
   position: relative;
-  background-color: #1e3a5f; /* Dark blue */
-  color: #fdfdfd; /* Light text */
-  padding: 2rem;
+  /* background-color: #1e3a5f; Dark blue */
+  /* color: #fdfdfd; Light text */
+  background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
+  color: black;
+  padding: 4rem;
 }
 
 h2 {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #ffffff; /* White text */
+  color: black; /* White text */
   margin-bottom: 0.2rem;
   text-align: center;
 }
 
 .subtext {
   font-size: 1.1rem;
-  color: #cfd8dc; /* Light grey text */
+  color: black; /* Light grey text */
   text-align: center;
   margin-bottom: 1.5rem;
   margin-top: 1.5rem;
@@ -320,14 +324,14 @@ h2 {
 .cols {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 2rem;
+  grid-gap: 4rem;
   justify-items: center;
   margin-top: 3rem;
 }
 
 .col {
-  width: 250px;
-  height: 300px;
+  width: 400px;
+  height: 250px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -338,12 +342,12 @@ h2 {
 
 
 .card-inner {
-  width: 100%;
+  width: 200%;
   height: 100%;
   transition: transform 0.6s;
   transform-style: preserve-3d;
   border-radius: 15px;
-  background-color: #243b55;
+  background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -357,50 +361,12 @@ h2 {
   transform: rotateY(180deg);
 }
 
-.card-front,
-.card-back {
+.card-front {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   border-radius: 15px;
-}
-
-
-
-.card-back {
-  transform: rotateY(180deg);
-  background-color: #1b2d47;
-  color: #e0efff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.modal-backdrop2 {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content2 {
-  background-color: #243b55;
-  color: #d1e1f1;
-  padding: 2rem;
-  border-radius: 15px;
-  width: 80%;
-  max-width: 800px;
-  height: 70%;
-  overflow-y: auto;
-  animation: scaleIn 0.5s ease forwards;
 }
 
 @keyframes scaleIn {
@@ -413,10 +379,9 @@ h2 {
     opacity: 1;
   }
 }
-
 .card-inner:hover {
   transform: scale(1.05) translateZ(0);
-  background-color: #1b2d47; /* Darker shade for hover */
+  /* background-color: #1b2d47; Darker shade for hover */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -426,7 +391,7 @@ h2 {
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 3px solid #002982;
+  border: 3px solid white;
   position: absolute;
   top: -40px;
   left: 50%;
@@ -448,7 +413,6 @@ h2 {
     gap: 10px; /* Space between the emojis */
     z-index: 2; /* Ensure it's above the card background */
 }
-
 
 .emoji {
   font-size: 1.5em; /* Adjust the size as needed */
@@ -495,6 +459,30 @@ h2 {
   justify-content: center; /* Center content vertically */
   height: 100%; /* Ensures it takes up the full height of the card */
 }
+.modal-content {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-start; /* Keep the name at the top */
+  align-items: center; /* Center children horizontally */
+  padding: 2rem;
+  border-radius: 10px;
+  width: 700px;
+  height: 500px;
+  position: relative;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
 .close-btn {
   position: absolute;
@@ -506,12 +494,59 @@ h2 {
   z-index: 3; /* Ensures button appears above everything else */
 }
 
+.animated-quotes {
+  display: flex;
+  flex-direction: column; /* Stack the quote images and text vertically */
+  align-items: center; /* Center align the content */
+  text-align: center; /* Center the text */
+  margin-top: 20px; /* Space between name and quote */
+  flex-grow: 1; /* Allow it to take up remaining space */
+}
+
+.quote-container {
+  display: flex;
+  flex-direction: column; /* Stack the quote images and text vertically */
+  align-items: center; /* Center align the content */
+  justify-content: center; /* Center the content vertically */
+  margin-top: 10px; /* Add margin for spacing */
+}
+
+.quote-container p {
+  margin-top: 20px; /* Adjust this value as needed for desired spacing */
+  margin-bottom: 20px;
+}
+
+.quote-icon-start {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  margin-right: 10px; /* Align left with margin to the right */
+  align-self: flex-start; /* Align to the left */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+  
+}
+
+.quote-icon-end {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  margin-left: 10px; /* Align right with margin to the left */
+  align-self: flex-end; /* Align to the right */
+  transform: scaleX(-1); /* Flips the quote image horizontally */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+ 
+}
+
+.flip-quote {
+  transform: scaleX(-1); /* Flips the quote image horizontally */
+}
+
+
 
 /* animal gif */
 
 .animal-runner {
   overflow: hidden;
-  background-color: #1e3a5f;
+  /* background-color: #1e3a5f; */
+  background-color: transparent;
   padding: 10px 0;
   width: 100%;
 }
@@ -532,39 +567,8 @@ h2 {
 }
 
 
-
-
-
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(220, 207, 207, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: #243b55;
-  color: #d1e1f1; /* Soft light blue */
-  padding: 2rem;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  transform: scale(0.5);
-  opacity: 0;
-  animation: scaleIn 0.5s ease forwards;
-}
-
 .add-testimonial {
-  position: fixed; /* Ensures the button stays fixed in place while scrolling */
-  top: 20px; /* Adjust as needed */
-  left: 200px; /* Move the button to the left side */
-  background: linear-gradient(90deg, #5c6bc0, #e0e3f6); /* Gradient in lighter blues */
+  background: linear-gradient(90deg, #191e3b, #e0e3f6); /* Gradient in lighter blues */
   color: #ffffff;
   background-size: 200% 100%;
   border: none;
@@ -597,6 +601,35 @@ h2 {
   }
 }
 
+.form-content {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-start; /* Keep the name at the top */
+  align-items: center; /* Center children horizontally */
+  padding: 2rem;
+  border-radius: 10px;
+  width: 500px;
+  height: auto; /* Change this if needed */
+  position: relative;
+  background-color: white; /* Set the background to white */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional: adds a shadow for depth */
+
+}
+
+.form-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(220, 207, 207, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+
 .styled-form {
   display: flex;
   flex-direction: column;
@@ -611,7 +644,7 @@ h2 {
 
 label {
   font-weight: bold;
-  color: #fffefe;
+  color: #000000;
 }
 
 input[type="text"],
@@ -815,13 +848,13 @@ input[type="file"] {
 .pet-name {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #fefcfc;
+  color: black;
   margin-top: 40px;
   text-align: center;
 }
 
 .pet-problem {
-  color: #fffcfc;
+  color: rgb(110, 101, 101);
   font-size: 1rem;
   text-align: center;
 }
@@ -839,24 +872,8 @@ input[type="file"] {
   text-align: center;
 }
 
-/* donate now */
-.heartfelt-message-container {
-  background-color: #5a73a1; /* Soft blue background */
-  color: #e0efff; /* Light text color */
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow for floating effect */
-  text-align: center;
-  font-style: italic;
-  font-size: 1rem;
-  line-height: 1.5;
-  max-width: 250px;
-  margin-bottom: 0.5rem;
-  animation: fadeIn 1s forwards;
-}
-
 /* Donate Now Button Styling */
-/* Wrapper to position the entire message and button on the right side */
+
 .donate-popup-container {
   position: fixed;
   bottom: 50px; /* Adjust for vertical positioning */
@@ -869,18 +886,42 @@ input[type="file"] {
 }
 
 /* Heartfelt message styling */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 .heartfelt-message-container {
   background-color: #5a73a1; /* Soft blue background */
   color: #e0efff; /* Light text color */
   padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow for floating effect */
-  text-align: center; /* Align text to the right */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
   font-style: italic;
   font-size: 1rem;
   line-height: 1.5;
   max-width: 250px;
-  animation: fadeIn 1s forwards;
+  margin-bottom: 0.5rem;
+  opacity: 1; /* Fully visible by default */
+  animation: fadeIn 1s forwards; /* Fade in animation */
+}
+
+.fade-out {
+  animation: fadeOut 1s forwards; /* Fade out animation */
 }
 
 /* Donate Now Button Styling */
@@ -926,59 +967,6 @@ input[type="file"] {
 }
 
 
-
-/* Set the star colors to blue */
-.fil0 {
-  fill: #02008e
-}
-
-.star-1, .star-2, .star-3, .star-4, .star-5 {
-  position: absolute;
-  width: 25px; /* Or any size you prefer */
-  height: auto;
-  filter: drop-shadow(0 0 0 #02008e); /* Initial blue color for stars */
-  z-index: 2; /* Ensure they are above other content */
-  transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
-}
-
-
-.star-1 { top: 20%; left: 20%; }
-.star-2 { top: 45%; left: 45%; width: 15px; }
-.star-3 { top: 40%; left: 40%; width: 5px; }
-.star-4 { top: 20%; left: 40%; width: 8px; }
-.star-5 { top: 25%; left: 45%; width: 15px; }
-.star-6 { top: 5%; left: 50%; width: 5px; }
-
-/* Blue stars on hover */
-.animated-donate-button:hover .star-1 {
-  top: -80%; left: -30%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-.animated-donate-button:hover .star-2 {
-  top: -25%; left: 10%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-.animated-donate-button:hover .star-3 {
-  top: 55%; left: 25%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-.animated-donate-button:hover .star-4 {
-  top: 30%; left: 80%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-.animated-donate-button:hover .star-5 {
-  top: 25%; left: 115%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-.animated-donate-button:hover .star-6 {
-  top: 5%; left: 60%; filter: drop-shadow(0 0 10px #02008e); z-index: 2;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-
-
-
-
-
 .paw-icon {
   font-size: 1.5rem;
   color: #5d4037;
@@ -1013,7 +1001,7 @@ input[type="file"] {
 
 .pagination {
     display: flex;
-    justify-content: center; /* Center all items in the flex container */
+    justify-content: space-between; /* Center all items in the flex container */
     align-items: center; /* Center align items vertically */
     margin-top: 2rem; /* Adjust spacing above */
     margin-bottom: 1rem; /* Optional for spacing below */
@@ -1038,5 +1026,23 @@ input[type="file"] {
   background-color: #a5a5a5;
   cursor: not-allowed;
 }
+
+.petname {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Adds a shadow for better contrast */
+  font-family: 'Montserrat', sans-serif;
+  color:  rgba(252, 238, 213, 0.6);
+}
+
+/* Styling for the back of the card paragraph */
+.journey {
+  font-weight: bold;
+  font-size: 1.15rem;
+  color: #ffffff; /* Ensure the text color is white for better contrast */
+  line-height: 1.5;
+  padding: 15px; /* Add padding to improve spacing */
+  font-family: 'Montserrat', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Adds a shadow for better contrast */
+}
+
 
 </style>

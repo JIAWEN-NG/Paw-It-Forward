@@ -56,107 +56,50 @@ const registerUser = async (req, res) => {
     try {
         const userRef = db.collection('Users').doc(userId);
         await userRef.update({
-            verificationPhotoUrl: imageUrl,
+            verificationPhoto: imageUrl,
             isPhotoVerified: false, // Mark as not verified by default
         });
-        console.log(`Verification photo URL saved for user: ${userId}`);
     } catch (error) {
         console.error('Error updating user with verification photo:', error);
         throw error;
     }
 };
 
-  
+const uploadPhotoVerif = async (req, res) => {
+
+  // Ensure the user exists in the Users collection
+  const userRef = db.collection('Users').doc(userId);
+  const userDoc = await userRef.get();
+  if (!userDoc.exists) {
+    return res.status(404).json({ message: 'User not found' });
+  }  
+
+  if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+  }
+  const bucket = admin.storage().bucket();
+  const fileName = `verification/${userId}/${Date.now()}_${req.file.originalname}`;
+  const file = bucket.file(fileName);
+
+  try {
+    await file.save(req.file.buffer, {
+      metadata: { contentType: req.file.mimetype },
+      resumable: false,
+    });
+    const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+
+    res.status(201).json({ message: 'File uploaded successfully', url: downloadURL });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ message: 'File upload failed', error: error.message });
+  }
+};
+
+
 module.exports = {
     getUserById,
     getAllUsers,
     registerUser,
-    updateUserPhotoVerification
+    updateUserPhotoVerification,
+    uploadPhotoVerif
 };
-
-
-// const UserController = {
-//   async getUser(req, res) {
-//     try {
-//       const userId = req.params.id;
-//       console.log("Fetching user data for ID:", userId);
-
-//       const userDoc = await db.collection('users').doc(userId).get();
-
-//       if (!userDoc.exists) {
-//         console.error("No document found for ID:", userId);
-//         return res.status(404).json({ error: 'User not found' });
-//       }
-
-//       const userData = userDoc.data();
-//       // Extract only the necessary fields
-//       const { role, profileImage, petDescription, name, email } = userData;
-
-//       // Send the data to the frontend
-//       res.json({ role, profileImage, petDescription, name, email });
-//     } catch (error) {
-//       console.error("Error fetching user data:", error.message);
-//       res.status(500).json({ error: 'Error fetching user data', message: error.message });
-//     }
-//   },
-// };
-
-// module.exports = UserController;
-
-
-// const UserController = {
-//   async getUser(req, res) {
-//     try {
-//       const userId = req.params.id;
-//       console.log("Fetching user data for ID:", userId);
-
-//       const userDoc = await db.collection('users').doc(userId).get();
-
-//       if (!userDoc.exists) {
-//         console.error("No document found for ID:", userId);
-//         return res.status(404).json({ error: 'User not found' });
-//       }
-
-//       const userData = userDoc.data();
-//       // Extract only the necessary fields
-//       const { role, profileImage, petDescription, name, email } = userData;
-
-//       // Send the data to the frontend
-//       res.json({ role, profileImage, petDescription, name, email });
-//     } catch (error) {
-//       console.error("Error fetching user data:", error.message);
-//       res.status(500).json({ error: 'Error fetching user data', message: error.message });
-//     }
-//   },
-// };
-
-// module.exports = UserController;
-
-
-// const UserController = {
-//   async getUser(req, res) {
-//     try {
-//       const userId = req.params.id;
-//       console.log("Fetching user data for ID:", userId);
-
-//       const userDoc = await db.collection('users').doc(userId).get();
-
-//       if (!userDoc.exists) {
-//         console.error("No document found for ID:", userId);
-//         return res.status(404).json({ error: 'User not found' });
-//       }
-
-//       const userData = userDoc.data();
-//       // Extract only the necessary fields
-//       const { role, profileImage, petDescription, name, email } = userData;
-
-//       // Send the data to the frontend
-//       res.json({ role, profileImage, petDescription, name, email });
-//     } catch (error) {
-//       console.error("Error fetching user data:", error.message);
-//       res.status(500).json({ error: 'Error fetching user data', message: error.message });
-//     }
-//   },
-// };
-
-// module.exports = UserController;
