@@ -10,7 +10,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
 // const upload = require('./middleware/uploadImage'); // Import the Multer middleware
-
+require("dotenv").config();
 // thahmina added
 const multer = require('multer');
 const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimonialController');
@@ -21,7 +21,7 @@ const server = http.createServer(app);
 app.use(express.json());
 app.use(cors());
 
-
+const port = process.env.PORT || 8000;
 
 const io = new Server(server, {
     cors: {
@@ -42,31 +42,10 @@ app.use('/api', dataRoutes); // Use the imported router
 app.use('/api', imageRoutes);
 
 
-app.use(bodyParser.json()); // To parse JSON request bodies
-
 // Testimonials routes
 app.get('/testimonials', getAllTestimonials);
 app.post('/upload-testimonial', upload.single('image'), uploadTestimonial);
-// Define route for fetching user data by ID
-app.get('/api/user/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    console.log("Fetching user data for ID:", userId);
 
-    const userDoc = await db.collection('Users').doc(userId).get();
-
-    if (!userDoc.exists) {
-      console.error("No document found for ID:", userId);
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const userData = userDoc.data();
-    const { role, profileImage, petDescription, name, email } = userData;
-    res.json({ role, profileImage, petDescription, name, email });
-  } catch (error) {
-    console.error("Error fetching user data:", error.message);
-    res.status(500).json({ error: 'Internal Server Error', message: error.message });
-  }});
 // Define route for fetching user data by ID
 app.get('/api/user/:id', async (req, res) => {
   try {
@@ -247,11 +226,8 @@ app.post('/api/user/:id/upload', upload2, async (req, res) => {
 });
 
 
-// // Start server only if not in a test environment
-// if (process.env.NODE_ENV !== 'test') {
-//     server.listen(PORT, () => {
-//         console.log(`[SYSTEM] Server started on port ${PORT}...`);
-//     });
-// }
+server.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
 
 module.exports = app; // Export the app instance for testing

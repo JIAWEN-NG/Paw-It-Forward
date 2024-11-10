@@ -29,7 +29,6 @@ app.use(cors());
 router.get('/users/:id', userController.getUserById); // Use the controller's function
 // You can add more routes related to users here using the same controller
 router.post('/register', registerUser);
-
 //request routes
 //router.post('/requests/sendRequest', requestController.createRequest); // Create a new request
 router.put('/requests/:requestId/accept', requestController.acceptRequest); // Accept a request
@@ -48,14 +47,6 @@ router.get('/admin/withdrawals', adminController.getAllWithdrawals);
 router.patch('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
 router.patch('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
 
-
-
-
-router.get("/users", (req, res) => {
-    console.log('GET /users route hit');
-    userController.getAllUsers(req, res);
-});
-// You can add more routes related to users here using the same controller
 
 //Afsana added 
 // Donation Routes
@@ -177,7 +168,6 @@ router.post('/fundraising', upload, async (req, res) => {
 // The route stays the same as it doesn't need to specify param handling in the URL
 router.put('/fundraising', upload, fundraisingController.editFundraising);
 
-
 // Withdrawal Routes
 router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
 router.get('/withdrawals', withdrawalController.getAllWithdrawals);
@@ -187,8 +177,6 @@ router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserI
 // Testimonial routes
 router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
 router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Upload a new testimonial with an image
-
-
 
 // Photo verification route
 router.post('/photo-verification', upload, async (req, res) => {
