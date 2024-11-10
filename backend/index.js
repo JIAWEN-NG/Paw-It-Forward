@@ -5,7 +5,6 @@ const { db , bucket } = require('./config/firebase'); // Firebase configuration
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe initialization
 const Payment = require('./models/paymentModel'); // Import the Payment model
 const imageRoutes = require('./routers/imageRoutes');
-const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
@@ -33,9 +32,7 @@ const io = new Server(server, {
 });
 
 // thahmina added
-app.use(bodyParser.json());
 const upload = multer({ storage: multer.memoryStorage() });
-
 
 // console.log('Router is being mounted');
 app.use('/api', dataRoutes); // Use the imported router
