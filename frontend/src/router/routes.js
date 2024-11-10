@@ -98,19 +98,5 @@ const router = createRouter({
   routes
 });
 
-// Uncomment if authentication guards are needed
-// router.beforeEach((to, from, next) => {
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-//   const auth = getAuth();
-//   onAuthStateChanged(auth, (user) => {
-//     if (requiresAuth && !user) {
-//       next('/login'); // Redirect to login if not authenticated and trying to access a restricted route
-//     } else if ((to.path === '/login' || to.path === '/signup') && user) {
-//       next('/chat'); // Redirect to chat if already logged in and trying to access login or signup
-//     } else {
-//       next(); // Proceed normally if the authentication state meets the route requirements
-//     }
-//   });
-// });
 
 export default router;

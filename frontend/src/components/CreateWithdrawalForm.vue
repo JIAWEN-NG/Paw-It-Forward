@@ -76,7 +76,7 @@ export default {
       formData.append('userId', authState.userId); 
 
       try {
-        const response = await fetch('http://localhost:8000/api/withdrawals', {
+        const response = await fetch(`${this.$api_url}/withdrawals`, {
           method: 'POST',
           body: formData
         });

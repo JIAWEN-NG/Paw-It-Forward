@@ -101,7 +101,7 @@ export default {
     // Fetch donations and set the full and filtered donations list
     async fetchDonations() {
       try {
-        const response = await fetch('http://localhost:8000/api/marketplace');
+        const response = await fetch(`${this.$api_url}/marketplace`);
         if (!response.ok) throw new Error('Failed to fetch donations');
         const data = await response.json();
         this.donations = data;

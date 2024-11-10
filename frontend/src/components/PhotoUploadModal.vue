@@ -73,7 +73,7 @@ export default {
           formData.append('userId', this.userId); // Include userId
 
           try {
-            const response = await axios.post(`http://localhost:8000/api/user/${this.userId}/upload`, formData, {
+            const response = await axios.post(`${this.$api_url}/user/${this.userId}/upload`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data' // Set the appropriate header
               }

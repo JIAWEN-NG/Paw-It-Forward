@@ -163,7 +163,7 @@ export default {
   
     const fetchFundraisingDetail = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/Fundraising/${props.id}`);
+        const response = await axios.get(`${this.$api_url}/Fundraising/${props.id}`);
         fundraising.value = response.data;
       } catch (err) {
         console.error('Error fetching fundraising detail:', err);

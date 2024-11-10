@@ -198,7 +198,7 @@ export default {
     async fetchTestimonials() {
       console.log("Fetching testimonials...");
       try {
-        const response = await fetch('http://localhost:8000/api/testimonials');
+        const response = await fetch(`${this.$api_url}/testimonials`);
         if (!response.ok) throw new Error(`Failed to fetch testimonials: ${response.statusText}`);
         
         const data = await response.json();
@@ -236,7 +236,7 @@ export default {
       }
 
       try {
-        const response = await fetch('http://localhost:8000/api/upload-testimonial', {
+        const response = await fetch(`${this.$api_url}/upload-testimonial`, {
           method: 'POST',
           body: formData
         });

@@ -84,7 +84,7 @@
 <script>
 import UserApproval from './AdminUserApproval.vue';
 import WithdrawalRequests from './AdminWithdrawal.vue';
-import axios from 'axios';
+
 
 export default {
   components: {
@@ -159,7 +159,7 @@ export default {
     async fetchUsers(status) {
       this.loadingUsers = true;
       try {
-        const response = await axios.get(`http://localhost:8000/api/admin/users?status=${status}`);
+        const response = await this.$axios.get(`/admin/users?status=${status}`);
         this.users = response.data;
       } catch (error) {
         console.error(`Error fetching ${status} users:`, error);
@@ -170,7 +170,7 @@ export default {
     async fetchDonationRequests() {
       this.loadingWithdrawals = true;
       try {
-        const response = await axios.get('http://localhost:8000/api/admin/withdrawals');
+        const response = await this.$axios.get('/admin/withdrawals');
         this.donationRequests = response.data;
       } catch (error) {
         console.error('Error fetching donation requests:', error);
@@ -185,7 +185,7 @@ export default {
     },
     async approveUser(userId) {
       try {
-        await axios.patch(`http://localhost:8000/api/admin/users/${userId}/approve`);
+        await this.$axios.patch(`/admin/users/${userId}/approve`);
         this.fetchUsers(this.activeTab);
       } catch (error) {
         console.error('Error approving user:', error);
@@ -194,7 +194,7 @@ export default {
     async rejectUser(userId, reason) {
       if (reason) {
         try {
-          await axios.patch(`http://localhost:8000/api/admin/users/${userId}/reject`, { rejectionReason: reason });
+          await this.$axios.patch(`/admin/users/${userId}/reject`, { rejectionReason: reason });
           this.fetchUsers(this.activeTab);
         } catch (error) {
           console.error('Error rejecting user:', error);
@@ -203,7 +203,7 @@ export default {
     },
     async transferDonation(requestId) {
       try {
-        await axios.patch(`http://localhost:8000/api/admin/withdrawals/${requestId}/approve`);
+        await this.$axios.patch(`/admin/withdrawals/${requestId}/approve`);
         this.fetchDonationRequests(); // Refresh the list after approval
       } catch (error) {
         console.error('Error transferring donation:', error);
@@ -213,7 +213,7 @@ export default {
     async rejectDonation(requestId, reason) {
       if (reason) {
         try {
-          await axios.patch(`http://localhost:8000/api/admin/withdrawals/${requestId}/reject`, { rejectionReason: reason });
+          await this.$axios.patch(`/admin/withdrawals/${requestId}/reject`, { rejectionReason: reason });
           this.fetchDonationRequests();
         } catch (error) {
           console.error('Error rejecting donation:', error);
