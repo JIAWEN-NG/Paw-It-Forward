@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-  
         <!-- Text and button displayed side by side -->
         <div class="text-container" style="margin-right: 20px;">
           <h2>Stories of Hope</h2>
@@ -11,7 +10,6 @@
         <button class="add-testimonial wave-button" style="align-self: center;" @click="openModal">
           Add Your Story
         </button>
-  
 
       <div class="cols">
       <div class="col" v-for="(testimonial, index) in paginatedTestimonials" :key="index" @click="showExpandedModal(testimonial)">
@@ -43,25 +41,29 @@
       </div>
 
   
-      <!-- back of modal -->
+     <!-- back of card-->
+    <div class="card-back">
       <div v-if="expandedTestimonial" class="modal-backdrop" @click.self="closeExpandedModal">
         <div class="modal-content" 
             :style="{ 
-              backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${expandedTestimonial.image})`,
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${expandedTestimonial.image})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center',
+              // backgroundBlendMode: 'overlay' /* Ensures blend of the gradient and the image */
             }">
           <span class="close-btn" @click="closeExpandedModal">&times;</span>
-          <h2>{{ expandedTestimonial.animalName }}</h2> <!-- Name stays at the top -->
+          <h2 class="petname">{{ expandedTestimonial.animalName }}</h2>
           <div class="animated-quotes">
             <div class="quote-container">
-              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon" />
-              <p>{{ expandedTestimonial.donationJourney }}</p>
-              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon flip-quote" />
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-start" />
+              <p class="journey">{{ expandedTestimonial.donationJourney }}</p>
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-end flip-quote" />
             </div>
           </div>
         </div>
       </div>
+    </div>
+      
 
 
       <!-- Modal for adding testimonials -->
@@ -294,7 +296,6 @@ export default {
 <style scoped>
 
 
-
 .wrapper {
   position: relative;
   /* background-color: #1e3a5f; Dark blue */
@@ -360,24 +361,13 @@ h2 {
   transform: rotateY(180deg);
 }
 
-.card-front,
-.card-back {
+.card-front {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   border-radius: 15px;
 }
-
-
-.card-back {
-  transform: rotateY(180deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
 
 @keyframes scaleIn {
   from {
@@ -526,10 +516,23 @@ h2 {
   margin-bottom: 20px;
 }
 
-.quote-icon {
+.quote-icon-start {
   width: 40px; /* Adjust size as needed */
   height: auto;
-  margin: 0 10px; /* Space between images and text */
+  margin-right: 10px; /* Align left with margin to the right */
+  align-self: flex-start; /* Align to the left */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+  
+}
+
+.quote-icon-end {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  margin-left: 10px; /* Align right with margin to the left */
+  align-self: flex-end; /* Align to the right */
+  transform: scaleX(-1); /* Flips the quote image horizontally */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+ 
 }
 
 .flip-quote {
@@ -1023,5 +1026,23 @@ input[type="file"] {
   background-color: #a5a5a5;
   cursor: not-allowed;
 }
+
+.petname {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Adds a shadow for better contrast */
+  font-family: 'Montserrat', sans-serif;
+  color:  rgba(252, 238, 213, 0.6);
+}
+
+/* Styling for the back of the card paragraph */
+.journey {
+  font-weight: bold;
+  font-size: 1.15rem;
+  color: #ffffff; /* Ensure the text color is white for better contrast */
+  line-height: 1.5;
+  padding: 15px; /* Add padding to improve spacing */
+  font-family: 'Montserrat', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Adds a shadow for better contrast */
+}
+
 
 </style>
