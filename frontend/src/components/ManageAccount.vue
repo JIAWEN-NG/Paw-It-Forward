@@ -3,7 +3,7 @@
     <h1 class="page-title">Edit My Profile</h1>
     
     <!-- Inline Success Alert -->
-    <div v-if="showSuccessAlert==true" class="success-alert">
+    <div v-if="showSuccessAlert" class="success-alert">
       <p>{{ successMessage }}</p>
     </div>
 
@@ -24,7 +24,6 @@
         </div>
       </div>
       <p class="role-display"><b>Role:</b> {{ formattedRole }}</p>
-      <p class="role-display"><b>User ID:</b> {{userId}}</p>
     </div>
 
     <div class="details-section" v-if="currentUserData">
@@ -51,19 +50,22 @@
       :showModal="showEditProfileModal" 
       :currentUser="currentUserData" 
       @close="showEditProfileModal = false" 
-      @save="handleProfileUpdate" 
+      @save="handleProfileUpdate"
+      @showSuccess="setSuccessMessage"
     />
 
-    <!-- Photo Upload Modal -->
-   <PhotoUploadModal 
-    v-if="showPhotoUploadModal" 
-    :showModal="showPhotoUploadModal" 
-    :userId="userId"
-    @close="showPhotoUploadModal = false" 
-    @uploadSuccess="handlePhotoUploadSuccess"
-  />
+    <PhotoUploadModal 
+      v-if="showPhotoUploadModal" 
+      :showModal="showPhotoUploadModal" 
+      :userId="userId"
+      :userProfilePicUrl="userProfilePicUrl"
+      @close="showPhotoUploadModal = false" 
+      @uploadSuccess="handlePhotoUploadSuccess"
+      @showSuccess="setSuccessMessage"
+    />
   </div>
 </template>
+
 
 <script>
 import { auth, db } from '../main'; // Ensure this is your Firebase Auth config
@@ -102,7 +104,7 @@ export default {
   },
   async mounted() {
     // Check if the userId is already set in authState; otherwise, get it from auth.currentUser
-    console.log('Current user id: ', this.userId)
+    console.log('Current user id: ', this.userId);
     if (!this.userId) {
       const currentUser = auth.currentUser;
       if (currentUser) {
@@ -137,37 +139,23 @@ export default {
   },
   methods: {
     handleProfileUpdate(updatedInfo) {
-      console.log("Profile updated with:", updatedInfo);
       this.currentUserData = { ...this.currentUserData, ...updatedInfo };
-
-      this.successMessage = "Your profile has been updated successfully.";
-      this.showSuccessAlert = true;
-      console.log('showSuccessAlert set to true');
-
-      setTimeout(() => {
-        this.showSuccessAlert = false;
-        console.log('showSuccessAlert set to false after timeout');
-      }, 3000);
     },
     handlePhotoUploadSuccess(newPhotoUrl) {
       this.currentUserData.profileImage = `${newPhotoUrl}?timestamp=${Date.now()}`;
-      authState.userProfilePicUrl = this.currentUserData.profileImage;
       this.$forceUpdate();
-
-      this.successMessage = "Profile photo updated successfully.";
+    },
+    setSuccessMessage(message) {
+      console.log('Success message triggered:', message);
+      this.successMessage = message;
       this.showSuccessAlert = true;
 
       setTimeout(() => {
         this.showSuccessAlert = false;
       }, 3000);
-    },
-    watch: {
-    'authState.userProfilePicUrl'(newUrl) {
-      this.currentUserData.profileImage = newUrl;
     }
   }
-},
-}
+};
 </script>
 
 <style scoped>
@@ -186,17 +174,12 @@ export default {
 }
 
 .success-alert {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text color */
   padding: 10px 20px;
-  border: 1px solid #c3e6cb;
+  border: 1px solid #c3e6cb; /* Border to match the background */
   border-radius: 4px;
-  z-index: 1000;
-  transition: opacity 0.5s ease;
+  margin-bottom:20px;
 }
 
 .profile-section {
