@@ -1,5 +1,61 @@
 <template>
-    <div class="container" :class="{ active: isRegisterActive }">
+    <div>
+        <div class="container-xs" v-if="isXsScreen">
+            <div class="sign-in-xs d-flex flex-column justify-content-center" v-if="!showForgotPassword && !isRegisterActive">
+                <form @submit.prevent="login">
+                    <h1 class="mb-3 text-center">Welcome Back!</h1>
+                    <div class="form-group">
+                        <input type="email" class="form-control details" placeholder="Email" v-model="email" required>
+                    </div>
+                    <div class="form-group position-relative">
+                        <input type="password" class="form-control details" placeholder="Password" v-model="password" required>
+                    </div>                        
+                    <div class="form-check d-flex align-items-center me-2" style="font-size: 13px;">
+                        <input type="checkbox" id="rememberMeXs" class="form-check-input" v-model="rememberMe">
+                        <label class="form-check-label mx-1" for="rememberMeXs">Remember Me</label>
+                    </div>
+                    <button type="submit" class="btn mb-3">Sign In</button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="#" @click.prevent="toggleForgotPassword" class="forgot-password-link" style="text-decoration: none;">Forgot your password?</a>
+                    </div>  
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <a href="#" @click.prevent="toggleAuth" class="" style="text-decoration: underline;">Don't have an account yet?</a>
+                    </div>  
+                </form>
+            </div>
+
+            <div class="forgot-pw-xs" v-if="showForgotPassword">
+                <form @submit.prevent="sendPasswordResetEmail">
+                    <h1 class="text-center mb-3">Forgot Password?</h1>
+                    <div class="form-group">
+                        <input type="email" class="form-control details" placeholder="Enter your email" v-model="resetEmail" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Send Reset Email</button>
+                    <a href="#" @click.prevent="toggleForgotPassword" class="d-block mt-3 text-center" style="text-decoration: underline;">Back to Sign In</a>
+                </form>
+            </div>
+
+            <div class="sign-up-xs d-flex flex-column justify-content-center" v-if="isRegisterActive && !showPhotoSubmission">
+                <form @submit.prevent="register">
+                    <h1 class="mb-3 text-center">Create an Account</h1>
+                    <div class="form-group">
+                        <input type="text" class="form-control details" placeholder="Name" v-model="name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control details" placeholder="Email" v-model="email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control details" placeholder="Password" v-model="password" required>
+                    </div>
+                    <button type="submit" class="btn">Sign Up</button>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <a href="#" @click.prevent="toggleAuth" class="" style="text-decoration: underline;">Already have an account?</a>
+                    </div>  
+                </form>
+            </div>
+        </div>
+
+    <div v-else class="container" :class="{ active: isRegisterActive }">
         <div class="form-container sign-in d-lg-block flex-column justify-content-center" v-if="!isRegisterActive && !showForgotPassword">
             <form @submit.prevent="login">
                 <h1 class="mb-3 text-center">Welcome Back!</h1>
@@ -84,6 +140,7 @@
             </div>
         </div>
     </div>
+</div>
 
     <AuthModal
     v-if="showModal"
@@ -132,6 +189,7 @@
         showModal: false,
         modalTitle: '',
         modalMessage: '',
+        isXsScreen: window.innerWidth < 576 // Detect if screen size is XS
 
       };
     },
@@ -230,7 +288,6 @@
         },
         toggleForgotPassword() {
         this.showForgotPassword = !this.showForgotPassword; // Toggle visibility
-        console.log("Forgot Password toggled:", this.showForgotPassword); // Add this line for debugging
         this.resetEmail = '';
         },
         signInWithGoogle() {
@@ -270,12 +327,24 @@
             this.showModal = true;
         }
     },
-
+    checkScreenSize() {
+            this.isXsScreen = window.innerWidth < 576;
+        }
     },
       async mounted() {
     // Fetch each image by its filename
     this.googleImageUrl = await this.fetchImage('about/google.png');
+    window.addEventListener('resize', this.checkScreenSize);
+
     // this.defaultProfileImageUrl = await this.fetchImage('Profilephotos/default-profile.png');
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.checkScreenSize);
+    },
+    watch: {
+        isXsScreen(newVal) {
+            console.log('Screen size updated, isXsScreen:', newVal);
+        }
     },
   };
   </script>
@@ -300,7 +369,7 @@ h1{
     overflow: hidden;
     max-width: 100%;
     min-height: 480px;
-    height: 100%;
+    height:calc(100vh - 80px);
 
 }
 
@@ -321,7 +390,7 @@ h1{
     text-decoration: none;  
 }
 
-.container button{
+.container button, .container-xs button{
     background-color: #ffaa00;
     color: #fff;
     font-size: 13px;
@@ -344,10 +413,12 @@ h1{
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    padding: 100px 6rem;
+    padding: 100px 20vh;
+    height: calc(100vh - 80px);
+    justify-content: center;
 }
 
-.container .details{
+.container .details, .container-xs .details{
     background-color: #eee;
     border: none;
     margin: 8px 0;
@@ -521,7 +592,47 @@ img{
     margin: 0 10px; /* Space between the line and the text */
 }
 
+.container-xs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
+}
 
+.sign-in-xs form, .forgot-pw-xs form, .sign-up-xs form {
+    width: 100%;
+    max-width: 400px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sign-in-xs .form-group {
+    margin-bottom: 15px;
+}
+
+.sign-in-xs button, .sign-up-xs button  {
+    background-color: #ffaa00;
+    color: #fff;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.sign-in-xs button:hover {
+    background-color: #e69900;
+}
+
+.form-check .form-check-input {
+    float: left;
+    margin-left:0;
+}
 
   </style>
   
