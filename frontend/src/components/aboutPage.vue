@@ -76,8 +76,6 @@
             <!-- Content -->
             <div v-if="currentFullScreen === 'owners'" class="list-extension d-md-flex justify-content-center p-3">
               <div class="stepper-container text-content col-md-5 py-4">
-                <!-- <h2 class="pb-3">Get Started Now!</h2> -->
-                <!-- Steps for pet owners -->
                         <div class="step">
                             <div><div class="circle">1</div></div>
                             <div>
@@ -113,8 +111,6 @@
 
             <div v-if="currentFullScreen === 'donors'" class="list-extension d-md-flex justify-content-center p-3">
               <div class="stepper-container text-content col-md-5 py-3">
-                <!-- <h2 class="pb-3">Get Started Now!</h2> -->
-                <!-- Steps for donors -->
                         <div class="step">
                             <div><div class="circle">1</div></div>
                             <div>
@@ -191,54 +187,16 @@ export default {
       const section = document.getElementById(sectionId);
       section.scrollIntoView({ behavior: "smooth" });
     },
-    detectScroll() {
-      if (this.scrollTimeout) {
-        clearTimeout(this.scrollTimeout);
-      }
-    // Check if the user has scrolled past a certain threshold
-    if (window.scrollY > 10) {
-      this.scrollTimeout = setTimeout(() => {
-        this.snapToNearestSection();
-      }, 150); // Adjust timeout as needed
-    }
-    },
-  snapToNearestSection() {
-    const scrollPosition = window.scrollY + window.innerHeight / 3;
-    let closestSection = null;
-    let minDistance = Infinity;
-
-  // Exclude the last section to avoid snapping to it
-  this.sections.slice(0, -1).forEach((section) => {
-    const sectionTop = section.offsetTop;
-    const distance = Math.abs(scrollPosition - sectionTop);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestSection = section;
-    }
-  });
-
-  // Check if the scroll position is close to the bottom of the document
-  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-  if (!nearBottom && closestSection) {
-    closestSection.scrollIntoView({ behavior: "smooth" });
-  }
-},
 },
 
 async mounted() {
   // Store references to each section
   this.sections = Array.from(document.querySelectorAll(".full-screen, .full-screen-other"));
 
-  // Add scroll event listener
-  window.addEventListener("scroll", this.detectScroll);
   // Fetch each image by its filename
   this.petOwnerImageUrl = await this.fetchImage('about/petowner.png');
   this.supportImageUrl = await this.fetchImage('about/support.png');
   this.heartImageUrl = await this.fetchImage('about/heart.png');
-},
-beforeDestroy() {
-  // Remove scroll event listener when the component is destroyed
-  window.removeEventListener("scroll", this.detectScroll);
 },
 };
 </script>
@@ -248,6 +206,12 @@ beforeDestroy() {
 *{
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
+}
+
+.landing-page {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
 }
 
 .toggle-bar {
@@ -300,15 +264,6 @@ beforeDestroy() {
   padding: 20px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
-/* 
-.stepper-container {
-  display: flex;
-  flex-direction: column;
-} */
-/* 
-.step {
-  margin-bottom: 10px;
-} */
 
 .image-box {
     margin-left: 20px;
@@ -320,21 +275,16 @@ beforeDestroy() {
 .side-image {
     max-width: 80%;
     height: auto;
-    /* border-radius: 10px; */
-    /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 
-
-/* General Page Styling */
-
-
-/* Hero Section */
 .hero-section {
   background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
   display: flex;
   align-items: center;
   flex-direction: column;
   margin-top: 80px;
+  /* scroll-snap-align: start; */
+  
 }
 .last-section {
   background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
@@ -342,6 +292,8 @@ beforeDestroy() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* scroll-snap-align: start; */
+
 }
 
 .container {
@@ -350,13 +302,6 @@ beforeDestroy() {
   justify-content: space-between;
   align-items: center;
 }
-/* 
-.hero-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
-
 
 .text-content h1 {
     font-size: 28px;
@@ -445,6 +390,8 @@ font-size: 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* scroll-snap-align: start; */
+
 }
 
 
@@ -515,8 +462,10 @@ display: none
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  padding: 40px;
-  padding-bottom: 80px;
+  padding: 80px;
+  /* padding-bottom: 80px; */
+  scroll-padding-top:120px;
+  scroll-snap-align: start;
 }
 
 .full-screen-middle{
@@ -526,6 +475,7 @@ display: none
   justify-content: space-evenly;
   padding: 40px;
   padding-top: 80px;
+  scroll-snap-align: start;
 }
 
 .full-screen-last{
@@ -535,6 +485,7 @@ display: none
   justify-content: center;
   padding: 40px;
   padding-top: 80px;
+  scroll-snap-align: center;
 }
 
 
@@ -557,9 +508,6 @@ display: none
 
 .stepper-container .step:hover {
   color: #0044cc;
-  /* padding: 10px; */
-  /* transition: transform 0.3s ease, color 0.3s ease; */
-  /* transform: scale(1.02); */
 }
 
 @keyframes wiggle {
