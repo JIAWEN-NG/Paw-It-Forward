@@ -42,7 +42,7 @@ const createRequest = async (req, res) => {
         const chatRef = await db.collection('Chats').add({
             participants: [donorId, receiverId],
             lastMessage: requestMessage,
-            lastMessageTimestamp: serverTimestamp(),
+            lastMessageTimestamp: new Date(),
             requestedItem: {
                 title: itemsDonated,
                 image: itemImage,
@@ -58,7 +58,7 @@ const createRequest = async (req, res) => {
             senderId: receiverId,
             receiverId: donorId,
             message: requestMessage,
-            timestamp: serverTimestamp(),
+            timestamp: new Date(),
             receiverName: donorData.name,
             receiverProfileImage: donorData.profileImage,
             requestId: requestRef.id
