@@ -2,7 +2,13 @@
   <div v-if="showModal" class="modal-overlay">
     <div class="modal-content">
       <h2>Edit Your Photo</h2>
-      <input type="file" accept="image/*" @change="onFileChange" />
+      <div v-if="userProfilePicUrl" class="current-photo-container">
+        <p>Current Photo</p>
+        <img :src="userProfilePicUrl" alt="Current Profile Photo" class="current-photo" />
+      </div>
+      <button class="upload-button" @click="triggerFileInput">Upload New Photo</button>
+      <input type="file" ref="fileInput" accept="image/*" @change="onFileChange" class="hidden-file-input" />
+      
       <div v-if="selectedImage" class="crop-container">
         <img :src="selectedImage" ref="image" class="crop-image" />
       </div>
@@ -29,6 +35,10 @@ export default {
     userId: {
       type: String,
       required: true
+    },
+    userProfilePicUrl: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -38,8 +48,8 @@ export default {
     };
   },
   methods: {
-    created() {
-      console.log('User ID is:',this.userId)
+    triggerFileInput() {
+      this.$refs.fileInput.click();
     },
     onFileChange(event) {
       const file = event.target.files[0];
@@ -69,23 +79,25 @@ export default {
       if (this.cropper) {
         this.cropper.getCroppedCanvas().toBlob(async blob => {
           const formData = new FormData();
-          formData.append('image', blob, `${this.userId}.png`); // Append the blob with the userId as the file name
-          formData.append('userId', this.userId); // Include userId
+          formData.append('image', blob, `${this.userId}.png`);
+          formData.append('userId', this.userId);
 
           try {
             const response = await axios.post(`${this.$api_url}/user/${this.userId}/upload`, formData, {
               headers: {
-                'Content-Type': 'multipart/form-data' // Set the appropriate header
+                'Content-Type': 'multipart/form-data'
               }
             });
 
-            const photoURL = response.data.photoURL; // Get the URL from the response
-            this.$emit('save', photoURL); // Emit the new photo URL to the parent component
+            const photoURL = response.data.photoURL;
+            this.$emit('uploadSuccess', photoURL);
+            console.log('Emitting showSuccess event');
+            this.$emit('showSuccess', 'Profile photo updated successfully.');
             this.close();
           } catch (error) {
-            console.error("Error uploading photo:", error.response.data); // Log error details
+            console.error("Error uploading photo:", error.response.data);
           }
-        }, 'image/png'); // Specify the image format
+        }, 'image/png');
       }
     },
     close() {
@@ -122,12 +134,53 @@ export default {
   text-align: center;
 }
 
+.current-photo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  color: gray;
+  font-weight:lighter;
+}
+
+.current-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 5px;
+  border-radius: 100%;
+  border: 1px solid gray; 
+}
+
+
+.hidden-file-input {
+  display: none;
+}
+
+.upload-button {
+  background-color: transparent;
+  color: gray;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid gray;
+  margin-bottom: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.upload-button:hover {
+  background-color: lightgray;
+  color: white;
+  border: 1px solid gray;
+}
+
+
 .modal-buttons {
   display: flex;
   justify-content: space-between;
 }
 
-/* Button styles */
 .cancel-button {
   background-color: transparent;
   color: #6c757d;
@@ -160,5 +213,12 @@ export default {
   background-color: #e0e0e0;
   color: #999;
   cursor: not-allowed;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 </style>
