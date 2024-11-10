@@ -3,7 +3,18 @@
     <div v-if="loading" class="text-center">Loading withdrawals...</div>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
-    <div v-if="!loading && paginatedWithdrawals.length > 0" class="table-responsive-md">
+    <!-- Status Filter -->
+    <div class="mb-3">
+      <label for="statusFilter" class="form-label">Filter by Status:</label>
+      <select id="statusFilter" v-model="selectedStatus" @change="filterWithdrawals" class="form-select">
+        <option value="">All</option>
+        <option value="Approved">Approved</option>
+        <option value="Pending">Pending</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <div v-if="!loading && filteredWithdrawals.length > 0" class="table-responsive-md">
       <table class="compact-table table">
         <thead>
           <tr>
@@ -31,6 +42,10 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div v-if="!loading && filteredWithdrawals.length === 0" class="alert alert-warning text-center">
+      No withdrawals found.
     </div>
 
     <!-- Pagination Controls -->
@@ -93,23 +108,25 @@ export default {
   data() {
     return {
       withdrawals: [],
+      filteredWithdrawals: [],
       fundraisingPosts: {},
       loading: false,
       error: null,
       currentPage: 1,
       itemsPerPage: 5,
+      selectedStatus: '',
       selectedWithdrawal: null,
     };
   },
 
   computed: {
     totalPages() {
-      return Math.ceil(this.withdrawals.length / this.itemsPerPage);
+      return Math.ceil(this.filteredWithdrawals.length / this.itemsPerPage);
     },
     paginatedWithdrawals() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.withdrawals.slice(start, end);
+      return this.filteredWithdrawals.slice(start, end);
     }
   },
 
@@ -157,6 +174,7 @@ export default {
               requestedAt: withdrawal.requestedAt ? new Date(withdrawal.requestedAt) : null,
             };
           }).sort((a, b) => b.requestedAt - a.requestedAt);
+          this.filteredWithdrawals = [...this.withdrawals];
         } else {
           this.error = 'No withdrawals found.';
         }
@@ -193,6 +211,15 @@ export default {
 
     viewDetails(withdrawal) {
       this.selectedWithdrawal = withdrawal;
+    },
+
+    filterWithdrawals() {
+      if (this.selectedStatus) {
+        this.filteredWithdrawals = this.withdrawals.filter(withdrawal => withdrawal.status === this.selectedStatus);
+      } else {
+        this.filteredWithdrawals = [...this.withdrawals];
+      }
+      this.currentPage = 1;
     }
   }
 };
@@ -263,7 +290,9 @@ tbody tr:hover {
   color: #000;
   cursor: pointer;
 }
-
+#statusFilter{
+  width:10%;
+}
 .pagination-container {
   display: flex;
   justify-content: space-between;
