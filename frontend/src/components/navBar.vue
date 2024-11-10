@@ -92,7 +92,6 @@ export default {
       try {
         const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
         const data = await response.json();
-        console.log("fetching");
         return data.url; // Return the URL from the API response
       } catch (error) {
         console.error(`Failed to fetch image ${fileName}:`, error);
@@ -109,18 +108,14 @@ export default {
 
   async loadUserProfilePic() {
   const currentUser = this.$auth.currentUser;
-  console.log("Attempting to load profile picture for user:", currentUser?.uid);
   if (currentUser) {
     try {
       const userDocRef = doc(db, "Users", currentUser.uid);
       const userDoc = await getDoc(userDocRef);
-      console.log("Fetched user document:", userDoc.exists() ? userDoc.data() : "No document found");
 
       if (userDoc.exists()) {
         authState.userProfilePicUrl = userDoc.data().profileImage;
         this.userRole = userDoc.data().role;
-        console.log(this.userRole);
-        console.log("Profile picture URL set to:", authState.userProfilePicUrl);
       } else {
         console.log("No user document found for UID:", currentUser.uid);
       }
@@ -142,9 +137,7 @@ export default {
     this.chatInvertImageUrl = await this.fetchImage('about/chatinvert.png');
 
     if (this.isUserLoggedIn) {
-    console.log("User logged in, loading profile picture...");
     await this.loadUserProfilePic();
-    console.log("Profile picture loaded:", this.userProfilePicUrl);
   }
 
   },
@@ -156,13 +149,12 @@ export default {
       return authState.userProfilePicUrl;
     },
     isAdmin() {
-      return this.userRole === "admin"; // Check if the user is an admin
+      return this.userRole === "admin";
     },
   },
   watch: {
     isUserLoggedIn(newVal) {
       if (newVal) {
-        console.log("User just logged in, attempting to load profile picture...");
         this.loadUserProfilePic();
       }
     },
