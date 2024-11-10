@@ -184,7 +184,7 @@ export default {
     closeExpandedModal() {
       this.expandedTestimonial = null; // Close the expanded testimonial modal
     },
-    showModal(index) {
+    toggleShowModal(index) {
       this.expandedIndex = index;
     },
     closeModal() {
