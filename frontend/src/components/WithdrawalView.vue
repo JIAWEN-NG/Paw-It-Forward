@@ -7,24 +7,27 @@
       <table class="compact-table table">
         <thead>
           <tr>
-            <th>Proof Image</th>
             <th>Post Title</th>
             <th>Amount Withdrawn</th>
-            <th>Reason</th>
             <th>Status</th>
             <th>Date Requested</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="withdrawal in paginatedWithdrawals" :key="withdrawal.id">
-            <td>
-              <img :src="withdrawal.proofImg || 'https://via.placeholder.com/100'" alt="Proof Image" class="thumbnail" />
-            </td>
             <td>{{ getPostTitle(withdrawal.postId) }}</td>
             <td>{{ formatCurrency(withdrawal.amountWithdraw) }}</td>
-            <td>{{ withdrawal.reason }}</td>
-            <td>{{ withdrawal.status }}</td>
+            <td :class="{'text-success': withdrawal.status === 'Approved', 'text-danger': withdrawal.status === 'Rejected'}">{{ withdrawal.status }}</td>
             <td>{{ formatDate(withdrawal.requestedAt) }}</td>
+            <td>
+              <button 
+                class="btn btn-outline-primary btn-sm btn-viewdetail" 
+                @click="viewDetails(withdrawal)"
+              >
+                View Details
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -48,6 +51,37 @@
         Next
       </button>
     </div>
+
+    <!-- Modal for Viewing Details -->
+    <div v-if="selectedWithdrawal" class="modal modal-centered" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Withdrawal Details</h5>
+            <button type="button" class="close" @click="selectedWithdrawal = null">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label><strong>Proof Image:</strong></label>
+            <img 
+              v-if="selectedWithdrawal.proofImg" 
+              :src="selectedWithdrawal.proofImg" 
+              alt="Proof Image" 
+              class="thumbnail mb-3"
+            />
+            <p><strong>Withdrawal Reason:</strong> {{ selectedWithdrawal.reason }}</p>
+            <p v-if="selectedWithdrawal.status === 'Pending'"><strong>Status:</strong> This withdrawal is still being processed.</p>
+            <p v-if="selectedWithdrawal.status !== 'Rejected' && selectedWithdrawal.status !== 'Pending'"><strong>Processed At:</strong> {{ formatDate(selectedWithdrawal.processedAt) }}</p>
+            <p v-if="selectedWithdrawal.status === 'Approved'"><strong>Transaction ID:</strong> {{ selectedWithdrawal.transactionId }}</p>
+            <p v-if="selectedWithdrawal.status === 'Rejected'"><strong>Rejection Reason:</strong> {{ selectedWithdrawal.rejectionReason }}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="selectedWithdrawal = null">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -64,6 +98,7 @@ export default {
       error: null,
       currentPage: 1,
       itemsPerPage: 5,
+      selectedWithdrawal: null,
     };
   },
 
@@ -117,19 +152,11 @@ export default {
         const response = await axios.get(`http://localhost:8000/api/withdrawals/${authState.userId}`);
         if (response.status === 200) {
           this.withdrawals = response.data.map(withdrawal => {
-            // Log each withdrawal to check the structure
-            console.log('Withdrawal object:', withdrawal);
-
             return {
               ...withdrawal,
-              requestedAt: withdrawal.requestedAt
-                ? new Date(withdrawal.requestedAt) // Directly parse the ISO string
-                : null, // Ensure null if the date is missing or invalid
+              requestedAt: withdrawal.requestedAt ? new Date(withdrawal.requestedAt) : null,
             };
-          }).sort((a, b) => b.requestedAt - a.requestedAt); // Sort by latest date first
-
-          // Log to ensure dates are correctly parsed
-          console.log('Formatted withdrawals:', this.withdrawals);
+          }).sort((a, b) => b.requestedAt - a.requestedAt);
         } else {
           this.error = 'No withdrawals found.';
         }
@@ -147,8 +174,8 @@ export default {
 
     formatDate(date) {
       if (!date) {
-        console.warn('Invalid date:', date); // Log to see which dates are invalid
-        return 'N/A'; // Provide a fallback if the date is invalid
+        console.warn('Invalid date:', date);
+        return 'N/A';
       }
       const options = { day: 'numeric', month: 'short', year: 'numeric' };
       return new Date(date).toLocaleDateString('en-GB', options);
@@ -162,13 +189,16 @@ export default {
 
     formatCurrency(value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    },
+
+    viewDetails(withdrawal) {
+      this.selectedWithdrawal = withdrawal;
     }
   }
 };
 </script>
 
 <style scoped>
-
 .compact-table {
   width: 100%;
   max-width: 100%;
@@ -178,8 +208,8 @@ export default {
 }
 .table-responsive-md {
   overflow-x: auto;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .table-responsive::-webkit-scrollbar {
@@ -188,10 +218,9 @@ export default {
 
 @media (min-width: 768px) {
   .table-responsive-md {
-    overflow-x: visible; /* Remove scroll for larger screens */
+    overflow-x: visible;
   }
 }
-
 
 th, td {
   padding: 12px 16px;
@@ -219,13 +248,20 @@ tbody tr:hover {
 }
 
 .thumbnail {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
   border-radius: 6px;
   border: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: #000;
+  cursor: pointer;
 }
 
 .pagination-container {
@@ -248,5 +284,35 @@ tbody tr:hover {
 .btn-outline-primary:hover {
   background-color: #2c3e50;
   color: #fff;
+}
+
+.modal-centered .modal-dialog {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.text-success {
+  color: green;
+}
+
+.text-danger {
+  color: red;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn.btn-outline-primary.btn-viewdetail:hover {
+  background-color: #1280c9; 
+  color: #fff; 
+  border-color: #1280c9; 
 }
 </style>
