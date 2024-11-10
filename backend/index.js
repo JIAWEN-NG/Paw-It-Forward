@@ -15,9 +15,11 @@ const upload2 = require('./middleware/uploadImage'); // Import the Multer middle
 const multer = require('multer');
 const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimonialController');
 
-const PORT = 8000;
+// const PORT = 8000;
 const app = express();
 const server = http.createServer(app);
+app.use(express.json());
+app.use(cors());
 
 
 
@@ -29,11 +31,6 @@ const io = new Server(server, {
         credentials: true,
     },
 });
-
-app.use(express.json());
-app.use(cors());
-
-
 
 // thahmina added
 app.use(bodyParser.json());
@@ -209,29 +206,7 @@ async function updateFundraisingAmount(postId, amount) {
     }
 }
 
-// Start server only if not in a test environment
-if (process.env.NODE_ENV !== 'test') {
-    server.listen(PORT, () => {
-        console.log(`[SYSTEM] Server started on port ${PORT}...`);
-    });
-}
 
-module.exports = app; // Export the app instance for testing
-
-
-// Define route for updating user profile by ID
-// app.put('/api/user/:id', async (req, res) => {
-//   const userId = req.params.id;
-//   const userData = req.body;
-
-//   try {
-//     await db.collection('Users').doc(userId).update(userData);
-//     res.status(200).send({ message: 'User updated successfully' });
-//   } catch (error) {
-//     console.error("Error updating user:", error.message);
-//     res.status(500).send({ error: "Failed to update user" });
-//   }
-// });
 
 // // Define route for uploading user profile photos
 app.post('/api/user/:id/upload', upload2, async (req, res) => {
@@ -270,3 +245,13 @@ app.post('/api/user/:id/upload', upload2, async (req, res) => {
         res.status(500).json({ message: 'Error uploading photo', error: error.message });
     }
 });
+
+
+// // Start server only if not in a test environment
+// if (process.env.NODE_ENV !== 'test') {
+//     server.listen(PORT, () => {
+//         console.log(`[SYSTEM] Server started on port ${PORT}...`);
+//     });
+// }
+
+module.exports = app; // Export the app instance for testing
