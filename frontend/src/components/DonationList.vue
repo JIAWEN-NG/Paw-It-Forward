@@ -108,6 +108,7 @@ export default {
       currentUserId: null,
       notificationMessage: '',      // For displaying notifications
       notificationType: '',         // "success" or "error"
+      
     };
   },
   created() {
@@ -234,7 +235,11 @@ export default {
   padding: 20px;
   background-color: #F8F9FB;
   border-radius: 20px;
+  display: flex;
+  justify-content: center; /* Center the cards container */
 }
+
+
 
 
 /* Adjusted Compact Card Styling for Wider Card */
@@ -256,14 +261,15 @@ export default {
 .row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: start; /* Align items to the left */
 }
 
 .col-sm-6,
 .col-lg-4 {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center; /* Center each column item */
 }
+
 
 
 /* Profile Image Styling */
