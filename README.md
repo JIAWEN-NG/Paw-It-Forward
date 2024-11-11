@@ -14,9 +14,9 @@ IS216 G3 Group 5 Project members:
 
   
 ## Links
-- **GitHub Repository:** [Paw It Forward](https://github.com/JIAWEN-NG/Paw-It-Forward)
-- **Deployed frontend:** [Paw It Forward]()
-- **Deployed backend backend:** 
+- **GitHub Repository:** [Paw It Forward ](https://github.com/JIAWEN-NG/Paw-It-Forward)
+- **Deployed frontend:** [Paw It Forward Live Website](https://purrfessorpaws-40ca2.web.app)
+- **Deployed backend backend:** [Vercel Backend](https://paw-it-forward.vercel.app)
  
 
 ## Login Information

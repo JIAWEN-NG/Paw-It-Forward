@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { io } from 'socket.io-client';
+import { getFirestore, collection, doc, getDoc, query, where, onSnapshot } from 'firebase/firestore';
+
 
 export default {
     props: ['currentUserId', 'selectedChat'], // Keep selectedChat as a prop
@@ -69,7 +69,7 @@ export default {
             chats: [],
             searchQuery: '',
             isLoadingChats: true,
-            socket: null,
+            // socket: null,
             updateKey: 0,
             selectedChatId: null
         };
@@ -85,9 +85,8 @@ export default {
             }
             // Sort chats based on lastMessageTimestamp, descending order
             return chatsToDisplay.sort((a, b) => {
-                // Convert timestamps to Date objects for comparison
-                const timeA = new Date(a.lastMessageTimestamp).getTime();
-                const timeB = new Date(b.lastMessageTimestamp).getTime();
+                const timeA = a.lastMessageTimestamp ? a.lastMessageTimestamp.getTime() : 0;
+                const timeB = b.lastMessageTimestamp ? b.lastMessageTimestamp.getTime() : 0;
                 return timeB - timeA; // Sort in descending order
             });
         },
@@ -98,9 +97,7 @@ export default {
             handler(newChat) {
                 if (newChat && newChat.chatId) { // Ensure chatId is defined
                     this.fetchMessages(newChat.chatId); // Fetch messages using the valid chatId
-                } else {
-                    console.error('Selected chat is invalid or has no chatId');
-                }
+                } 
             },
         },
     },
@@ -118,67 +115,54 @@ export default {
         },
         async fetchInitialChats() {
             try {
-                const response = await axios.get(`http://localhost:8000/api/chats/user/${this.currentUserId}`);
-                const chatsData = response.data;
-
-                const updatedChats = await Promise.all(
-                    chatsData.map(async (chat) => {
-                        const otherUserId = chat.participants.find((participant) => participant !== this.currentUserId);
-                        chat.otherUserId = otherUserId;
-                        console.log("Other user ID:", otherUserId);
-                        const userResponse = await axios.get(`http://localhost:8000/api/users/${otherUserId}`);
-                        const userData = userResponse.data;
-                        chat.receiverName = userData.name;
-                        chat.receiverProfileImage = userData.profileImage;
-
-                        return chat;
-                    })
+                const db = getFirestore();
+                const chatsQuery = query(
+                    collection(db, "Chats"),
+                    where("participants", "array-contains", this.currentUserId)
                 );
 
-                this.chats = updatedChats;
-                this.isLoadingChats = false;
+                onSnapshot(chatsQuery, async (snapshot) => {
+                    const updatedChats = await Promise.all(snapshot.docs.map(async docSnapshot => {
+                        const chatData = docSnapshot.data();
+                        chatData.chatId = docSnapshot.id;
 
-                this.setupSocketListeners();
-            } catch (error) {
-                console.error('Error fetching chats:', error);
-            }
-        },
-        setupSocketListeners() {
-            this.socket = io('http://localhost:8000');
-            this.socket.on('newChat', async (newChat) => {
-                // Check if chat with the same ID already exists
-                const existingChatIndex = this.chats.findIndex(chat => chat.chatId === newChat.chatId);
-                if (existingChatIndex === -1) {
-                    // Add receiver details to the new chat
-                    const otherUserId = newChat.participants.find((participant) => participant !== this.currentUserId);
-                    if (otherUserId) {
-                        try {
-                            const userResponse = await axios.get(`http://localhost:8000/api/users/${otherUserId}`);
-                            const userData = userResponse.data;
-                            newChat.receiverName = userData.name;
-                            newChat.receiverProfileImage = userData.profileImage;
-                        } catch (error) {
-                            console.error('Error fetching user data for new chat:', error);
+                        if (chatData.lastMessageTimestamp && typeof chatData.lastMessageTimestamp.toDate === 'function') {
+                            chatData.lastMessageTimestamp = chatData.lastMessageTimestamp.toDate();
                         }
-                    }
-                    // Add the new chat and create a new array reference to force reactivity
-                    this.chats.unshift(newChat);
+                        const otherUserId = chatData.participants.find(participant => participant !== this.currentUserId);
 
-                } else {
-                    console.log("Duplicate chat detected, not adding to chats array");
-                }
-            });
+                        // Attempt to fetch the other user's data
+                        try {
+                            const userDoc = await getDoc(doc(db, "Users", otherUserId));
+                            if (userDoc.exists()) {
+                                const userData = userDoc.data();
+                                chatData.receiverName = userData.name;
+                                chatData.receiverProfileImage = userData.profileImage;
+                            } else {
+                                console.warn("User document not found:", otherUserId);
+                            }
+                        } catch (userError) {
+                            console.error("Error fetching user data:", userError);
+                        }
 
-            // Listen for updates on the selected chat
-            this.socket.on('updateChat', async (updatedChat) => {
-                this.updateChatInList(updatedChat); // Update the chat in the list
-            });
+                        return chatData;
+                    }));
+
+                    this.chats = updatedChats;
+                    this.isLoadingChats = false;
+                });
+            } catch (error) {
+                console.error("Error fetching chats:", error);
+                this.isLoadingChats = false;
+            }
         },
 
         formatDate(date) {
+            if (!date) return 'Invalid Date';
             const options = { month: '2-digit', day: '2-digit' };
             return new Date(date).toLocaleDateString('en-GB', options);
         },
+
 
         truncatedMessage(message) {
             if (!message) return 'No message available';
@@ -300,8 +284,10 @@ export default {
     flex-grow: 1;
     overflow-y: auto;
 }
+
 .chat-items-wrapper::-webkit-scrollbar {
-  display: none; /* For Chrome, Safari, and Opera */
+    display: none;
+    /* For Chrome, Safari, and Opera */
 }
 
 /* Chat Items */
@@ -336,9 +322,12 @@ export default {
 .chat-item:hover {
     background-color: #e3edf7;
 }
+
 .chat-item.active {
-    background-color: #cfe2f3; /* Change this color as needed */
+    background-color: #cfe2f3;
+    /* Change this color as needed */
 }
+
 /* Avatar */
 .avatar {
     width: 48px;
