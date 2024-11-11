@@ -21,15 +21,8 @@ app.use(express.json());
 app.use(cors());
 
 const port = process.env.PORT || 8000;
+const frontend_url = process.env.FRONTEND_URL;
 
-const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        allowedHeaders: ["my-custom-header"],
-        credentials: true,
-    },
-});
 
 // thahmina added
 const upload = multer({ storage: multer.memoryStorage() });
@@ -65,23 +58,6 @@ app.get('/api/user/:id', async (req, res) => {
   }
 });
 
-app.set('socketio', io);
-
-// WebSocket connection setup
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
-    socket.on('joinChat', (chatId) => {
-        socket.join(chatId);
-        console.log(`User joined chat: ${chatId}`);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-    });
-
-    socket.emit('testEvent', { message: 'Hello from server' });
-});
 
 // Stripe checkout session creation
 app.post('/create-checkout-session', async (req, res) => {
@@ -104,8 +80,8 @@ app.post('/create-checkout-session', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'http://localhost:3000/donation-success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url: 'http://localhost:3000/cancel',
+            success_url: `${frontend_url}/donation-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${frontend_url}/cancel`,
             payment_intent_data: {
                 metadata: {
                     userId: userId || 'unknown_user',
