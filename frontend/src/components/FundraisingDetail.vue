@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed , getCurrentInstance} from 'vue';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import { authState } from '../store/auth.js';
@@ -160,10 +160,11 @@ export default {
     const showShareModal = ref(false);
     const showAmountModal = ref(false);
     const shareLink = ref(window.location.href);
+    const { proxy } = getCurrentInstance();
   
     const fetchFundraisingDetail = async () => {
       try {
-        const response = await axios.get(`${this.$api_url}/Fundraising/${props.id}`);
+        const response = await proxy.$axios.get(`/Fundraising/${props.id}`);
         fundraising.value = response.data;
       } catch (err) {
         console.error('Error fetching fundraising detail:', err);
@@ -217,7 +218,8 @@ export default {
       const amountInCents = donationAmount.value * 100;
       
       try {
-        const response = await axios.post('http://localhost:8000/create-checkout-session', {
+        const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+        const response = await axios.post(`${BASE_URL}/create-checkout-session`, {
           postName: fundraising.value.title,
           price: amountInCents,
           userId: currentUser.value,

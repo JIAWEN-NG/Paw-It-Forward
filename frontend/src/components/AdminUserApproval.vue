@@ -178,9 +178,9 @@ export default {
     },
     methods: {
         getUserStatus(user) {
-            if (!user.isPhotoVerified && !user.remarks) {
+            if (!user.isPhotoVerified && !user.rejectionReason) {
                 return 'Pending';
-            } else if (!user.isPhotoVerified && user.remarks) {
+            } else if (!user.isPhotoVerified && user.rejectionReason) {
                 return 'Rejected';
             } else if (user.isPhotoVerified) {
                 return 'Approved';
