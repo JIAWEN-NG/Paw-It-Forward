@@ -1,69 +1,73 @@
 <template>
   <div class="account-page">
-    <h1 class="page-title">Edit My Profile</h1>
-    
-    <!-- Inline Success Alert -->
-    <div v-if="showSuccessAlert==true" class="success-alert">
-      <p>{{ successMessage }}</p>
-    </div>
+    <div class="card-container">
+      <h1 class="page-title">Edit My Profile</h1>
+      
+      <!-- Inline Success Alert -->
+      <div v-if="showSuccessAlert" class="success-alert">
+        <p>{{ successMessage }}</p>
+      </div>
 
-    <div class="profile-section" v-if="currentUserData">
-      <div class="profile-photo-container">
-        <img 
-          :src="currentUserData.profileImage || defaultProfileImage" 
-          alt="Profile Picture" 
-          class="profile-image" 
-        />
-        <div class="change-photo-overlay">
-          <button 
-            @click="showPhotoUploadModal = true" 
-            class="change-photo-button"
-          >
-            Change Photo
-          </button>
+      <div class="profile-section" v-if="currentUserData">
+        <div class="profile-photo-container">
+          <img 
+            :src="currentUserData.profileImage || defaultProfileImage" 
+            alt="Profile Picture" 
+            class="profile-image" 
+          />
+          <div class="change-photo-overlay">
+            <button 
+              @click="showPhotoUploadModal = true" 
+              class="change-photo-button"
+            >
+              Change Photo
+            </button>
+          </div>
         </div>
+        <p class="role-display"><b>Role:</b> {{ formattedRole }}</p>
       </div>
-      <p class="role-display"><b>Role:</b> {{ formattedRole }}</p>
-      <p class="role-display"><b>User ID:</b> {{userId}}</p>
+
+      <div class="details-section" v-if="currentUserData">
+        <div class="detail-item">
+          <span class="detail-title">Name:</span>
+          <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-title">Email:</span>
+          <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-title">Pet Description:</span>
+          <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
+        </div>
+        <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
+      </div>
+
+      <p v-else>Loading user data...</p>
+
+      <!-- Edit Profile Modal -->
+      <EditProfileModal 
+        v-if="showEditProfileModal" 
+        :showModal="showEditProfileModal" 
+        :currentUser="currentUserData" 
+        @close="showEditProfileModal = false" 
+        @save="handleProfileUpdate"
+        @showSuccess="setSuccessMessage"
+      />
+
+      <PhotoUploadModal 
+        v-if="showPhotoUploadModal" 
+        :showModal="showPhotoUploadModal" 
+        :userId="userId"
+        :userProfilePicUrl="userProfilePicUrl"
+        @close="showPhotoUploadModal = false" 
+        @uploadSuccess="handlePhotoUploadSuccess"
+        @showSuccess="setSuccessMessage"
+      />
     </div>
-
-    <div class="details-section" v-if="currentUserData">
-      <div class="detail-item">
-        <span class="detail-title">Name:</span>
-        <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-title">Email:</span>
-        <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-title">Pet Description:</span>
-        <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
-      </div>
-      <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
-    </div>
-
-    <p v-else>Loading user data...</p>
-
-    <!-- Edit Profile Modal -->
-    <EditProfileModal 
-      v-if="showEditProfileModal" 
-      :showModal="showEditProfileModal" 
-      :currentUser="currentUserData" 
-      @close="showEditProfileModal = false" 
-      @save="handleProfileUpdate" 
-    />
-
-    <!-- Photo Upload Modal -->
-   <PhotoUploadModal 
-    v-if="showPhotoUploadModal" 
-    :showModal="showPhotoUploadModal" 
-    :userId="userId"
-    @close="showPhotoUploadModal = false" 
-    @uploadSuccess="handlePhotoUploadSuccess"
-  />
   </div>
 </template>
+
 
 <script>
 import { auth, db } from '../main'; // Ensure this is your Firebase Auth config
@@ -102,7 +106,7 @@ export default {
   },
   async mounted() {
     // Check if the userId is already set in authState; otherwise, get it from auth.currentUser
-    console.log('Current user id: ', this.userId)
+    console.log('Current user id: ', this.userId);
     if (!this.userId) {
       const currentUser = auth.currentUser;
       if (currentUser) {
@@ -137,37 +141,23 @@ export default {
   },
   methods: {
     handleProfileUpdate(updatedInfo) {
-      console.log("Profile updated with:", updatedInfo);
       this.currentUserData = { ...this.currentUserData, ...updatedInfo };
-
-      this.successMessage = "Your profile has been updated successfully.";
-      this.showSuccessAlert = true;
-      console.log('showSuccessAlert set to true');
-
-      setTimeout(() => {
-        this.showSuccessAlert = false;
-        console.log('showSuccessAlert set to false after timeout');
-      }, 3000);
     },
     handlePhotoUploadSuccess(newPhotoUrl) {
       this.currentUserData.profileImage = `${newPhotoUrl}?timestamp=${Date.now()}`;
-      authState.userProfilePicUrl = this.currentUserData.profileImage;
       this.$forceUpdate();
-
-      this.successMessage = "Profile photo updated successfully.";
+    },
+    setSuccessMessage(message) {
+      console.log('Success message triggered:', message);
+      this.successMessage = message;
       this.showSuccessAlert = true;
 
       setTimeout(() => {
         this.showSuccessAlert = false;
       }, 3000);
-    },
-    watch: {
-    'authState.userProfilePicUrl'(newUrl) {
-      this.currentUserData.profileImage = newUrl;
     }
   }
-},
-}
+};
 </script>
 
 <style scoped>
@@ -177,26 +167,14 @@ export default {
   text-align: center;
   margin-bottom: 20px;
 }
-.account-page {
-  max-width: 600px;
-  min-width: 400px;
-  margin: auto;
-  padding: 20px;
-  text-align: center; /* Center the content */
-}
 
 .success-alert {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   background-color: #d4edda;
   color: #155724;
   padding: 10px 20px;
   border: 1px solid #c3e6cb;
   border-radius: 4px;
-  z-index: 1000;
-  transition: opacity 0.5s ease;
+  margin-bottom: 20px;
 }
 
 .profile-section {
@@ -289,22 +267,46 @@ export default {
   color: #555;
 }
 
+
 .edit-profile-button {
-  background-color: transparent;
-  color: #4CAF50;
+  background: linear-gradient(135deg, #1f2e3d 0%, #3a506b 100%);
+  color: white;
   padding: 10px 20px;
-  border: 1px solid #4CAF50;
-  border-radius: 5px;
-  cursor: pointer;
+  border: none;
+  border-radius: 25px;
   font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
   margin-top: 20px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left:auto;
+  margin-right:auto;
+
+  text-decoration: none;
 }
 
 .edit-profile-button:hover {
-  background-color: #4CAF50;
-  color: white;
+  background: linear-gradient(135deg, #2c3e50 0%, #506c8a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.account-page {
+  background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.card-container {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
 }
 </style>

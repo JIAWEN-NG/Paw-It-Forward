@@ -2,165 +2,166 @@
 
 <template>
   <div class="container py-4">
-    <!-- Notification for Success and Error Messages -->
-    <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ successMessage }}
-      <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
-    </div>
-    <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ errorMessage }}
-      <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
-    </div>
-    <div v-if="listings && listings.length">
-      <table class="compact-table">
-        <thead>
-          <tr>
-            <th>My Posts</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="listing in paginatedListings" :key="listing.id">
-            <td>
-              <div class="listing-container">
-                <img :src="listing.itemImage" alt="Item Image" class="thumbnail" v-if="listing.itemImage" />
-                <div class="listing-details">
-                  <p id="title">{{ listing.itemsDonated }} | {{ listing.petType }}</p>
-                  <p class="small-text">{{ listing.itemCategory }}</p>
-                  <p class="small-text">{{ listing.condition }}</p>
-                  <p class="small-text">{{ listing.location || 'Location Unknown' }}</p>
-                  <p class="small-text">Posted {{ formatDate(listing.createdAt) }}</p>
-                </div>
-              </div>
-            </td>
-            <td>
-              <button @click="openEditForm(listing)" class="btn btn-outline-secondary btn-sm">Edit</button>
-              <button @click="confirmDeleteListing(listing.id)" class="btn btn-outline-danger btn-sm">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Loading Spinner -->
+    <div v-if="loading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </div>
     <div v-else>
-      <p>No listings available.</p>
-    </div>
+      <!-- Notification for Success and Error Messages -->
+      <div v-if="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ successMessage }}
+        <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
+      </div>
+      <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ errorMessage }}
+        <button type="button" class="btn-close" @click="clearMessage" aria-label="Close"></button>
+      </div>
+      <div v-if="listings && listings.length">
+        <table class="compact-table">
+          <thead>
+            <tr>
+              <th>My Posts</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="listing in paginatedListings" :key="listing.id">
+              <td>
+                <div class="listing-container">
+                  <img :src="listing.itemImage" alt="Item Image" class="thumbnail" v-if="listing.itemImage" />
+                  <div class="listing-details">
+                    <p id="title">{{ listing.itemsDonated }} | {{ listing.petType }}</p>
+                    <p class="small-text">{{ listing.itemCategory }}</p>
+                    <p class="small-text">{{ listing.condition }}</p>
+                    <p class="small-text">{{ listing.location || 'Location Unknown' }}</p>
+                    <p class="small-text">Posted {{ formatDate(listing.createdAt) }}</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <button @click="openEditForm(listing)" class="btn btn-outline-secondary btn-sm">Edit</button>
+                <button @click="confirmDeleteListing(listing.id)" class="btn btn-outline-danger btn-sm">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="!loading && listings.length === 0" class="alert alert-warning text-center">
+        Currently, you have no Makrteplace listings created
+      </div>
 
-    <!-- Pagination Controls -->
-    <div class="pagination-container">
-      <button 
-        @click="changePage(currentPage - 1)" 
-        :disabled="currentPage === 1" 
-        class="btn btn-outline-primary pagination-button"
-      >
-        Previous
-      </button>
-      <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button 
-        @click="changePage(currentPage + 1)" 
-        :disabled="currentPage === totalPages" 
-        class="btn btn-outline-primary pagination-button"
-      >
-        Next
-      </button>
-    </div>
+      <!-- Pagination Controls -->
+      <div class="pagination-container">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+          class="btn btn-outline-primary pagination-button">
+          Previous
+        </button>
+        <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
+          class="btn btn-outline-primary pagination-button">
+          Next
+        </button>
+      </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirm Delete</h5>
-          </div>
-          <div class="modal-body">
-            <p>Are you sure you want to delete this listing?</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancel</button>
-            <button type="button" class="btn btn-danger" @click="deleteListing">Delete</button>
+      <!-- Delete Confirmation Modal -->
+      <div v-if="showDeleteModal" class="modal-overlay">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm Delete</h5>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this listing?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancel</button>
+              <button type="button" class="btn btn-danger" @click="deleteListing">Delete</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Edit Form Modal -->
-    <div v-if="showForm" class="modal-overlay">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <span class="close" @click="closeEditForm">&times;</span>
-          <h5 class="modal-title text-center">Edit Listing</h5>
-          <div class="modal-body">
-            <form @submit.prevent="updateListing">
-              <div class="form-group mb-3">
-                <label for="itemsDonated" class="form-label">Item Description</label>
-                <textarea
-                  v-model="listing.itemsDonated"
-                  id="itemsDonated"
-                  class="form-control"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-              
-              <div class="form-group mb-3">
-                <label for="itemCategory" class="form-label">Item Category</label>
-                <select v-model="listing.itemCategory" id="itemCategory" class="form-control" required>
-                  <option value="" disabled>Select Category</option>
-                  <option value="Food & Feeding Supplies">Food & Feeding Supplies</option>
-                  <option value="Toys">Toys</option>
-                  <option value="Bedding & Furniture">Bedding & Furniture</option>
-                  <option value="Grooming & Hygiene">Grooming & Hygiene</option>
-                  <option value="Clothing & Accessories">Clothing & Accessories</option>
-                  <option value="Health & Wellness">Health & Wellness</option>
-                  <option value="Travel & Carriers">Travel & Carriers</option>
-                </select>
-              </div>
-              
-              <div class="form-group mb-3">
-                <label for="condition" class="form-label">Condition</label>
-                <select v-model="listing.condition" id="condition" class="form-control" required>
-                  <option value="" disabled>Select Condition</option>
-                  <option value="Brand New">Brand New</option>
-                  <option value="Slightly Used">Slightly Used</option>
-                  <option value="Well Used">Well Used</option>
-                </select>
-              </div>
-
-              <div class="form-group mb-3">
-                <label for="petType" class="form-label">Pet Type</label>
-                <select v-model="listing.petType" id="petType" class="form-control" required>
-                  <option value="" disabled>Select Pet Type</option>
-                  <option value="Cat">Cat</option>
-                  <option value="Dog">Dog</option>
-                </select>
-              </div>
-
-              <div class="form-group mb-3">
-                <label for="location" class="form-label">Location</label>
-                <select v-model="listing.location" id="location" class="form-control" required>
-                  <option value="" disabled>Select Location</option>
-                  <option value="West">West</option>
-                  <option value="East">East</option>
-                  <option value="Central">Central</option>
-                  <option value="North">North</option>
-                  <option value="North-east">North-east</option>
-                </select>
-              </div>
-
-              <div class="form-group mb-3">
-                <label for="imageUpload" class="form-label">Upload New Picture (Optional)</label>
-                <div class="image-upload-box" @click="triggerFileInput">
-                  <img v-if="imagePreview || listing.itemImage" :src="imagePreview || listing.itemImage" class="image-preview" />
-                  <span v-else class="placeholder">No Image Uploaded</span>
+      <!-- Edit Form Modal -->
+      <div v-if="showForm" class="modal-overlay">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <span class="close" @click="closeEditForm">&times;</span>
+            <h5 class="modal-title text-center">Edit Listing</h5>
+            <div class="modal-body">
+              <form @submit.prevent="updateListing">
+                <div class="form-group mb-3">
+                  <label for="itemsDonated" class="form-label">Item Description</label>
+                  <textarea v-model="listing.itemsDonated" id="itemsDonated" class="form-control" rows="3"
+                    required></textarea>
                 </div>
-                <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none;" />
-                <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{ listing.itemImage ? 'Reupload' : 'Choose File' }}</button>
-              </div>
 
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @click="closeEditForm">Cancel</button>
-                <button type="submit" class="btn btn-success" :disabled="submitting">{{ submitting ? 'Saving...' : 'Save Changes' }}</button>
-              </div>
-            </form>
+                <div class="form-group mb-3">
+                  <label for="itemCategory" class="form-label">Item Category</label>
+                  <select v-model="listing.itemCategory" id="itemCategory" class="form-control" required>
+                    <option value="" disabled>Select Category</option>
+                    <option value="Food & Feeding Supplies">Food & Feeding Supplies</option>
+                    <option value="Toys">Toys</option>
+                    <option value="Bedding & Furniture">Bedding & Furniture</option>
+                    <option value="Grooming & Hygiene">Grooming & Hygiene</option>
+                    <option value="Clothing & Accessories">Clothing & Accessories</option>
+                    <option value="Health & Wellness">Health & Wellness</option>
+                    <option value="Travel & Carriers">Travel & Carriers</option>
+                  </select>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="condition" class="form-label">Condition</label>
+                  <select v-model="listing.condition" id="condition" class="form-control" required>
+                    <option value="" disabled>Select Condition</option>
+                    <option value="Brand New">Brand New</option>
+                    <option value="Slightly Used">Slightly Used</option>
+                    <option value="Well Used">Well Used</option>
+                  </select>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="petType" class="form-label">Pet Type</label>
+                  <select v-model="listing.petType" id="petType" class="form-control" required>
+                    <option value="" disabled>Select Pet Type</option>
+                    <option value="Cat">Cat</option>
+                    <option value="Dog">Dog</option>
+                  </select>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="location" class="form-label">Location</label>
+                  <select v-model="listing.location" id="location" class="form-control" required>
+                    <option value="" disabled>Select Location</option>
+                    <option value="West">West</option>
+                    <option value="East">East</option>
+                    <option value="Central">Central</option>
+                    <option value="North">North</option>
+                    <option value="North-east">North-east</option>
+                  </select>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="imageUpload" class="form-label">Upload New Picture (Optional)</label>
+                  <div class="image-upload-box" @click="triggerFileInput">
+                    <img v-if="imagePreview || listing.itemImage" :src="imagePreview || listing.itemImage"
+                      class="image-preview" />
+                    <span v-else class="placeholder">No Image Uploaded</span>
+                  </div>
+                  <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" ref="fileInput"
+                    style="display: none;" />
+                  <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{
+                    listing.itemImage ? 'Reupload' : 'Choose File' }}</button>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" @click="closeEditForm">Cancel</button>
+                  <button type="submit" class="btn btn-success" :disabled="submitting">{{ submitting ? 'Saving...' :
+                    'Save Changes' }}</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -185,7 +186,9 @@ export default {
       currentPage: 1,
       itemsPerPage: 5,
       successMessage: '',
-      errorMessage: ''
+      errorMessage: '',
+      submitting: false,
+      loading: true, // Add loading property
     };
   },
   async created() {
@@ -216,8 +219,8 @@ export default {
     },
     async deleteListing() {
       try {
-        await axios.delete('http://localhost:8000/api/marketplace', {
-          data: { 
+        await axios.delete(`${this.$api_url}/marketplace`, {
+          data: {
             id: this.deleteListingId,  // Use stored ID for deletion
             userId: authState.userId
           }
@@ -243,13 +246,17 @@ export default {
       this.errorMessage = '';
     },
     async fetchListings(userId) {
+      this.loading = true; // Start loading
       try {
-        const response = await axios.get(`http://localhost:8000/api/marketplace/${userId}`);
+        const response = await axios.get(`${this.$api_url}/marketplace/${userId}`);
         this.listings = response.data
           .map(listing => ({ ...listing, createdAt: new Date(listing.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
       } catch (error) {
         console.error("Error fetching listings:", error);
+      }
+      finally {
+        this.loading = false; // Stop loading
       }
     },
     formatDate(date) {
@@ -288,7 +295,7 @@ export default {
         }
         formData.append('userId', authState.userId);
 
-        const response = await axios.put('http://localhost:8000/api/marketplace', formData, {
+        const response = await axios.put(`${this.$api_url}/marketplace`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
 
@@ -318,27 +325,45 @@ export default {
   padding: 20px;
   border-radius: 8px;
 } */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
 
 .compact-table {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
   border-collapse: separate;
-  border-spacing: 0 10px; /* Add vertical space between rows */
+  border-spacing: 0 10px;
+  /* Add vertical space between rows */
 }
 
-th, td {
-  padding: 12px 16px; /* Increased padding for better readability */
+th,
+td {
+  padding: 12px 16px;
+  /* Increased padding for better readability */
   text-align: left;
   vertical-align: middle;
-  background-color: #ffffff; /* White background for cells */
+  background-color: #ffffff;
+  /* White background for cells */
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Light shadow for depth */
 }
 
 th {
-  background-color: #f1f1f1; /* Slightly darker background for headers */
-  color: #333; /* Dark text for headers */
+  background-color: #f1f1f1;
+  /* Slightly darker background for headers */
+  color: #333;
+  /* Dark text for headers */
   font-weight: 600;
 }
 
@@ -347,31 +372,40 @@ tbody tr {
 }
 
 tbody tr:hover {
-  transform: scale(1.01); /* Slight scale-up on hover for emphasis */
+  transform: scale(1.01);
+  /* Slight scale-up on hover for emphasis */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
 }
 
 .listing-container {
   display: flex;
-  align-items: stretch; /* Make items take full height of the container */
-  gap: 15px; /* Spacing between image and text */
+  align-items: stretch;
+  /* Make items take full height of the container */
+  gap: 15px;
+  /* Spacing between image and text */
 }
 
 .thumbnail {
-  width: 100px; /* Fixed width */
-  height: 100px; /* Remove fixed height */
+  width: 100px;
+  /* Fixed width */
+  height: 100px;
+  /* Remove fixed height */
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid #ddd; /* Light border for images */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for images */
+  border: 1px solid #ddd;
+  /* Light border for images */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for images */
   flex-shrink: 0;
 }
 
 .listing-details p {
-  margin: 2px 0; /* Less margin between lines for a compact look */
+  margin: 2px 0;
+  /* Less margin between lines for a compact look */
   font-size: 0.9rem;
-  color: #555; /* Soft gray text color */
+  color: #555;
+  /* Soft gray text color */
 }
 
 /* Button styling for a cleaner look */
@@ -496,18 +530,21 @@ button.btn-danger:hover {
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  
+
 }
+
 .pagination-button {
-  border: 1px solid #2c3e50; /* Ensures a visible border */
+  border: 1px solid #2c3e50;
+  /* Ensures a visible border */
   color: #2c3e50;
   border-radius: 5px;
   padding: 6px 12px;
 }
+
 .btn-outline-primary {
   color: #2c3e50;
   border-color: #2c3e50;
-  
+
 }
 
 .btn-outline-primary:hover {
@@ -548,14 +585,15 @@ button.btn-danger:hover {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width:35%;
+  width: 35%;
 }
 
 
 .action-buttons {
   display: flex;
-  gap: 5px; 
+  gap: 5px;
 }
+
 .close {
   position: absolute;
   top: 10px;
@@ -564,5 +602,4 @@ button.btn-danger:hover {
   color: #000;
   cursor: pointer;
 }
-
 </style>

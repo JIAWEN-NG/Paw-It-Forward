@@ -118,7 +118,7 @@ export default {
     },
 
     async fetchFundraisings() {
-      const response = await fetch('http://localhost:8000/api/Fundraising');
+      const response = await fetch(`${this.$api_url}/Fundraising`);
       const data = await response.json();
       this.setFundraisings(data);
     },

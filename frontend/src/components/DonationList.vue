@@ -124,6 +124,11 @@ export default {
       return `${day} ${month} ${year}`;
     },
     openRequestModal(donation) {
+      if (!this.currentUserId) {
+        // Redirect to login if user is not logged in
+        this.$router.push('/login');
+        return;
+      }
       this.selectedDonation = donation;
       this.showModal = true;
     },
@@ -160,7 +165,7 @@ export default {
       }
 
       try {
-        const response = await fetch('http://localhost:8000/api/requests', {
+        const response = await fetch(`${this.$api_url}/requests`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

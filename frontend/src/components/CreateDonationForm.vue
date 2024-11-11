@@ -145,7 +145,8 @@ export default {
          }
 
          try {
-            const response = await fetch(`http://localhost:8000/api/marketplace`, {
+            const api_url = import.meta.env.VITE_APP_API_BASE_URL;
+            const response = await fetch(`${api_url}/marketplace`, {
                 method: 'POST',
                 body: formData,
             });
@@ -181,7 +182,7 @@ export default {
 
       async fetchDonorDetails(donorId) {
          try {
-            const response = await fetch(`http://localhost:8000/api/users/${donorId}`);
+            const response = await fetch(`${this.$api_url}/users/${donorId}`);
             if (response.ok) {
                const user = await response.json();
                this.donation.donorName = user.name || '';

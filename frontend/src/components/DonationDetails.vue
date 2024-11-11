@@ -43,7 +43,7 @@ DonationDetails.vue
     },
     async created() {
       try {
-        const response = await fetch(`http://localhost:8000/api/marketplace/${this.id}`);
+        const response = await fetch(`${this.$api_url}/marketplace/${this.id}`);
         if (!response.ok) {
           throw new Error('Donation not found');
         }

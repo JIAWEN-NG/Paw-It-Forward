@@ -107,7 +107,7 @@ export default {
       formData.append('userId', authState.userId);
 
       try {
-        const response = await fetch(`http://localhost:8000/api/fundraising`, {
+        const response = await fetch(`${this.$api_url}/fundraising`, {
           method: 'POST',
           body: formData
         });

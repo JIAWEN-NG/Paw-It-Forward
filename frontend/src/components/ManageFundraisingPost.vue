@@ -1,6 +1,10 @@
 <template>
   <div class="container py-4">
-    <div v-if="loading" class="text-center">Loading fundraising posts...</div>
+    <div v-if="loading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
     
     <!-- Success Alert Message -->
@@ -50,7 +54,7 @@
     </div> 
 
     <div v-if="!loading && paginatedFundraisings.length === 0" class="alert alert-warning text-center">
-      No fundraising posts found.
+      Currently, you have no fundraising posts created
     </div>
 
     <!-- Pagination Controls -->
@@ -214,7 +218,7 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get(`http://localhost:8000/api/fundraising/user/${authState.userId}`);
+        const response = await axios.get(`${this.$api_url}/fundraising/user/${authState.userId}`);
         this.fundraisings = response.data
           .map(fundraising => ({ ...fundraising, createdAt: new Date(fundraising.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
@@ -249,7 +253,7 @@ export default {
 
     async deleteFundraising() {
       try {
-        await axios.delete(`http://localhost:8000/api/fundraising`, { 
+        await axios.delete(`${this.$api_url}/fundraising`, { 
           data: { 
             id: this.deletePostId,
             userId: authState.userId
@@ -285,7 +289,7 @@ export default {
       }
 
       try {
-        const response = await axios.put('http://localhost:8000/api/fundraising', formData, {
+        const response = await axios.put(`${this.$api_url}/fundraising`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         this.fundraisings = this.fundraisings.map(f => f.id === this.fundraising.id ? { ...f, ...response.data.updatedData } : f);
@@ -366,6 +370,17 @@ export default {
 
 
 <style scoped>
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
 
 .compact-table {
   width: 100%;

@@ -2,17 +2,24 @@
 <template>
   <div class="container-fluid page-layout">
     <!-- inserting carousel component here -->
-    <CarouselMarketplace/>
+    <CarouselMarketplace />
     <div class="row">
       <!-- Sidebar Filter on the Left -->
       <div class="col-md-3 filter-container">
         <CreateDonationForm @notification="handleNotification" />
-        <FilterSidebar @filter="applyFilters" />
+        <FilterSidebar :isDateFilterOpen.sync="isDateFilterOpen" :isConditionFilterOpen.sync="isConditionFilterOpen"
+          :isItemCategoryFilterOpen.sync="isItemCategoryFilterOpen" :isPetTypeFilterOpen.sync="isPetTypeFilterOpen"
+          :isLocationFilterOpen.sync="isLocationFilterOpen" @update:isDateFilterOpen="isDateFilterOpen = $event"
+          @update:isConditionFilterOpen="isConditionFilterOpen = $event"
+          @update:isItemCategoryFilterOpen="isItemCategoryFilterOpen = $event"
+          @update:isPetTypeFilterOpen="isPetTypeFilterOpen = $event"
+          @update:isLocationFilterOpen="isLocationFilterOpen = $event" @filter="applyFilters" />
       </div>
 
       <!-- Donation List in the Center with Pagination -->
       <div class="col-md-9">
-        <div v-if="notificationMessage" :class="`alert alert-${notificationType} alert-dismissible fade show`" role="alert">
+        <div v-if="notificationMessage" :class="`alert alert-${notificationType} alert-dismissible fade show`"
+          role="alert">
           {{ notificationMessage }}
           <button type="button" class="btn-close" @click="clearNotification" aria-label="Close"></button>
         </div>
@@ -26,17 +33,11 @@
 
         <!-- Pagination Controls -->
         <div class="pagination-container">
-          <button 
-            :disabled="currentPage === 1" 
-            @click="prevPage" 
-            class="btn btn-outline-primary">
+          <button :disabled="currentPage === 1" @click="prevPage" class="btn btn-outline-primary">
             Previous
           </button>
           <span>Page {{ currentPage }} of {{ totalPages }}</span>
-          <button 
-            :disabled="currentPage === totalPages" 
-            @click="nextPage" 
-            class="btn btn-outline-primary">
+          <button :disabled="currentPage === totalPages" @click="nextPage" class="btn btn-outline-primary">
             Next
           </button>
         </div>
@@ -60,6 +61,11 @@ export default {
   },
   data() {
     return {
+      isDateFilterOpen: false,
+      isConditionFilterOpen: false,
+      isItemCategoryFilterOpen: false,
+      isPetTypeFilterOpen: false,
+      isLocationFilterOpen: false,
       donations: [], // Full list of donations
       filteredDonations: [], // Filtered and sorted list of donations
       currentPage: 1,
@@ -91,9 +97,9 @@ export default {
       this.notificationMessage = message;
       this.notificationType = type;
       if (type === 'success') {
-      // Automatically refresh the page data when a new post is created successfully
-      this.fetchDonations();
-    }
+        // Automatically refresh the page data when a new post is created successfully
+        this.fetchDonations();
+      }
       setTimeout(() => {
         this.clearNotification();
       }, 3000); // Auto-clear after 3 seconds
@@ -101,7 +107,7 @@ export default {
     // Fetch donations and set the full and filtered donations list
     async fetchDonations() {
       try {
-        const response = await fetch('http://localhost:8000/api/marketplace');
+        const response = await fetch(`${this.$api_url}/marketplace`);
         if (!response.ok) throw new Error('Failed to fetch donations');
         const data = await response.json();
         this.donations = data;

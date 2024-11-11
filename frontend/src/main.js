@@ -39,14 +39,17 @@ const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 setupAuthState(auth);
 
-
-const baseUrl = 'http://localhost:8000'; // Define your API base URL
+const API_BASE_URL = import.meta.env.VITE_APP_API_BASE_URL;
 const axiosInstance = axios.create({
-    baseURL: baseUrl,
+    baseURL: API_BASE_URL,
 });
+
+
+
 const app = createApp(App)
 app.config.globalProperties.$axios = axiosInstance;
 app.config.globalProperties.$auth = auth; // Making auth accessible globally
+app.config.globalProperties.$api_url = API_BASE_URL;
 
 app.use(router)
 
