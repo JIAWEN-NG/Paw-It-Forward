@@ -1,21 +1,34 @@
 <template>
-  <div class="wrapper">
-  
-        <!-- Text and button displayed side by side -->
-        <div class="text-container" style="margin-right: 20px;">
-          <h2>Stories of Hope</h2>
-          <p class="subtext">Share your story of how donations brought hope and healing to your pet in need.</p>
-        </div>
+  <div class="container testimonial-container">
+    <h2 class="title">Stories of Hope</h2>
+    <p class="subtitle">Share your story of how donations brought hope and healing to your pet in need.</p>
 
-        <!-- Centralizing the button -->
-        <button class="add-testimonial wave-button" style="align-self: center;" @click="openModal">
-          Add Your Story
-        </button>
-  
+    <!-- Only show the button if the user is logged in -->
+    <button 
+      v-if="isUserLoggedIn" 
+      class="add-testimonial wave-button" 
+      style="align-self: center;" 
+      @click="openModal"
+    >
+      Add Your Story
+    </button>
 
-      <div class="cols">
-      <div class="col" v-for="(testimonial, index) in paginatedTestimonials" :key="index" @click="showExpandedModal(testimonial)">
-        <div class="card-inner">
+    <!-- If the user is not logged in, display a message or redirect to login -->
+    <div v-else class="login-message-container">
+      <p class="login-message">
+        <span class="login-icon">🔒</span>
+        Please <router-link to="/login" class="login-link">login</router-link> to add your story.
+      </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
+        <div 
+          class="card testimonial-card" 
+          @mouseenter="flipCard(testimonial.id)" 
+          @mouseleave="resetFlip"
+          :class="{ 'is-flipped': flippedCardId === testimonial.id }"
+        >
           <div class="card-front">
             <div class="profile-photo-container top-center">
               <img :src="getImageUrl(testimonial.imageBase64)" alt="Animal Photo" v-if="testimonial.imageBase64" />
@@ -27,42 +40,17 @@
             <p class="testimonial-text">{{ testimonial.background }}</p>
             <p class="client-signature">{{ testimonial.userName }}</p>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
-      <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
-    </div>
-
-    <!-- Animal animation section generated in JavaScript -->
-    <div class="animal-runner">
-          <div class="animal-strip" v-html="animalBanner"></div>
-      </div>
-
-  
-      <!-- back of modal -->
-      <div v-if="expandedTestimonial" class="modal-backdrop" @click.self="closeExpandedModal">
-        <div class="modal-content" 
-            :style="{ 
-              backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${expandedTestimonial.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }">
-          <span class="close-btn" @click="closeExpandedModal">&times;</span>
-          <h2>{{ expandedTestimonial.animalName }}</h2> <!-- Name stays at the top -->
-          <div class="animated-quotes">
-            <div class="quote-container">
-              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon" />
-              <p>{{ expandedTestimonial.donationJourney }}</p>
-              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon flip-quote" />
+          <div class="card-back">
+            <div class="back-content">
+              <div class="back-photo-container">
+                <img :src="getImageUrl(testimonial.imageBase64)" alt="Enlarged Animal Photo" v-if="testimonial.imageBase64" />
+              </div>
+              <p class="donation-journey">"{{ testimonial.donationJourney }}"</p>
             </div>
           </div>
         </div>
       </div>
-
+    </div>
 
     <!-- Modal for adding testimonials -->
     <div v-if="showModal" class="form-backdrop" @click.self="closeModal">
@@ -134,10 +122,18 @@
               Donate Now <i class="fas fa-heart heart-icon"></i>
             </router-link>
           </div>
+
+          <div class="pagination-container">
+            <button :disabled="currentPage === 1" @click="prevPage">Previous</button>
+            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+          </div>
+
 </template>
 
 <script>
 import axios from 'axios';
+import { getAuth } from 'firebase/auth'; // Firebase Auth SDK
 import pixcat from '@/assets/pixcat.png';
 import pixdog from '@/assets/pixdog.png';
 import testimonialBackground from '@/assets/animals.jpg';
@@ -162,6 +158,7 @@ export default {
       showHeartfeltMessage: false,
       isFading: false,
       wordCount: 0,  // Track word count
+      isUserLoggedIn: false,
     };
   },
   computed: {
@@ -175,48 +172,44 @@ export default {
     }
   },
   methods: {
-    showExpandedModal(testimonial) {
-    this.expandedTestimonial = testimonial; // Set the selected testimonial
-    this.showModal = false; // Ensure form modal is closed when viewing testimonial
-  },
-    closeExpandedModal() {
-      this.expandedTestimonial = null; // Close the expanded testimonial modal
+    async fetchTestimonials() {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_BASE_URL}/testimonials`);
+        this.testimonials = response.data; // Set testimonials to the response data
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+      }
     },
-    showModal(index) {
-      this.expandedIndex = index;
+
+    getImageUrl(imageBase64) {
+      return `data:image/jpeg;base64,${imageBase64}`;
+    },
+    flipCard(id) {
+      this.flippedCardId = id; // Set the flipped card when mouse enters
     },
     resetFlip() {
       this.flippedCardId = null; // Reset the flipped card when mouse leaves
     },
     openModal() {
-    this.showModal = true; // Show the form modal
-    this.expandedTestimonial = null; // Ensure testimonial modal is closed
+      this.showModal = true;
     },
-    async fetchTestimonials() {
-      console.log("Fetching testimonials...");
-      try {
-        const response = await fetch('http://localhost:8000/api/testimonials');
-        if (!response.ok) throw new Error(`Failed to fetch testimonials: ${response.statusText}`);
-        
-        const data = await response.json();
-        this.testimonials = data.map(testimonial => ({
-          animalName: testimonial.animalName || 'Unknown Pet',
-          image: `data:image/jpeg;base64,${testimonial.imageBase64}`,
-          background: testimonial.background || 'Unknown Problem',
-          donationJourney: testimonial.donationJourney || ''
-        }));
-
-        console.log("Testimonials fetched:", this.testimonials);
-      } catch (error) {
-        console.error('Error fetching testimonials:', error);
-      }
+    closeModal() {
+      this.showModal = false;
+      this.resetForm();
     },
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.newTestimonial.image = file;
-        this.imagePreview = URL.createObjectURL(file);
-      }
+    resetForm() {
+      this.newTestimonial = {
+        animalName: '',
+        image: null,
+        background: '',
+        donationJourney: ''
+      };
+      this.imagePreview = '';
+    },
+    updateWordCount() {
+      // Split text into words and count them
+      const wordCount = this.newTestimonial.donationJourney.trim().split(/\s+/).length;
+      this.wordCount = wordCount;
     },
     async submitForm() {
       this.isSubmitting = true;
@@ -232,14 +225,8 @@ export default {
       }
 
       try {
-        const response = await fetch('http://localhost:8000/api/upload-testimonial', {
-          method: 'POST',
-          body: formData
-        });
-        console.log("Response status:", response.status);
-        if (!response.ok) throw new Error(`Failed to upload testimonial: ${response.statusText}`);
-
-        console.log("Upload successful!");
+        const response = await axios.post(`${this.$api_url}`, formData);
+        if (!response.ok) throw new Error('Failed to upload testimonial');
         this.uploadSuccess = true;
         setTimeout(() => {
           this.uploadSuccess = false;
@@ -256,7 +243,21 @@ export default {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
+    },
+    prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
     }
+  },
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  },
+  async checkLoginStatus() {
+      const user = await getAuth().currentUser;
+      this.isUserLoggedIn = user !== null;
+  }
   },
   mounted() {
     this.fetchTestimonials();
@@ -276,12 +277,11 @@ export default {
 
 <style scoped>
 
-
-
-.wrapper {
-  position: relative;
-  /* background-color: #1e3a5f; Dark blue */
-  /* color: #fdfdfd; Light text */
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+.testimonial-container {
+  padding: 40px 20px 20px;
   background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
 }
 .title {
@@ -327,38 +327,38 @@ export default {
   color: #fff;
 }
 
-.card-front,
-.card-back {
+.card-front, .card-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
 }
-
-
 .card-back {
   transform: rotateY(180deg);
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 20px;
+  border-radius: 15px;
+  background: rgba(248, 249, 250, 0.9);
 }
 
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+.back-photo-container {
+  width: 200px; 
+  height: 200px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  overflow: hidden;
 }
-.card-inner:hover {
-  transform: scale(1.05) translateZ(0);
-  /* background-color: #1b2d47; Darker shade for hover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+.back-photo-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 .back-content {
   margin: auto;
@@ -480,25 +480,31 @@ export default {
 }
 .pagination-container {
   display: flex;
-  flex-direction: column; /* Stack the quote images and text vertically */
-  align-items: center; /* Center align the content */
-  justify-content: center; /* Center the content vertically */
-  margin-top: 10px; /* Add margin for spacing */
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px; /* Space between the buttons */
 }
 
-.quote-container p {
-  margin-top: 20px; /* Adjust this value as needed for desired spacing */
-  margin-bottom: 20px;
+.pagination-container button {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #002A48; /* Light background */
+  border: 1px solid #487fff; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: #fefdfd;
 }
 
-.quote-icon {
-  width: 40px; /* Adjust size as needed */
-  height: auto;
-  margin: 0 10px; /* Space between images and text */
+.pagination-container button:hover {
+  background-color: #ddd; /* Darker background on hover */
+  transform: scale(1.05); /* Slight scaling effect on hover */
 }
 
-.flip-quote {
-  transform: scaleX(-1); /* Flips the quote image horizontally */
+.pagination-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 
@@ -648,7 +654,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
+  gap: 1.2rem;
 }
 
 .form-group {
@@ -927,67 +933,6 @@ input[type="file"] {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-
-.paw-icon {
-  font-size: 1.5rem;
-  color: #5d4037;
-  animation: pawMove 1.5s ease-in-out infinite;
-}
-
-@keyframes pawMove {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.dog-tail {
-  font-size: 1.5rem;
-  color: #5d4037;
-  display: inline-block;
-  animation: tailWag 0.4s ease-in-out infinite alternate;
-  transform-origin: top right;
-}
-
-@keyframes tailWag {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(15deg);
-  }
-}
-
-.pagination {
-    display: flex;
-    justify-content: space-between; /* Center all items in the flex container */
-    align-items: center; /* Center align items vertically */
-    margin-top: 2rem; /* Adjust spacing above */
-    margin-bottom: 1rem; /* Optional for spacing below */
-}
-
-.pagination-text {
-    margin: 0 10px; /* Add margin for spacing between buttons and text */
-}
-
-.pagination button {
-  background-color: #5c6bc0;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 0.5rem 1rem;
-  margin: 0 0px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination button:disabled {
-  background-color: #a5a5a5;
-  cursor: not-allowed;
 }
 
 </style>
