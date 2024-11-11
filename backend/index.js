@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const cors = require('cors');
 const dataRoutes = require('./routers/dataRoutes'); // Import the router
@@ -9,7 +10,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 const upload2 = require('./middleware/uploadImage'); // Import the Multer middleware
 // const upload = require('./middleware/uploadImage'); // Import the Multer middleware
-require("dotenv").config();
 // thahmina added
 const multer = require('multer');
 const { getAllTestimonials, uploadTestimonial } = require('./controllers/testimonialController');
