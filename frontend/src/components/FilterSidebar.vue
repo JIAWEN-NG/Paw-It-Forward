@@ -131,6 +131,7 @@ export default {
   },
   methods: {
     toggleSection(section) {
+      console.log("Toggling section:", section);
       if (Object.prototype.hasOwnProperty.call(this, section)) {
         this[section] = !this[section];
       } else {
