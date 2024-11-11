@@ -27,10 +27,11 @@ export default {
     async fetchDonationDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get('session_id');
+      const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
       if (sessionId) {
         try {
-          const response = await fetch(`http://localhost:8000/get-checkout-session/${sessionId}`);
+          const response = await fetch(`${BASE_URL}/get-checkout-session/${sessionId}`);
           const data = await response.json();
           this.donationDetails = data;
         } catch (error) {

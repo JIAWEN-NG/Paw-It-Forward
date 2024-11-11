@@ -106,7 +106,8 @@
           </div>
 
           <!-- Timestamp -->
-          <small class="text-muted mx-2 message-timestamp" :class="message.senderId === currentUserId ? 'me-2' : 'ms-2'">
+          <small class="text-muted mx-2 message-timestamp"
+            :class="message.senderId === currentUserId ? 'me-2' : 'ms-2'">
             {{ formatMessageTimestamp(message.timestamp) }}
           </small>
         </div>
@@ -133,8 +134,10 @@
 
 
 <script>
-import axios from 'axios';
-import { io } from 'socket.io-client';
+// import axios from 'axios';
+// import { io } from 'socket.io-client';
+import { getFirestore, collection, doc, query, getDoc, orderBy, onSnapshot, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+
 
 export default {
   props: ['currentUserId', 'selectedChat'],
@@ -142,42 +145,31 @@ export default {
     return {
       messages: [],
       newMessage: '',
-      socket: null, // Initialize socket as null
+      // socket: null, // Initialize socket as null
       systemMessage: '',
       lastMessageTimestamp: '', // For displaying system messages
       modalAction: '',
       systemMessageTimestamp: '',
     };
   },
+
   mounted() {
-    console.log("Attempting to connect to WebSocket server");
-    this.socket = io('http://localhost:8000', { transports: ['websocket'] });
-
-    this.socket.on('connect', () => {
-      console.log('Connected to the WebSocket server');
-      if (this.selectedChat && this.selectedChat.chatId) { // Check for chatId
-        this.joinChat(this.selectedChat.chatId);
-        this.fetchMessages(); // Fetch messages only if chatId is defined
-        this.fetchChatDetails();
-      }
-    });
-
-    this.socket.on('disconnect', () => {
-      console.log('Disconnected from the WebSocket server');
-    });
-
-    this.setupSocketListeners();
+    if (this.selectedChat && this.selectedChat.chatId) {
+      this.listenToMessages();
+    }
   },
 
   beforeUnmount() {
-    this.cleanupSocketListeners();
-    if (this.socket) {
-      this.socket.disconnect(); // Disconnect the socket on component unmount
+    if (this.unsubscribeMessages) {
+      this.unsubscribeMessages();
     }
   },
   computed: {
     isCurrentUserDonor() {
       return this.currentUserId === this.selectedChat.participants[0];
+    },
+    otherUserId() {
+      return this.selectedChat?.participants?.find((id) => id !== this.currentUserId) || null;
     },
   },
   methods: {
@@ -185,41 +177,68 @@ export default {
 
       this.$emit('backToChatList'); // Emit an event to notify the parent component
     },
-    joinChat(chatId) {
-      if (this.socket) {
-        this.socket.emit('joinChat', chatId); // Join the chat room if socket is defined
-      } else {
-        console.error("Socket is not initialized. Cannot join chat.");
-      }
-    },
-    setupSocketListeners() {
-      console.log("Setting up socket listeners");
-      this.socket.on('newMessage', (message) => {
-        this.handleNewMessage(message);
-        if (message.requestId === this.selectedChat.requestId) {
-          // Also update selectedChat's last message if it matches
-          this.selectedChat.lastMessage = message.message;
-          this.selectedChat.lastMessageTimestamp = message.timestamp;
-        }
+
+    listenToMessages() {
+      const db = getFirestore();
+      const messagesRef = collection(db, 'Chats', this.selectedChat.chatId, 'messages');
+      const messagesQuery = query(messagesRef, orderBy('timestamp', 'asc'));
+
+      // Set up a Firestore real-time listener
+      this.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+        this.messages = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
       });
     },
 
-    cleanupSocketListeners() {
-      // Remove the event listener when the component unmounts to prevent duplicates
-      this.socket.off('newMessage', this.handleNewMessage);
-    },
-    handleNewMessage(message) {
-      if (message.requestId === this.selectedChat.requestId) {
-        this.messages.push(message);
-        this.selectedChat.lastMessage = message.message;
-        this.lastMessageTimestamp = message.timestamp;
+    // Send a message to Firestore
+    async sendMessage() {
+      if (this.newMessage.trim() === '') return;
+
+      const receiverId = this.otherUserId;
+      if (!receiverId) {
+        console.error('Error: receiverId is undefined. Check that selectedChat.otherUserId is set correctly.');
+        return;
+      }
+
+      try {
+        const db = getFirestore();
+        const messagesRef = collection(db, 'Chats', this.selectedChat.chatId, 'messages');
+
+        const messageData = {
+          senderId: this.currentUserId,
+          receiverId: receiverId,
+          message: this.newMessage,
+          requestId: this.selectedChat.requestId,
+          timestamp: serverTimestamp(),
+        };
+
+        // Add the new message to the messages collection
+        const messageDoc = await addDoc(messagesRef, messageData);
+
+        // Fetch the actual timestamp after Firestore has set it
+        const messageSnapshot = await getDoc(messageDoc);
+        const actualTimestamp = messageSnapshot.data().timestamp;
+
+        // After adding the message, update the lastMessage and lastMessageTimestamp in the Chats document
+        const chatRef = doc(db, 'Chats', this.selectedChat.chatId);
+        await updateDoc(chatRef, {
+          lastMessage: messageData.message,
+          lastMessageTimestamp: actualTimestamp,
+        });
+        this.newMessage = '';
+      } catch (error) {
+        console.error('Error sending message:', error);
       }
     },
+
+
     async fetchChatDetails() {
 
 
       try {
-        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}`); // Ensure 'chatId' is consistent
+        const response = await this.$axios.get(`/chats/${this.selectedChat.chatId}`); // Ensure 'chatId' is consistent
         const chatData = response.data;
 
         // Update selectedChat details from the response
@@ -234,47 +253,7 @@ export default {
         console.error('Error fetching chat details:', error);
       }
     },
-    async sendMessage() {
-      if (this.newMessage.trim() === '') return;
 
-      try {
-        const messageData = {
-          senderId: this.currentUserId,
-          receiverId: this.selectedChat.otherUserId,
-          message: this.newMessage,
-          requestId: this.selectedChat.requestId,
-          requestedItem: this.selectedChat.requestedItem,
-          timestamp: new Date().toISOString(),
-        };
-
-        // Send the message via Axios to save it in the backend
-        await axios.post('http://localhost:8000/api/chats/sendMessage', messageData);
-
-        // Emit the message event to the server via Socket.IO
-        this.socket.emit('sendMessage', messageData);
-
-        // Clear the input after sending
-        this.newMessage = '';
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    },
-
-    async fetchMessages() {
-      if (!this.selectedChat || !this.selectedChat.chatId) {
-        console.error('No chatId found when fetching messages');
-        return;
-      }
-
-      this.messages = []; // Clear messages from previous chat
-
-      try {
-        const response = await axios.get(`http://localhost:8000/api/chats/${this.selectedChat.chatId}/messages`);
-        this.messages = response.data.messages;
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    },
 
     setModalAction(action) {
       this.modalAction = action; // Set the action type
@@ -296,7 +275,7 @@ export default {
     },
     async acceptRequest() {
       try {
-        await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/accept`);
+        await this.$axios.put(`/requests/${this.selectedChat.requestId}/accept`);
         await this.fetchMessages(); // Refresh messages after accepting
       } catch (error) {
         console.error('Error accepting request:', error);
@@ -304,7 +283,7 @@ export default {
     },
     async declineRequest() {
       try {
-        await axios.put(`http://localhost:8000/api/requests/${this.selectedChat.requestId}/decline`);
+        await this.$axios.put(`/requests/${this.selectedChat.requestId}/decline`);
         await this.fetchMessages(); // Refresh messages after declining
       } catch (error) {
         console.error('Error declining request:', error);
@@ -318,10 +297,11 @@ export default {
       const previousDate = previousMessage ? new Date(previousMessage.timestamp).toDateString() : null;
       return previousDate !== messageDate;
     },
-
-    // Format the date for the divider, showing "Today" for today's date
     formatDateDivider(timestamp) {
-      const messageDate = new Date(timestamp);
+      if (!timestamp || typeof timestamp.toDate !== 'function') {
+        return ''; // Return an empty string if the timestamp is null or invalid
+      }
+      const messageDate = timestamp.toDate();
       const today = new Date();
       if (messageDate.toDateString() === today.toDateString()) {
         return 'Today';
@@ -329,37 +309,29 @@ export default {
       return messageDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
     },
 
-    // Format the timestamp for individual messages
     formatMessageTimestamp(timestamp) {
+      if (!timestamp || typeof timestamp.toDate !== 'function') {
+        return 'Invalid Date'; // Placeholder if timestamp is null or invalid
+      }
       const options = { hour: '2-digit', minute: '2-digit', hour12: true };
-      return new Date(timestamp).toLocaleTimeString([], options);
-    },
+      return timestamp.toDate().toLocaleTimeString([], options);
+    }
+
+
   },
   watch: {
     selectedChat: {
       immediate: true,
       handler(newChat) {
-        if (newChat && newChat.chatId) { // Check for valid chatId
-          this.messages = []; // Clear previous messages
-          if (this.socket && this.socket.connected) {
-            this.joinChat(newChat.chatId);
-            this.fetchMessages(); // Fetch messages for the new chat
-            this.fetchChatDetails(); // Fetch chat details
-          } else {
-            console.warn("Socket is not connected yet. Retrying...");
-            const retryJoinChat = setInterval(() => {
-              if (this.socket && this.socket.connected) {
-                this.joinChat(newChat.chatId);
-                this.fetchMessages();
-                clearInterval(retryJoinChat); // Stop retrying once successful
-              }
-            }, 100);
-          }
+        if (newChat && newChat.chatId) {
+          this.messages = [];
+          this.listenToMessages();
         } else {
           console.error('Selected chat is invalid or missing chatId');
         }
       },
     },
+
   },
 
 

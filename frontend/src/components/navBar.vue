@@ -90,7 +90,7 @@ export default {
   methods: {
     async fetchImage(fileName) {
       try {
-        const response = await fetch(`http://localhost:8000/api/images?fileName=${fileName}`);
+        const response = await fetch(`${this.$api_url}/images?fileName=${fileName}`);
         const data = await response.json();
         return data.url; // Return the URL from the API response
       } catch (error) {

@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import { doc, updateDoc } from 'firebase/firestore'; // Import Firestore functions
-import { db } from '../main'; // Ensure your Firebase config is correctly imported
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../main';
 
 export default {
   name: 'EditProfileModal',
@@ -65,19 +65,18 @@ export default {
   methods: {
     async saveProfile() {
       try {
-        // Firestore document reference
-        const userDocRef = doc(db, 'Users', this.editableUser.id); 
+        const userDocRef = doc(db, 'Users', this.editableUser.id);
 
-        // Update the document in Firestore
         await updateDoc(userDocRef, {
           name: this.editableUser.name,
           email: this.editableUser.email,
           petDescription: this.editableUser.petDescription,
         });
 
-        // Emit the updated user data to the parent component
         this.$emit('save', this.editableUser);
-        this.close(); // Close the modal
+        console.log('Emitting showSuccess event');
+        this.$emit('showSuccess', 'Your profile has been updated successfully.');
+        this.close();
       } catch (error) {
         console.error("Error updating profile:", error.message);
       }
@@ -88,7 +87,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .modal-overlay {

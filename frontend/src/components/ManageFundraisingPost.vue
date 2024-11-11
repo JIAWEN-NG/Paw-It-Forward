@@ -214,7 +214,7 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get(`http://localhost:8000/api/fundraising/user/${authState.userId}`);
+        const response = await axios.get(`${this.$api_url}/fundraising/user/${authState.userId}`);
         this.fundraisings = response.data
           .map(fundraising => ({ ...fundraising, createdAt: new Date(fundraising.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
@@ -249,7 +249,7 @@ export default {
 
     async deleteFundraising() {
       try {
-        await axios.delete(`http://localhost:8000/api/fundraising`, { 
+        await axios.delete(`${this.$api_url}/fundraising`, { 
           data: { 
             id: this.deletePostId,
             userId: authState.userId
@@ -285,7 +285,7 @@ export default {
       }
 
       try {
-        const response = await axios.put('http://localhost:8000/api/fundraising', formData, {
+        const response = await axios.put(`${this.$api_url}/fundraising`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         this.fundraisings = this.fundraisings.map(f => f.id === this.fundraising.id ? { ...f, ...response.data.updatedData } : f);

@@ -216,7 +216,7 @@ export default {
     },
     async deleteListing() {
       try {
-        await axios.delete('http://localhost:8000/api/marketplace', {
+        await axios.delete(`${this.$api_url}/marketplace`, {
           data: { 
             id: this.deleteListingId,  // Use stored ID for deletion
             userId: authState.userId
@@ -244,7 +244,7 @@ export default {
     },
     async fetchListings(userId) {
       try {
-        const response = await axios.get(`http://localhost:8000/api/marketplace/${userId}`);
+        const response = await axios.get(`${this.$api_url}/marketplace/${userId}`);
         this.listings = response.data
           .map(listing => ({ ...listing, createdAt: new Date(listing.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
@@ -288,7 +288,7 @@ export default {
         }
         formData.append('userId', authState.userId);
 
-        const response = await axios.put('http://localhost:8000/api/marketplace', formData, {
+        const response = await axios.put('${this.$api_url}/marketplace', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
 

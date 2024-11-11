@@ -42,7 +42,7 @@ const createRequest = async (req, res) => {
         const chatRef = await db.collection('Chats').add({
             participants: [donorId, receiverId],
             lastMessage: requestMessage,
-            lastMessageTimestamp: new Date().toISOString(),
+            lastMessageTimestamp: new Date(),
             requestedItem: {
                 title: itemsDonated,
                 image: itemImage,
@@ -58,27 +58,27 @@ const createRequest = async (req, res) => {
             senderId: receiverId,
             receiverId: donorId,
             message: requestMessage,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date(),
             receiverName: donorData.name,
             receiverProfileImage: donorData.profileImage,
             requestId: requestRef.id
         });
 
-        // Emit a 'newChat' event with the new chat data
-        const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
-        io.emit('newChat', {
-            chatId: chatRef.id,
-            receiverId,
-            lastMessage: requestMessage,
-            lastMessageTimestamp: new Date().toISOString(),
-            requestedItem: {
-                title: itemsDonated,
-                image: itemImage,
-                status: 'pending',
-            },
-            requestId: requestRef.id,
-            participants: [donorId, receiverId]
-        });
+        // // Emit a 'newChat' event with the new chat data
+        // const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
+        // io.emit('newChat', {
+        //     chatId: chatRef.id,
+        //     receiverId,
+        //     lastMessage: requestMessage,
+        //     lastMessageTimestamp: new Date(),
+        //     requestedItem: {
+        //         title: itemsDonated,
+        //         image: itemImage,
+        //         status: 'pending',
+        //     },
+        //     requestId: requestRef.id,
+        //     participants: [donorId, receiverId]
+        // });
 
 
         res.status(201).json({ message: 'Request and chat created successfully', chatId: chatRef.id, request: newRequest });

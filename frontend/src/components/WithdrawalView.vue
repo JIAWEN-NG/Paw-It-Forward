@@ -143,7 +143,7 @@ export default {
   methods: {
     async fetchFundraisingPosts() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/fundraising/user/${authState.userId}`);
+        const response = await axios.get(`${this.$api_url}/fundraising/user/${authState.userId}`);
         if (response.status === 200) {
           response.data.forEach(post => {
             this.fundraisingPosts[post.id] = post.title;
@@ -166,7 +166,7 @@ export default {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.get(`http://localhost:8000/api/withdrawals/${authState.userId}`);
+        const response = await axios.get(`${this.$api_url}/withdrawals/${authState.userId}`);
         if (response.status === 200) {
           this.withdrawals = response.data.map(withdrawal => {
             return {

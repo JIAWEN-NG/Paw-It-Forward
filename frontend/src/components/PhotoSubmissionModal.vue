@@ -74,7 +74,7 @@
       formData.append('userId', this.userId);
 
       try {
-        const response = await fetch(`http://localhost:8000/api/photo-verification`, {
+        const response = await fetch(`${this.$api_url}/photo-verification`, {
           method: 'POST',
           body: formData
         });
