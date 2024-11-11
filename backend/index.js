@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cors());
 
 const port = process.env.PORT || 8000;
-const frontend_url = process.env.FRONTEND_URL;
+
 
 
 // thahmina added
@@ -62,7 +62,7 @@ app.get('/api/user/:id', async (req, res) => {
 // Stripe checkout session creation
 app.post('/create-checkout-session', async (req, res) => {
     const { postName, price, userId, postId, postImage } = req.body;
-
+    const frontend_url = process.env.FRONTEND_URL;
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card', 'paynow'],
