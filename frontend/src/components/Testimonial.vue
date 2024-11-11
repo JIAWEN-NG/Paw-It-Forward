@@ -648,7 +648,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.3rem;
 }
 
 .form-group {
