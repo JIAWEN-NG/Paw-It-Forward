@@ -113,6 +113,7 @@ export default {
 
 <style scoped>
 .modal-overlay {
+  margin-top: 80px;
   position: fixed;
   top: 0;
   left: 0;
@@ -177,6 +178,7 @@ export default {
 
 
 .modal-buttons {
+  margin-top:10px;
   display: flex;
   justify-content: space-between;
 }
