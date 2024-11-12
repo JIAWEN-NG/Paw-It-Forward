@@ -127,7 +127,7 @@ router.post('/fundraising', upload, async (req, res) => {
 
     try {
         // Ensure userId is sent in the request body
-        const userId = req.body.userId || "p8v0JBWhlfNZ13DzpBFN"; // Use default if not provided
+        const userId = req.body.userId;
 
         console.log('Request Body:', req.body);
         console.log('User ID:', userId);
@@ -204,12 +204,12 @@ router.post('/photo-verification', upload, async (req, res) => {
         });
 
         blobStream.on('finish', async () => {
-            const imageUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(blob.name)}`;
+            const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(blob.name)}?alt=media`;
             console.log('Verification photo uploaded successfully. Image URL:', imageUrl);
 
             // Store the image URL in the user's profile in Firestore for admin verification
-            // await userController.updateUserPhotoVerification(userId, imageUrl);
             await userController.updateUserPhotoVerification(userId, imageUrl);
+            // await userController.updateUserPhotoVerification(req, res);
             res.status(200).json({ message: 'Photo uploaded for verification.', imageUrl });
         });
 
