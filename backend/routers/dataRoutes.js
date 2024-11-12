@@ -204,9 +204,10 @@ router.post('/photo-verification', upload, async (req, res) => {
         blobStream.on('finish', async () => {
             const imageUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(blob.name)}`;
             console.log('Verification photo uploaded successfully. Image URL:', imageUrl);
+            req.body.verificationPhoto = imageUrl;
 
             // Store the image URL in the user's profile in Firestore for admin verification
-            await userController.updateUserPhotoVerification(userId, imageUrl);
+            await userController.updateUserPhotoVerification(userId, req);
             res.status(200).json({ message: 'Photo uploaded for verification.', imageUrl });
         });
 
