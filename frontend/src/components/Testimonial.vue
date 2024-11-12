@@ -7,7 +7,6 @@
     <button 
       v-if="isUserLoggedIn" 
       class="add-testimonial wave-button" 
-      style="align-self: center;" 
       @click="openModal"
     >
       Add Your Story
@@ -30,7 +29,7 @@
           :class="{ 'is-flipped': flippedCardId === testimonial.id }"
         >
           <div class="card-front">
-            <div class="profile-photo-container top-center">
+            <div class="profile-photo-container">
               <img :src="getImageUrl(testimonial.imageBase64)" alt="Animal Photo" v-if="testimonial.imageBase64" />
               <div class="no-image" v-else>No Image</div>
             </div>
@@ -59,7 +58,6 @@
         <button class="close-button" @click="closeModal">&times;</button>
         <h2 class="form-title">Add Your Story</h2>
         <form @submit.prevent="submitForm" class="styled-form">
-          <!-- Form fields go here -->
           <div class="form-group">
             <label for="animalName">Animal Name:</label>
             <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
@@ -85,7 +83,6 @@
               required
               maxlength="300" 
               @input="updateWordCount"
-              :class="{'word-limit-reached': wordCount >= 50}"
             ></textarea>
             <p class="word-count">Word count: {{ wordCount }} / 50</p>
           </div>
@@ -110,25 +107,23 @@
     </div>
   </div>
 
+  <!-- Floating Donate Now Button -->
+  <div class="donate-popup-container">
+    <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
+      <p class="heartfelt-message">
+        "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
+      </p>
+    </div>
+    <router-link to="/fundraising" class="donate-popup animated-donate-button">
+      Donate Now <i class="fas fa-heart heart-icon"></i>
+    </router-link>
+  </div>
 
-      <!-- Floating Donate Now Button -->
-      <div class="donate-popup-container">
-        <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
-              <p class="heartfelt-message">
-                "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
-              </p>
-            </div>
-            <router-link to="/fundraising" class="donate-popup animated-donate-button">
-              Donate Now <i class="fas fa-heart heart-icon"></i>
-            </router-link>
-          </div>
-
-          <div class="pagination-container">
-            <button :disabled="currentPage === 1" @click="prevPage">Previous</button>
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
-            <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
-          </div>
-
+  <div class="pagination-container">
+    <button :disabled="currentPage === 1" @click="prevPage">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button :disabled="currentPage === totalPages" @click="nextPage">Next</button>
+  </div>
 </template>
 
 <script>
@@ -288,12 +283,86 @@ export default {
   text-align: center;
   font-size: 2rem;
   font-weight: bold;
-  
 }
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 50px;
+}
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .add-testimonial {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    position: absolute;
+    right: 20px;
+    top: 80px;
+  }
+
+  .row-cols-md-3 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .testimonial-card {
+    width: 90%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pagination-container button {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonial-container {
+    padding: 20px;
+  }
+
+  .card-front, .card-back {
+    padding: 1rem;
+  }
+
+  .card-front img, .card-back img {
+    max-width: 100%;
+  }
+
+  .form-content {
+    width: 100%;
+    padding: 1.5rem;
+    box-shadow: none;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+
+  .pagination-container {
+    display: block;
+  }
+
+  .pagination-container button {
+    width: 100%;
+  }
 }
 
 .testimonial-card {
