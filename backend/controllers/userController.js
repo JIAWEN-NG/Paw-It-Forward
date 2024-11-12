@@ -52,48 +52,47 @@ const registerUser = async (req, res) => {
     }
   };
   
+  const updateUserPhotoVerification = async (userId, imageUrl) => {
+    try {
+        const userRef = db.collection('Users').doc(userId);
+        await userRef.update({
+            verificationPhoto: imageUrl,
+            isPhotoVerified: false, // Mark as not verified by default
+        });
+    } catch (error) {
+        console.error('Error updating user with verification photo:', error);
+        throw error;
+    }
+};
+
 const uploadPhotoVerif = async (req, res) => {
-  const userId = req.body.userId; // Ensure userId is sent in the request body
-    
+
   // Ensure the user exists in the Users collection
   const userRef = db.collection('Users').doc(userId);
   const userDoc = await userRef.get();
   if (!userDoc.exists) {
-      return res.status(404).json({ message: 'User not found' });
-  }
-
-  // Ensure the file is uploaded
+    return res.status(404).json({ message: 'User not found' });
+  }  
+  let verificationPhoto='';
   if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
   }
-
-  // Create the file name and reference in Firebase Storage
+  const bucket = admin.storage().bucket();
   const fileName = `verification/${userId}/${Date.now()}_${req.file.originalname}`;
   const file = bucket.file(fileName);
 
   try {
-      // Save the file to Firebase Storage
-      await file.save(req.file.buffer, {
-          metadata: { contentType: req.file.mimetype },
-          resumable: false,
-      });
+    await file.save(req.file.buffer, {
+      metadata: { contentType: req.file.mimetype },
+      resumable: false,
+    });
+    verificationPhoto = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
-      // Generate the URL of the uploaded file
-      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
-
-      // Update the user's profile with the verification photo URL in Firestore
-      await userRef.update({
-          verificationPhoto: imageUrl,
-          isPhotoVerified: false, // Mark as not verified by default
-      });
-
-      // Respond with success and the image URL
-      res.status(201).json({ message: 'File uploaded and user updated for verification.', imageUrl });
+    res.status(201).json({ message: 'File uploaded successfully', url: downloadURL });
   } catch (error) {
-      console.error('Error uploading and updating verification photo:', error);
-      res.status(500).json({ message: 'Error uploading photo and updating user.', error: error.message });
+    console.error('Error uploading file:', error);
+    res.status(500).json({ message: 'File upload failed', error: error.message });
   }
-
 };
 
 
@@ -101,34 +100,5 @@ module.exports = {
     getUserById,
     getAllUsers,
     registerUser,
-    uploadPhotoVerif
+    updateUserPhotoVerification,
 };
-
-
-// const UserController = {
-//   async getUser(req, res) {
-//     try {
-//       const userId = req.params.id;
-//       console.log("Fetching user data for ID:", userId);
-
-//       const userDoc = await db.collection('users').doc(userId).get();
-
-//       if (!userDoc.exists) {
-//         console.error("No document found for ID:", userId);
-//         return res.status(404).json({ error: 'User not found' });
-//       }
-
-//       const userData = userDoc.data();
-//       // Extract only the necessary fields
-//       const { role, profileImage, petDescription, name, email } = userData;
-
-//       // Send the data to the frontend
-//       res.json({ role, profileImage, petDescription, name, email });
-//     } catch (error) {
-//       console.error("Error fetching user data:", error.message);
-//       res.status(500).json({ error: 'Error fetching user data', message: error.message });
-//     }
-//   },
-// };
-
-// module.exports = UserController;
