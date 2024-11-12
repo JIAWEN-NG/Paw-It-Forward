@@ -24,7 +24,6 @@
             </button>
           </div>
         </div>
-        <p class="role-display"><b>Role:</b> {{ formattedRole }}</p>
       </div>
 
       <div class="details-section" v-if="currentUserData">
