@@ -207,7 +207,8 @@ router.post('/photo-verification', upload, async (req, res) => {
             req.body.verificationPhoto = imageUrl;
 
             // Store the image URL in the user's profile in Firestore for admin verification
-            await userController.updateUserPhotoVerification(userId, req);
+            // await userController.updateUserPhotoVerification(userId, imageUrl);
+            await userController.uploadPhotoVerif(userId, imageUrl);
             res.status(200).json({ message: 'Photo uploaded for verification.', imageUrl });
         });
 

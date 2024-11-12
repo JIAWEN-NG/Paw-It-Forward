@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { db } = require('../config/firebase'); // Adjust if necessary
+const { db,admin } = require('../config/firebase'); // Adjust if necessary
 
 // Function to get a user by ID
 const getUserById = async (req, res) => {
@@ -52,47 +52,48 @@ const registerUser = async (req, res) => {
     }
   };
   
-  const updateUserPhotoVerification = async (userId, imageUrl) => {
-    try {
-        const userRef = db.collection('Users').doc(userId);
-        await userRef.update({
-            verificationPhoto: imageUrl,
-            isPhotoVerified: false, // Mark as not verified by default
-        });
-    } catch (error) {
-        console.error('Error updating user with verification photo:', error);
-        throw error;
-    }
-};
-
 const uploadPhotoVerif = async (req, res) => {
-
+  const userId = req.body.userId; // Ensure userId is sent in the request body
+    
   // Ensure the user exists in the Users collection
   const userRef = db.collection('Users').doc(userId);
   const userDoc = await userRef.get();
   if (!userDoc.exists) {
-    return res.status(404).json({ message: 'User not found' });
-  }  
+      return res.status(404).json({ message: 'User not found' });
+  }
 
+  // Ensure the file is uploaded
   if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
   }
-  const bucket = admin.storage().bucket();
+
+  // Create the file name and reference in Firebase Storage
   const fileName = `verification/${userId}/${Date.now()}_${req.file.originalname}`;
   const file = bucket.file(fileName);
 
   try {
-    await file.save(req.file.buffer, {
-      metadata: { contentType: req.file.mimetype },
-      resumable: false,
-    });
-    const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+      // Save the file to Firebase Storage
+      await file.save(req.file.buffer, {
+          metadata: { contentType: req.file.mimetype },
+          resumable: false,
+      });
 
-    res.status(201).json({ message: 'File uploaded successfully', url: downloadURL });
+      // Generate the URL of the uploaded file
+      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+
+      // Update the user's profile with the verification photo URL in Firestore
+      await userRef.update({
+          verificationPhoto: imageUrl,
+          isPhotoVerified: false, // Mark as not verified by default
+      });
+
+      // Respond with success and the image URL
+      res.status(201).json({ message: 'File uploaded and user updated for verification.', imageUrl });
   } catch (error) {
-    console.error('Error uploading file:', error);
-    res.status(500).json({ message: 'File upload failed', error: error.message });
+      console.error('Error uploading and updating verification photo:', error);
+      res.status(500).json({ message: 'Error uploading photo and updating user.', error: error.message });
   }
+
 };
 
 
@@ -100,7 +101,7 @@ module.exports = {
     getUserById,
     getAllUsers,
     registerUser,
-    updateUserPhotoVerification
+    uploadPhotoVerif
 };
 
 
