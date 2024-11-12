@@ -85,9 +85,9 @@ export default {
             }
             // Sort chats based on lastMessageTimestamp, descending order
             return chatsToDisplay.sort((a, b) => {
-                const timeA = a.lastMessageTimestamp ? a.lastMessageTimestamp.getTime() : 0;
-                const timeB = b.lastMessageTimestamp ? b.lastMessageTimestamp.getTime() : 0;
-                return timeB - timeA; // Sort in descending order
+                const timeA = a.lastMessageTimestamp?.toDate ? a.lastMessageTimestamp.toDate().getTime() : 0;
+                const timeB = b.lastMessageTimestamp?.toDate ? b.lastMessageTimestamp.toDate().getTime() : 0;
+                return timeB - timeA;
             });
         },
     },
@@ -97,7 +97,7 @@ export default {
             handler(newChat) {
                 if (newChat && newChat.chatId) { // Ensure chatId is defined
                     this.fetchMessages(newChat.chatId); // Fetch messages using the valid chatId
-                } 
+                }
             },
         },
     },

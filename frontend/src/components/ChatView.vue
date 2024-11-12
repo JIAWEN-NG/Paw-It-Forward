@@ -10,15 +10,6 @@
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-9 p-0 chat-room-wrapper" v-show="selectedChat || isLargeScreen">
         <ChatRoom v-if="selectedChat" :currentUserId="currentUserId" :selectedChat="selectedChat"
           @backToChatList="handleBackToChatList" />
-
-        <!-- <div v-else class="empty-space d-flex align-items-center justify-content-center position-relative">
-          <img src="https://media.giphy.com/media/PcEHGN6WvTO2ekGICI/giphy.gif" alt="No chat selected animation"
-            class="background-gif w-100 h-100 position-absolute" />
-          <div class="overlay-text d-flex flex-column justify-content-center align-items-center position-relative">
-            <p class="heading-2 text-color mb-2">No chat selected</p>
-            <p class="body-2 text-color">Select a chat from the chat list.</p>
-          </div>
-        </div> -->
         <div v-else class="empty-space d-flex align-items-center justify-content-center position-relative">
           <img src="https://media.giphy.com/media/PcEHGN6WvTO2ekGICI/giphy.gif" alt="No chat selected animation"
             class="background-gif w-100 h-100 position-absolute" />
