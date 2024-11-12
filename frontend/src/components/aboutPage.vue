@@ -8,7 +8,7 @@
                   <h2>Helping One Paw At A Time</h2>
                   <p>
                       We believe that every pet deserves love, care, and a chance to thrive.
-                      Our mission is to create a compassionate community where pet owners
+                      Our mission is to create a compassionate community where pet providers
                       facing financial difficulties can easily access the resources they need.
                       Whether you're looking for support in times of crisis or wishing to lend
                       a helping hand, our platform connects donors directly with those in need.
@@ -62,7 +62,7 @@
                 :class="{ active: currentFullScreen === 'owners' }" 
                 @click="toggleFullScreen('owners')"
               >
-                Pet Owner Seeking Support
+                Pet Provider Seeking Support
               </div>
               <div 
                 class="toggle-section fw-medium" 
@@ -125,7 +125,7 @@
                             <div>
                                 <router-link to="/fundraising">
                                 <div class="title">Browse and Support</div>
-                                <div class="caption">Explore posts from pet owners in need. Choose the stories that resonate with you.</div>
+                                <div class="caption">Explore posts from pet providers in need. Choose the stories that resonate with you.</div>
                                 </router-link>
                             </div>
                         </div>
@@ -463,7 +463,7 @@ display: none
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  padding: 80px;
+  padding: 80px 40px 40px;
   /* padding-bottom: 80px; */
   scroll-padding-top:120px;
   scroll-snap-align: start;

@@ -18,12 +18,12 @@
                     <tbody>
                         <tr v-for="user in paginatedUsers" :key="user.id">
                             <td>
-                                <img :src="user.verificationPhoto" alt="User Image" class="shadow-sm user-image" />
+                                <img :src="user.verificationPhoto" alt="User Image" 
+                                    class=" shadow-sm user-image fixed-size" />
                             </td>
                             <td class="fw-semibold">{{ user.name }}</td>
                             <td>{{ user.email }}</td>
-                            <td><span class="badge bg-info text-white px-3 py-1 fs-7">{{ user.role }}</span>
-                            </td>
+                            <td><span class="badge bg-info text-white px-3 py-1 fs-7">{{ user.role }}</span></td>
                             <td>
                                 <span :class="statusBadgeClass(getUserStatus(user))">
                                     {{ getUserStatus(user) }}
@@ -33,8 +33,8 @@
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <button v-if="status === 'Pending'" @click="openApproveModal(user)"
-                                        class="btn btn-outline-success btn-sm fancy-btn  ">
-                                        <i class="bi bi-check-circle me-1 "></i> Approve
+                                        class="btn btn-outline-success btn-sm fancy-btn">
+                                        <i class="bi bi-check-circle me-1"></i> Approve
                                     </button>
                                     <button v-if="status === 'Pending'" @click="openRejectModal(user)"
                                         class="btn btn-outline-danger btn-sm fancy-btn">
@@ -76,13 +76,18 @@
                         <h5 class="modal-title fw-bold">User Details</h5>
                         <button type="button" class="btn-close" @click="closeModal"></button>
                     </div>
-                    <div class="modal-body d-flex align-items-center">
-                        <div class="me-4">
-                            <img :src="selectedUser.verificationPhoto || 'path/to/default/image.jpg'" alt="User Image"
-                                class="user-image-view">
+                    <!-- Add Row Class Here -->
+                    <div class="modal-body row">
+                        <!-- Image container - takes 6 columns on MD+ -->
+                        <div class="col-12 col-md-6 d-flex justify-content-center align-items-center mb-3 mb-md-0">
+                            <div class="modal-image-container w-100">
+                                <img :src="selectedUser.verificationPhoto || 'path/to/default/image.jpg'"
+                                    alt="User Image" class="user-image-view img-fluid">
+                            </div>
                         </div>
 
-                        <div class="user-info">
+                        <!-- Details container - takes 6 columns on MD+ -->
+                        <div class="col-12 col-md-6 user-info">
                             <h5 class="details-title">Details</h5>
                             <p><strong>Name:</strong> {{ selectedUser.name }}</p>
                             <p><strong>Email:</strong> {{ selectedUser.email }}</p>
@@ -97,6 +102,8 @@
                 </div>
             </div>
         </div>
+
+
 
         <!-- Reject User Modal -->
         <div v-if="showRejectModal" class="modal fade show" tabindex="-1"
@@ -166,7 +173,6 @@ export default {
         };
     },
     computed: {
-
         paginatedUsers() {
             const start = (this.currentPage - 1) * this.itemsPerPage;
             const end = start + this.itemsPerPage;
@@ -198,7 +204,6 @@ export default {
                     return 'badge text-white fs-6 fw-normal'; // Default badge if status is unknown
             }
         },
-
         goToPage(page) {
             if (page >= 1 && page <= this.totalPages) {
                 this.currentPage = page;
@@ -236,7 +241,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .admin-container {
     padding: 0 5vw 4vw;
@@ -260,21 +264,23 @@ export default {
     vertical-align: middle;
 }
 
-.user-image {
-    width: 80px;
-    height: 80px;
+table img.user-image.fixed-size {
+    width: 80px !important;
+    height: 80px !important;
+    max-width: 80px !important;
     object-fit: cover;
     border-radius: 10%;
     display: inline-block;
     vertical-align: middle;
 }
 
-.modal-user-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+.modal-body {
+    padding: 2rem;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
 }
 
 
@@ -289,22 +295,25 @@ export default {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Modal background overlay */
-.custom-modal {
-    background-color: rgba(0, 0, 0, 0.5);
-}
 
 /* Larger modal dialog */
 .custom-modal-dialog {
-    max-width: 800px;
-    /* Adjust this size as needed */
+    margin: 0 auto;
+    /* Centers the modal horizontally */
+    transform: translateY(0);
+    max-width: 700px;
+    width: 90%;
+}
+
+.modal-image-container {
+    width: 100%;
+    height: auto;
 }
 
 /* Image styling */
 .user-image-view {
-    width: 400px;
-    /* Adjust for desired size */
-    height: 400px;
+    width: 500px;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -312,8 +321,7 @@ export default {
 
 /* User info styling */
 .user-info p {
-    margin: 0;
-    font-size: 1rem;
+    margin: 0.5rem 0;
 }
 
 .user-info {
@@ -328,12 +336,31 @@ export default {
     color: #333;
 }
 
-/* Styling for individual detail items */
-.user-info p {
-    margin: 0.25rem 0;
-}
 
 .user-info p strong {
     color: #555;
+}
+
+@media (max-width: 576px) {
+
+    /* Stack image and details vertically on extra-small screens */
+    .modal-body {
+        display: block;
+
+    }
+
+    .modal-image-container {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .request-info p {
+        font-size: 0.9rem;
+    }
+
+    .modal-footer button {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.9rem;
+    }
 }
 </style>
