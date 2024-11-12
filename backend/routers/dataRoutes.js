@@ -179,7 +179,7 @@ router.get('/testimonials', testimonialController.getAllTestimonials); // Get al
 router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Upload a new testimonial with an image
 
 // Photo verification route
-router.post('/photo-verification', upload, async (req, res) => {
+router.post('/api/photo-verification', upload, async (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
