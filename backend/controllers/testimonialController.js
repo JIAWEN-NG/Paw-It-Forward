@@ -1,5 +1,5 @@
-// testimonialController.js
-const { db } = require('../config/firebase'); // Firebase configuration
+const { db, admin } = require('../config/firebase'); // Firebase configuration
+const { getAuth } = require('firebase-admin/auth'); // Firebase Admin SDK for authentication
 
 // Get all testimonials
 const getAllTestimonials = async (req, res) => {
@@ -24,13 +24,25 @@ const uploadTestimonial = async (req, res) => {
         return res.status(400).send("Missing required fields");
     }
 
+    // Extract the Firebase Auth token from the request header
+    const token = req.headers.authorization && req.headers.authorization.split('Bearer ')[1]; 
+
+    if (!token) {
+        return res.status(401).send("No token provided. Please log in.");
+    }
+
     try {
+        // Verify the token using Firebase Admin SDK
+        const decodedToken = await getAuth().verifyIdToken(token);
+        const userId = decodedToken.uid; // Get the Firebase UID of the user
+
         // Prepare testimonial data
         const testimonialData = {
             animalName,
             background,
             donationJourney,
-            user: "Jia Wen" // Replace with actual user data if dynamic
+            userId,  // Add userId to the testimonial data
+            userName: decodedToken.name || "Anonymous" // You can also add user's name from the token if available
         };
 
         // If an image file is uploaded, convert it to Base64 and add to testimonial data
@@ -48,7 +60,6 @@ const uploadTestimonial = async (req, res) => {
         res.status(500).send("Error uploading testimonial.");
     }
 };
-
 
 module.exports = {
     getAllTestimonials,

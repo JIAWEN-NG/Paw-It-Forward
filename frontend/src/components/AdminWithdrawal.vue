@@ -110,6 +110,7 @@
           </div>
         </div>
       </div>
+      
       <!-- View Request Details Modal -->
       <div v-if="showViewRequestModal" class="modal fade show custom-modal" tabindex="-1"
         style="display: block; background-color: rgba(0, 0, 0, 0.5);" @click.self="closeViewRequestModal">
@@ -119,13 +120,17 @@
               <h5 class="modal-title fw-bold">Request Details</h5>
               <button type="button" class="btn-close" @click="closeViewRequestModal"></button>
             </div>
-            <div class="modal-body d-flex align-items-start">
-              <div class="modal-image-container">
-                <img :src="selectedRequest?.proofImg || 'path/to/default/image.jpg'" alt="Request Image"
-                  class="request-image">
+            <div class="modal-body row">
+              <!-- Image container - takes 6 columns on MD+ -->
+              <div class="col-xs-12 col-md-6 col-sm-6 text-center mb-3 mb-md-0">
+                <div class="modal-image-container">
+                  <img :src="selectedRequest?.proofImg || 'path/to/default/image.jpg'" alt="Request Image"
+                    class="request-image img-fluid">
+                </div>
               </div>
 
-              <div class="request-info ms-4">
+              <!-- Details container - takes 6 columns on MD+ -->
+              <div class="col-xs-12 col-md-6 col-sm-6 request-info">
                 <h5 class="details-title">Details</h5>
                 <p><strong>Receiver Name:</strong> {{ selectedRequest?.name }}</p>
                 <p><strong>Date:</strong> {{ formatDate(selectedRequest?.requestedAt) }}</p>
@@ -140,6 +145,9 @@
           </div>
         </div>
       </div>
+
+
+
 
 
 
@@ -265,7 +273,9 @@ export default {
 }
 
 .custom-modal-dialog {
-  max-width: 800px;
+  margin: 0 auto;           /* Centers the modal horizontally */
+  transform: translateY(0);
+  max-width: 700px;
   width: 90%;
   /* Make sure the modal is responsive */
 }
@@ -284,17 +294,14 @@ export default {
   padding-bottom: 1rem;
 }
 
-/* Image Container Styles */
 .modal-image-container {
-  flex-shrink: 0;
-  width: 250px;
-  height: 250px;
-  /* Fixed size for images to keep it consistent */
+  width: 100%;
+  height: auto;
 }
 
 .request-image {
-  width: 100%;
-  height: 100%;
+  width: 500px;
+  height: auto;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -336,5 +343,28 @@ export default {
 
 .ms-4 {
   margin-left: 1.5rem !important;
+}
+
+@media (max-width: 576px) {
+  
+  /* Stack image and details vertically on extra-small screens */
+  .modal-body {
+    display: block;
+    
+  }
+
+  .modal-image-container {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .request-info p {
+    font-size: 0.9rem;
+  }
+
+  .modal-footer button {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+  }
 }
 </style>
