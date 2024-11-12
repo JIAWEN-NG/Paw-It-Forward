@@ -208,12 +208,12 @@ async mounted() {
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
 }
-
+/* 
 .landing-page {
     scroll-snap-type: y mandatory;
     overflow-y: scroll;
     height: 100vh;
-}
+} */
 
 .toggle-bar {
   display: flex;
@@ -465,8 +465,8 @@ display: none
   justify-content: space-evenly;
   padding: 80px 40px 40px;
   /* padding-bottom: 80px; */
-  scroll-padding-top:120px;
-  scroll-snap-align: start;
+  /* scroll-padding-top:120px; */
+  /* scroll-snap-align: start; */
 }
 
 .full-screen-middle{
@@ -476,7 +476,7 @@ display: none
   justify-content: space-evenly;
   padding: 40px;
   padding-top: 80px;
-  scroll-snap-align: start;
+  /* scroll-snap-align: start; */
 }
 
 .full-screen-last{
@@ -486,7 +486,7 @@ display: none
   justify-content: center;
   padding: 40px;
   padding-top: 80px;
-  scroll-snap-align: center;
+  /* scroll-snap-align: center; */
 }
 
 
