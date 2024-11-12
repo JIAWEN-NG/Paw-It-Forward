@@ -76,7 +76,11 @@ export default {
       });
     },
     async savePhoto() {
-      if (this.cropper) {
+        if (this.cropper) {
+          const croppedCanvas = this.cropper.getCroppedCanvas({
+          width: 100, // desired width
+          height: 100 // desired height
+        });
         this.cropper.getCroppedCanvas().toBlob(async blob => {
           const formData = new FormData();
           formData.append('image', blob, `${this.userId}.png`);
@@ -113,6 +117,7 @@ export default {
 
 <style scoped>
 .modal-overlay {
+  margin-top: 80px;
   position: fixed;
   top: 0;
   left: 0;
@@ -177,6 +182,7 @@ export default {
 
 
 .modal-buttons {
+  margin-top:10px;
   display: flex;
   justify-content: space-between;
 }
@@ -220,5 +226,17 @@ h2 {
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
+}
+
+.crop-container {
+  max-width: 250px;
+  max-height: 250px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.crop-image {
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>

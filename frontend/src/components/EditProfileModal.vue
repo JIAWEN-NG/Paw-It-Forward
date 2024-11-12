@@ -46,12 +46,25 @@ export default {
     currentUser: {
       type: Object,
       required: true
+    },
+    userId: {
+      type: String,
+      required: true
     }
   },
   data() {
     return {
-      editableUser: { ...this.currentUser },
+      editableUser: {}, // Initialize as an empty object
       hasChanges: false
+    };
+  },
+  mounted() {
+    // Populate `editableUser` after the component has mounted to ensure `currentUser` has loaded
+    this.editableUser = {
+      id: this.userId || '', // Use userId prop here
+      name: this.currentUser.name || '',
+      email: this.currentUser.email || '',
+      petDescription: this.currentUser.petDescription || ''
     };
   },
   watch: {
@@ -65,6 +78,11 @@ export default {
   methods: {
     async saveProfile() {
       try {
+        if (!this.editableUser.id) {
+          console.error("User ID is missing. Cannot update profile.");
+          return;
+        }
+
         const userDocRef = doc(db, 'Users', this.editableUser.id);
 
         await updateDoc(userDocRef, {
@@ -74,7 +92,6 @@ export default {
         });
 
         this.$emit('save', this.editableUser);
-        console.log('Emitting showSuccess event');
         this.$emit('showSuccess', 'Your profile has been updated successfully.');
         this.close();
       } catch (error) {

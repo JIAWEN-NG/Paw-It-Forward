@@ -49,7 +49,8 @@
       <EditProfileModal 
         v-if="showEditProfileModal" 
         :showModal="showEditProfileModal" 
-        :currentUser="currentUserData" 
+        :currentUser="currentUserData"
+        :userId="userId" 
         @close="showEditProfileModal = false" 
         @save="handleProfileUpdate"
         @showSuccess="setSuccessMessage"

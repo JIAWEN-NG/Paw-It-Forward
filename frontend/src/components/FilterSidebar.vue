@@ -72,13 +72,35 @@
 
 <script>
 export default {
+  props: {
+    isDateFilterOpen: {
+      type: Boolean,
+      default: false,
+    },
+    isConditionFilterOpen: {
+      type: Boolean,
+      default: false,
+    },
+    isItemCategoryFilterOpen: {
+      type: Boolean,
+      default: false,
+    },
+    isPetTypeFilterOpen: {
+      type: Boolean,
+      default: false,
+    },
+    isLocationFilterOpen: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      isDateFilterOpen: false,
-      isConditionFilterOpen: false,
-      isItemCategoryFilterOpen: false,
-      isPetTypeFilterOpen: false,
-      isLocationFilterOpen: false,
+      // isDateFilterOpen: false,
+      // isConditionFilterOpen: false,
+      // isItemCategoryFilterOpen: false,
+      // isPetTypeFilterOpen: false,
+      // isLocationFilterOpen: false,
       selectedConditions: [],
       selectedItemCategories: [],
       selectedPetTypes: [],
@@ -131,20 +153,7 @@ export default {
   },
   methods: {
     toggleSection(section) {
-      console.log("Toggling section:", section);
-      if (Object.prototype.hasOwnProperty.call(this, section)) {
-        this[section] = !this[section];
-      } else {
-        console.error(`Section ${section} not found in data properties`);
-      }
-    },
-    checkScreenSize() {
-      const isLargeScreen = window.innerWidth >= 992;
-      this.isDateFilterOpen = isLargeScreen;
-      this.isConditionFilterOpen = isLargeScreen;
-      this.isItemCategoryFilterOpen = isLargeScreen;
-      this.isPetTypeFilterOpen = isLargeScreen;
-      this.isLocationFilterOpen = isLargeScreen;
+      this.$emit(`update:${section}`, !this[section]);
     },
     emitFilters() {
       this.$emit("filter", {
@@ -155,6 +164,25 @@ export default {
         sortOrder: this.selectedSortOrder,
       });
     },
+
+    checkScreenSize() {
+
+      const isLargeScreen = window.innerWidth >= 992;
+      this.$emit("update:isDateFilterOpen", isLargeScreen);
+      this.$emit("update:isConditionFilterOpen", isLargeScreen);
+      this.$emit("update:isItemCategoryFilterOpen", isLargeScreen);
+      this.$emit("update:isPetTypeFilterOpen", isLargeScreen);
+      this.$emit("update:isLocationFilterOpen", isLargeScreen);
+    },
+    // emitFilters() {
+    //   this.$emit("filter", {
+    //     conditions: this.selectedConditions,
+    //     itemCategories: this.selectedItemCategories,
+    //     petTypes: this.selectedPetTypes,
+    //     locations: this.selectedLocations,
+    //     sortOrder: this.selectedSortOrder,
+    //   });
+    // },
     resetFilters() {
       this.selectedConditions = [];
       this.selectedItemCategories = [];
@@ -190,7 +218,8 @@ h4 {
   font-size: 1.1em;
   color: #444;
   font-weight: 600;
-  cursor: pointer; /* Added for clarity */
+  cursor: pointer;
+  /* Added for clarity */
   font-family: "Montserrat", sans-serif;
   border-bottom: 2px solid #ececec;
   padding-bottom: 5px;
@@ -237,6 +266,7 @@ input[type='radio'] {
   .filter-group {
     display: none;
   }
+
   .filter-group[v-show="true"] {
     display: block;
   }

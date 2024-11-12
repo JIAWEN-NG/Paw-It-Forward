@@ -53,6 +53,7 @@
                     </div>  
                 </form>
             </div>
+            
         </div>
 
     <div v-else class="container" :class="{ active: isRegisterActive }">
@@ -189,7 +190,7 @@
         showModal: false,
         modalTitle: '',
         modalMessage: '',
-        isXsScreen: window.innerWidth < 576 // Detect if screen size is XS
+        isXsScreen: window.innerWidth < 768, 
 
       };
     },
@@ -301,8 +302,7 @@
             })
             .catch((error) => {
                 console.error('Google Sign-In Error:', error.message);
-                alert('Google Sign-In failed: ' + error.message); // Notify the user of the error
-            });
+             });
         },
         async fetchImage(fileName) {
         try {
