@@ -63,24 +63,6 @@ const createRequest = async (req, res) => {
             receiverProfileImage: donorData.profileImage,
             requestId: requestRef.id
         });
-
-        // // Emit a 'newChat' event with the new chat data
-        // const io = req.app.get('socketio'); // Access the Socket.IO instance from Express
-        // io.emit('newChat', {
-        //     chatId: chatRef.id,
-        //     receiverId,
-        //     lastMessage: requestMessage,
-        //     lastMessageTimestamp: new Date(),
-        //     requestedItem: {
-        //         title: itemsDonated,
-        //         image: itemImage,
-        //         status: 'pending',
-        //     },
-        //     requestId: requestRef.id,
-        //     participants: [donorId, receiverId]
-        // });
-
-
         res.status(201).json({ message: 'Request and chat created successfully', chatId: chatRef.id, request: newRequest });
 
         //res.status(201).json({ message: 'Request created successfully', request: newRequest });
@@ -173,12 +155,6 @@ const declineRequest = async (req, res) => {
                 systemMessage: "The request has been Declined."
             });
 
-            // // Add a decline message to the chat
-            // await chatRef.collection('messages').add({
-            //     message: 'The request has been declined.',
-            //     timestamp: new Date().toISOString(),
-            //     systemMessage: true
-            // });
         }
 
         res.json({ message: 'Request declined' });

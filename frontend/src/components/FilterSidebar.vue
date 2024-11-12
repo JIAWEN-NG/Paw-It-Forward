@@ -96,11 +96,6 @@ export default {
   },
   data() {
     return {
-      // isDateFilterOpen: false,
-      // isConditionFilterOpen: false,
-      // isItemCategoryFilterOpen: false,
-      // isPetTypeFilterOpen: false,
-      // isLocationFilterOpen: false,
       selectedConditions: [],
       selectedItemCategories: [],
       selectedPetTypes: [],
@@ -174,15 +169,7 @@ export default {
       this.$emit("update:isPetTypeFilterOpen", isLargeScreen);
       this.$emit("update:isLocationFilterOpen", isLargeScreen);
     },
-    // emitFilters() {
-    //   this.$emit("filter", {
-    //     conditions: this.selectedConditions,
-    //     itemCategories: this.selectedItemCategories,
-    //     petTypes: this.selectedPetTypes,
-    //     locations: this.selectedLocations,
-    //     sortOrder: this.selectedSortOrder,
-    //   });
-    // },
+   
     resetFilters() {
       this.selectedConditions = [];
       this.selectedItemCategories = [];

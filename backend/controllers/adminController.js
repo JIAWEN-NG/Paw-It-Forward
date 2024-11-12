@@ -126,30 +126,6 @@ const getAllWithdrawals = async (req, res) => {
     }
   };
   
-
-// // process xfer 
-// // Example transfer function (using Stripe as an example)
-// const stripe = require('stripe')('your-stripe-secret-key');
-
-// async function transferMoney(userId, amount, accountDetails) {
-//     try {
-//         // Create a Stripe transfer
-//         const transfer = await stripe.transfers.create({
-//             amount: amount * 100, // Stripe uses cents for USD
-//             currency: 'usd', // or any other relevant currency
-//             destination: accountDetails.stripeAccountId, // User's Stripe account
-//             description: `Transfer for withdrawal request by user ${userId}`,
-//         });
-        
-//         return { success: true, transferId: transfer.id };
-//     } catch (error) {
-//         console.error('Error during transfer:', error);
-//         return { success: false, error: error.message };
-//     }
-// }
-
-
-
 // Export all functions
 module.exports = {
     approveUser,

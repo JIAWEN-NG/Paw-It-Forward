@@ -2,6 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
+
+const app = express();
+app.use(cors());
+
 const userController = require('../controllers/userController'); // Import the controller
 
 //Afsana added
@@ -17,28 +21,27 @@ const { registerUser } = require('../controllers/userController');
 const chatController = require('../controllers/chatController');
 
 //thahmina added
-
 const testimonialController = require('../controllers/testimonialController'); // Import the testimonial controller
 
-//jia wen added
-const adminController = require('../controllers/adminController');
+// thahmina added
+// Testimonial routes
+router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
+router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Upload a new testimonial with an image
 
-const app = express();
-app.use(cors());
 
-// Define the route and link it to the controller function
+
+// user routes
 router.get('/users/:id', userController.getUserById); // Use the controller's function
-// You can add more routes related to users here using the same controller
 router.post('/register', registerUser);
+
 //request routes
 //router.post('/requests/sendRequest', requestController.createRequest); // Create a new request
 router.put('/requests/:requestId/accept', requestController.acceptRequest); // Accept a request
 router.put('/requests/:requestId/decline', requestController.declineRequest); // Decline a request
-
-
-//requests routes 
 router.post('/requests', requestController.createRequest);
 
+//jia wen added
+const adminController = require('../controllers/adminController');
 
 // Admin routes
 router.patch('/admin/users/:userId/approve', adminController.approveUser);
@@ -48,11 +51,27 @@ router.get('/admin/withdrawals', adminController.getAllWithdrawals);
 router.patch('/admin/withdrawals/:requestId/approve', adminController.approveWithdrawal);
 router.patch('/admin/withdrawals/:requestId/reject', adminController.rejectWithdrawal);
 
+// Chat routes
+router.get('/chats/:chatId', chatController.getChatById); // Retrieve all chats
+router.post('/chats/sendMessage', chatController.sendMessage); // Send a chat message
+router.get('/chats/:chatId/messages', chatController.retrieveMessages); // Retrieve messages for a chat
+router.get('/chats/user/:userId', chatController.getUserChats); // Retrieve chats for a user
+
+//Dessy added
+// Fundraising Routes
+router.get('/fundraising', fundraisingController.getAllFundraisings);
+router.get('/fundraising/:id', fundraisingController.getPostById);
+router.get('/fundraising/user/:userId', fundraisingController.getAllFundraisingsByUserId);
+router.delete('/fundraising', fundraisingController.deleteFundraising);
+router.put('/fundraising', upload, fundraisingController.editFundraising);
+
+// Withdrawal Routes
+router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
+router.get('/withdrawals', withdrawalController.getAllWithdrawals);
+router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserId);
 
 //Afsana added 
 // Donation Routes
-// Donation Routes
-// router.put('/marketplace', marketplaceController.editDonation);
 router.put('/marketplace', upload, marketplaceController.editDonation);
 router.delete('/marketplace', marketplaceController.deleteDonation);
 router.get('/marketplace', marketplaceController.getAllDonations);
@@ -104,21 +123,6 @@ router.post('/marketplace', upload, async (req, res) => {
         res.status(500).send('Error creating donation.');
     }
 });
-// Chat routes
-router.get('/chats/:chatId', chatController.getChatById); // Retrieve all chats
-router.post('/chats/sendMessage', chatController.sendMessage); // Send a chat message
-router.get('/chats/:chatId/messages', chatController.retrieveMessages); // Retrieve messages for a chat
-router.get('/chats/user/:userId', chatController.getUserChats); // Retrieve chats for a user
-
-
-
-//Dessy added
-// Fundraising Routes
-router.get('/fundraising', fundraisingController.getAllFundraisings);
-router.get('/fundraising/:id', fundraisingController.getPostById);
-router.get('/fundraising/user/:userId', fundraisingController.getAllFundraisingsByUserId);
-router.delete('/fundraising', fundraisingController.deleteFundraising);
-
 
 router.post('/fundraising', upload, async (req, res) => {
     if (!req.file) {
@@ -166,18 +170,6 @@ router.post('/fundraising', upload, async (req, res) => {
         res.status(500).send('Error creating fundraising.');
     }
 });
-// The route stays the same as it doesn't need to specify param handling in the URL
-router.put('/fundraising', upload, fundraisingController.editFundraising);
-
-// Withdrawal Routes
-router.post('/withdrawals', upload, withdrawalController.createWithdrawal);
-router.get('/withdrawals', withdrawalController.getAllWithdrawals);
-router.get('/withdrawals/:userId', withdrawalController.getAllWithdrawalsByUserId);
-
-// thahmina added
-// Testimonial routes
-router.get('/testimonials', testimonialController.getAllTestimonials); // Get all testimonials
-router.post('/upload-testimonial', upload, testimonialController.uploadTestimonial); // Upload a new testimonial with an image
 
 // Photo verification route
 router.post('/photo-verification', upload, async (req, res) => {
@@ -219,5 +211,7 @@ router.post('/photo-verification', upload, async (req, res) => {
         res.status(500).send('Server error: Unable to upload photo for verification.');
     }
 });
+
+
 
 module.exports = router;

@@ -1,23 +1,3 @@
-<!-- <template>
-  <div class="meet-our-team">
-    <h2>Meet The <span>Team.</span></h2>
-    <div class="row team-members">
-      <div
-        v-for="member in teamMembers"
-        :key="member.name"
-        class="col-lg-4 col-md-6 col-12 mb-4"
-      >
-        <div class="team-member">
-          <div class="profile-pic">
-            <img :src="member.photo" :alt="member.name" />
-          </div>
-          <h3>{{ member.name }}</h3>
-          <p>{{ member.role }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template> -->
 
 <template>
   <div class="meet-our-team">
