@@ -2,75 +2,6 @@
 const { db, admin } = require('../config/firebase');
 
 // Function to create a new fundraising campaign
-// const createFundraising = async (req, res) => {
-//     const { title, description, targetAmount,petType } = req.body;
-//     const userId = "p8v0JBWhlfNZ13DzpBFN"; // Default user ID
-
-//     try {
-//         // Validate required fields
-//         if (!title || !description || !targetAmount ||!petType) {
-//             return res.status(400).json({ message: 'Missing required fields' });
-//         }
-
-//         // Ensure the user exists in the Users collection
-//         const userRef = db.collection('Users').doc(userId);
-//         const userDoc = await userRef.get();
-
-//         if (!userDoc.exists) {
-//             return res.status(404).json({ message: 'User not found' });
-//         }
-
-//         // Ensure an image is uploaded
-//         let fundraisingImg = '';
-//         if (!req.file) {
-//             return res.status(400).json({ message: 'Image is required' });
-//         }
-
-//         // Handle image upload
-       
-//         const bucket = admin.storage().bucket(); // Get the Firebase Storage bucket
-//         const fileName = `fundraising/${userId}/${Date.now()}_${req.file.originalname}`;
-//         const file = bucket.file(fileName);
-
-//         try {
-//             // Upload the image to Firebase Storage
-//             await file.save(req.file.buffer, {
-//                 metadata: { contentType: req.file.mimetype },
-//                 resumable: false,
-//             });
-
-//             // Get the file's public URL using Firebase Storage format
-//             fundraisingImg = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
-//         } catch (uploadError) {
-//             console.error('Error uploading image:', uploadError.message);
-//             return res.status(500).json({ message: 'Image upload failed', error: uploadError.message });
-//         }
-
-//         // Create a new fundraising document in the Fundraising collection
-//         const newFundraising = {
-//             userId,
-//             title,
-//             description,
-//             petType: petType || "Unknown",
-//             targetAmount: parseFloat(targetAmount),
-//             amountRaised: 0,
-//             createdAt: admin.firestore.Timestamp.now(),
-//             fundraisingImg
-//         };
-
-//         // Add new fundraising to the Fundraising collection
-//         const fundraisingRef = await db.collection('Fundraising').add(newFundraising);
-//         const createdFundraising = { id: fundraisingRef.id, ...newFundraising };
-
-//         // Return the newly created fundraising campaign with the auto-generated ID
-//         res.status(201).json(createdFundraising);
-//     } catch (error) {
-//         console.error('Error creating fundraising:', error.message);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
-
-// Function to create a new fundraising campaign
 const createFundraising = async (req, res) => {
     const { title, description, targetAmount, petType, userId } = req.body; // Accept userId from frontend
 
@@ -210,40 +141,6 @@ const getPostById = async (req, res) => {
 };
 
 // Function to get all fundraising campaigns for a specific user by user ID
-// const getAllFundraisingsByUserId = async (req, res) => {
-//     const { userId } = req.params; // Expect userId to be in the URL parameters
-
-//     try {
-//         const fundraisingsRef = db.collection('Fundraising').where('userId', '==', userId);
-//         const snapshot = await fundraisingsRef.get();
-
-//         if (snapshot.empty) {
-//             return res.status(404).json({ message: 'No fundraising campaigns found for this user' });
-//         }
-
-//         const fundraisings = snapshot.docs.map((doc) => {
-//             const data = doc.data();
-//             return {
-//                 id: doc.id,
-//                 userId: data.userId,
-//                 title: data.title,
-//                 description: data.description,
-//                 petType: data.petType || "Unknown",
-//                 targetAmount: data.targetAmount,
-//                 amountRaised: data.amountRaised,
-//                 createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
-//                 fundraisingImg: data.fundraisingImg || ""
-//             };
-//         });
-
-//         res.status(200).json(fundraisings);
-//     } catch (error) {
-//         console.error('Error fetching fundraising campaigns by user ID:', error.message);
-//         res.status(500).json({ error: error.message });
-//     }
-// };
-
-// Function to get all fundraising campaigns for a specific user by user ID
 const getAllFundraisingsByUserId = async (req, res) => {
     const { userId } = req.params; // Expect userId to be in the URL parameters
 
@@ -276,8 +173,6 @@ const getAllFundraisingsByUserId = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
 
 const deleteFundraising = async (req, res) => {
     const { id, userId } = req.body; // Accept userId from the request body

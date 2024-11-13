@@ -276,7 +276,6 @@ export default {
     async acceptRequest() {
       try {
         await this.$axios.put(`/requests/${this.selectedChat.requestId}/accept`);
-        await this.fetchMessages(); // Refresh messages after accepting
       } catch (error) {
         console.error('Error accepting request:', error);
       }
@@ -284,7 +283,6 @@ export default {
     async declineRequest() {
       try {
         await this.$axios.put(`/requests/${this.selectedChat.requestId}/decline`);
-        await this.fetchMessages(); // Refresh messages after declining
       } catch (error) {
         console.error('Error declining request:', error);
       }

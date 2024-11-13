@@ -1,23 +1,25 @@
 <template>
-  <!-- Primary Tabs for User Verification and Withdrawal Requests -->
-  <ul class="nav primary-nav-tabs mb-4">
-    <li class="nav-item">
-      <button class="nav-link" :class="{ active: activeTab !== 'Donations' }"
-        @click="activeTab = 'Pending'; fetchUsers('Pending')">
-        User Verification
-      </button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link" :class="{ active: activeTab === 'Donations' }"
-        @click="activeTab = 'Donations'; fetchDonationRequests()">
-        Withdrawal Requests
-      </button>
-    </li>
-  </ul>
+  <div class="container mx-1">
+    <!-- Primary Tabs for User Verification and Withdrawal Requests -->
+    <ul class="nav primary-nav-tabs mb-4">
+      <li class="nav-item">
+        <button class="nav-link" :class="{ active: activeTab !== 'Donations' }"
+          @click="activeTab = 'Pending'; fetchUsers('Pending')">
+          User Verification
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" :class="{ active: activeTab === 'Donations' }"
+          @click="activeTab = 'Donations'; fetchDonationRequests()">
+          Withdrawal Requests
+        </button>
+      </li>
+    </ul>
+  </div>
 
   <!-- User Verification Sub-Tabs with Card Style -->
   <div v-if="activeTab !== 'Donations'">
-    <div class="card-tabs">
+    <div class="card-tabs mx-1">
       <button class="tab-btn" :class="{ 'active': activeTab === 'Pending' }"
         @click="activeTab = 'Pending'; fetchUsers('Pending')">
         Pending Users

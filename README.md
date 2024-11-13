@@ -4,12 +4,12 @@ Paw-it-Forward's primary objective is to create a supportive community where pet
 
 
 IS216 G3 Group 5 Project members:
-- NG JIA WEN: jiawen.ng.2023
-- THAHMINA BEGUM DO MAIDEEN ABDUL KADER: thahminamak.2023
-- DESSY: dessy.2023
-- TAN YI XI JOVI: jovi.tan.2023
-- AFSANA PARVIN: afsana.p.2023
-- NE ZHIHAO DARIUS: darius.ne.2023
+- [NG JIA WEN](jiawen.ng.2023@scis.smu.edu.sg)
+- [THAHMINA BEGUM DO MAIDEEN ABDUL KADER](thahminamak.2023@scis.smu.edu.sg)
+- [DESSY](dessy.2023@scis.smu.edu.sg)
+- [TAN YI XI JOVI](jovi.tan.2023@scis.smu.edu.sg)
+- [AFSANA PARVIN](afsana.p.2023@scis.smu.edu.sg)
+- [NE ZHIHAO DARIUS](darius.ne.2023@scis.smu.edu.sg)
 
 
   
@@ -24,12 +24,27 @@ IS216 G3 Group 5 Project members:
 Use the following credentials to access different roles in the application:
 
 ### User Login
-- **Username:** 
-- **Password:** 
+- **Email: jovi.tan.2023@scis.smu.edu.sg** 
+- **Password: 1234567890** 
 
 ### Admin Login
-- **Username:** 
-- **Password:** 
+- **Email: purrfessorpaws05@gmail.com** 
+- **Password: 1234567890** 
+
+## Stripe Payment Information
+
+Use the following credentials to test for stripe payments in the application:
+
+### Card Payment Details
+
+- **Card Number: 4242 4242 4242 4242** 
+- **Date: 12/30** 
+- **CVC: 123** 
+
+### Paynow Payments
+- Select paynow as payment methods
+- Filled up email details 
+- Click simulate scan and authorise payment 
 
 ---
 
@@ -76,4 +91,4 @@ or
 
 
 Additional Information
-For any issues or questions, please refer to the GitHub repository SPMG3T7 or contact the project members via GitHub.
+For any issues or questions, please refer to the GitHub repository or contact the project members via email.

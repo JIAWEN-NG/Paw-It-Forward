@@ -13,53 +13,47 @@ const getAllTestimonials = async (req, res) => {
     }
 };
 
-// Upload a new testimonial with an optional image
 const uploadTestimonial = async (req, res) => {
     const { animalName, background, donationJourney } = req.body;
     const file = req.file;
 
-    // Check for required fields
     if (!donationJourney || !animalName || !background) {
-        console.error("Missing required fields");
+        console.error("Missing required fields:", req.body);  // Log missing fields
         return res.status(400).send("Missing required fields");
     }
 
-    // Extract the Firebase Auth token from the request header
     const token = req.headers.authorization && req.headers.authorization.split('Bearer ')[1]; 
 
     if (!token) {
+        console.error("No token provided");
         return res.status(401).send("No token provided. Please log in.");
     }
 
     try {
-        // Verify the token using Firebase Admin SDK
         const decodedToken = await getAuth().verifyIdToken(token);
-        const userId = decodedToken.uid; // Get the Firebase UID of the user
+        const userId = decodedToken.uid;
 
-        // Prepare testimonial data
         const testimonialData = {
             animalName,
             background,
             donationJourney,
-            userId,  // Add userId to the testimonial data
-            userName: decodedToken.name || "Anonymous" // You can also add user's name from the token if available
+            userId,
+            userName: decodedToken.name || "Anonymous"
         };
 
-        // If an image file is uploaded, convert it to Base64 and add to testimonial data
         if (file) {
             const imageBase64 = file.buffer.toString('base64');
             testimonialData.imageBase64 = imageBase64;
         }
 
-        // Save testimonial data to Firestore
         await db.collection('testimonials').add(testimonialData);
-
         res.status(200).send("Testimonial uploaded successfully.");
     } catch (error) {
-        console.error("Error uploading testimonial:", error);
+        console.error("Error uploading testimonial:", error);  // Log detailed error
         res.status(500).send("Error uploading testimonial.");
     }
 };
+
 
 module.exports = {
     getAllTestimonials,

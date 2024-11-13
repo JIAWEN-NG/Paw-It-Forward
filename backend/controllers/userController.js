@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { db } = require('../config/firebase'); // Adjust if necessary
+const { db,admin } = require('../config/firebase'); // Adjust if necessary
 
 // Function to get a user by ID
 const getUserById = async (req, res) => {
@@ -73,7 +73,7 @@ const uploadPhotoVerif = async (req, res) => {
   if (!userDoc.exists) {
     return res.status(404).json({ message: 'User not found' });
   }  
-
+  let verificationPhoto='';
   if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
   }
@@ -86,7 +86,7 @@ const uploadPhotoVerif = async (req, res) => {
       metadata: { contentType: req.file.mimetype },
       resumable: false,
     });
-    const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
+    verificationPhoto = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileName)}?alt=media`;
 
     res.status(201).json({ message: 'File uploaded successfully', url: downloadURL });
   } catch (error) {
@@ -101,5 +101,4 @@ module.exports = {
     getAllUsers,
     registerUser,
     updateUserPhotoVerification,
-    uploadPhotoVerif
 };

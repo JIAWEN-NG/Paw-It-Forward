@@ -36,6 +36,7 @@ app.use('/api', imageRoutes);
 app.get('/testimonials', getAllTestimonials);
 app.post('/upload-testimonial', upload.single('image'), uploadTestimonial);
 
+
 // Define route for fetching user data by ID
 app.get('/api/user/:id', async (req, res) => {
   try {

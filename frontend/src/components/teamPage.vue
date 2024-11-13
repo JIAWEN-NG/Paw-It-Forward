@@ -1,23 +1,3 @@
-<!-- <template>
-  <div class="meet-our-team">
-    <h2>Meet The <span>Team.</span></h2>
-    <div class="row team-members">
-      <div
-        v-for="member in teamMembers"
-        :key="member.name"
-        class="col-lg-4 col-md-6 col-12 mb-4"
-      >
-        <div class="team-member">
-          <div class="profile-pic">
-            <img :src="member.photo" :alt="member.name" />
-          </div>
-          <h3>{{ member.name }}</h3>
-          <p>{{ member.role }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template> -->
 
 <template>
   <div class="meet-our-team">
@@ -55,13 +35,14 @@ import sanaPhoto from '@/assets/sana.png';
 import joviPhoto from '@/assets/jovi.png';
 import thahPhoto from '@/assets/thah.jpg';
 import wenzPhoto from '@/assets/wenz.jpg';
+import DariusPhoto from '@/assets/darius.png';
 
 export default {
   data() {
     return {
       teamMembers: [
         { name: "Afsana", role: "Chief Meow-nager", photo: sanaPhoto },
-        { name: "Darius", role: "Treat Procurement Specialist", photo: "" },
+        { name: "Darius", role: "Treat Procurement Specialist", photo: DariusPhoto },
         { name: "Dessy", role: "Head of Purr-sonnel", photo: dessyPhoto },
         { name: "Jia Wen", role: "Head of Purr-duct Development", photo: wenzPhoto },
         { name: "Jovi", role: "Chief Barketing Officer", photo: joviPhoto },

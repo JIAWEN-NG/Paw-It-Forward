@@ -59,6 +59,7 @@
       if (file) {
         this.photoFile = file;
         this.imagePreview = URL.createObjectURL(file); // Update local property
+        console.log(this.imagePreview);
       }
     },
     async submitPhotoForVerification() {
