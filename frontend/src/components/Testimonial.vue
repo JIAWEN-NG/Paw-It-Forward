@@ -72,56 +72,60 @@
       <div class="form-content animated-modal">
         <!-- Close Button -->
         <button class="close-button" @click="closeModal">&times;</button>
-        <h2 class="form-title">Add Your Story</h2>
-        <form @submit.prevent="submitForm" class="styled-form">
-          <!-- Form fields go here -->
-          <div class="form-group">
-            <label for="animalName">Animal Name:</label>
-            <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
-          </div>
-          <div class="form-group">
-            <label for="image">Add a Photo of the Animal:</label>
-            <div class="file-upload">
-              <label class="upload-button" for="imageUpload">Choose File</label>
-              <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" required />
-              <span class="file-name">{{ imagePreview ? 'Image Selected' : 'No file chosen' }}</span>
-            </div>
-            <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" class="image-preview" />
-          </div>
-          <div class="form-group">
-            <label for="background">Background:</label>
-            <input type="text" id="background" v-model="newTestimonial.background" required />
-          </div>
-          <div class="form-group">
-            <label for="donationJourney">How the Donation Helped:</label>
-            <textarea 
-              id="donationJourney" 
-              v-model="newTestimonial.donationJourney" 
-              required
-              maxlength="300" 
-              @input="updateWordCount"
-              :class="{'word-limit-reached': wordCount >= 50}"
-            ></textarea>
-            <p class="word-count">Word count: {{ wordCount }} / 50</p>
-          </div>
-          <button
-            type="button"
-            @click="submitForm"
-            :disabled="isSubmitting"
-            :class="{ 'success': uploadSuccess, 'loading': isSubmitting }"
-            class="submit-button"
-          >
-            <span v-if="isSubmitting" class="loading-icon"></span>
-            <span v-else-if="uploadSuccess" class="checkmark-icon">
-              <svg viewBox="0 0 52 52">
-                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
-              </svg>
-            </span>
-            <span v-else>Upload</span>
-          </button>
+        <h2 class="form-title">Tell us your story!</h2>
 
-        </form>
+        <!-- Scrollable content container -->
+        <div class="scroll-container">
+          <form @submit.prevent="submitForm" class="styled-form">
+            <div class="form-group">
+              <label for="animalName">What's your pet's name?</label>
+              <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
+            </div>
+            <div class="form-group">
+              <label for="image">Share a photo of your pet!</label>
+              <div class="dotted-area">
+                <img v-if="imagePreview" :src="imagePreview" alt="Image Preview" class="image-preview" />
+                <span v-else class="placeholder-text">No photo selected</span>
+              </div>
+              <div class="file-upload">
+                <label class="upload-button" for="imageUpload">Select a photo</label>
+                <input type="file" id="imageUpload" @change="handleImageUpload" accept="image/*" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="background">Give a little background about your pet's story</label>
+              <input type="text" id="background" v-model="newTestimonial.background" required />
+            </div>
+            <div class="form-group">
+              <label for="donationJourney">Describe how this donation made a difference!</label>
+              <textarea 
+                id="donationJourney" 
+                v-model="newTestimonial.donationJourney" 
+                required
+                maxlength="300" 
+                @input="updateWordCount"
+                :class="{'word-limit-reached': wordCount >= 50}"
+              ></textarea>
+              <p class="word-count">Words used: {{ wordCount }} / 50</p>
+            </div>
+            <button
+              type="button"
+              @click="submitForm"
+              :disabled="isSubmitting"
+              :class="{ 'success': uploadSuccess, 'loading': isSubmitting }"
+              class="submit-button"
+            >
+              <span v-if="isSubmitting" class="loading-icon"></span>
+              <span v-else-if="uploadSuccess" class="checkmark-icon">
+                <svg viewBox="0 0 52 52">
+                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                  <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+                </svg>
+              </span>
+              <span v-else>Share Your Story!</span>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -329,8 +333,167 @@ export default {
 
 
 <style scoped>
+/* Form Title */
+.form-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Form Background */
+.form-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 400px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin-top: 40px;
+}
+
+/* Input Fields */
+input[type="text"],
+textarea {
+  padding: 12px;
+  border: 2px solid #ffbd59;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff7e6;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #ff8a00;
+}
+.dotted-area {
+  border: 2px dashed #999;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  height: 150px; /* Adjust height as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #fff7e6;
+}
+
+.placeholder-text {
+  color: #bbb;
+  font-size: 1rem;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.file-upload {
+  margin-top: 10px; /* Space between the button and dotted area */
+  align-items: center;
+  justify-content: flex-start; /* Aligns the button to the left */
+  margin-top: 10px; /* Space between the button and dotted area */
+}
+
+.upload-button {
+  background-color: #ff8a00;
+  color: #ffffff;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+  background-color: #ff6a00;
+}
+
+input[type="file"] {
+  display: none; /* Hide the default file input */
+}
+
+/* Submit Button */
+.submit-button {
+  background-color: #1e90ff;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #ff6a00;
+}
+
+/* Success Animation */
+.submit-button.success {
+  background-color: #28a745; /* Green color for success */
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Word Count */
+.word-count {
+  font-size: 0.9rem;
+  color: #ff8a00;
+  margin-top: 5px;
+}
+
+.word-limit-reached {
+  border-color: #ff4b5c;
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2rem;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 9999;
+}
+
+.close-button:hover {
+  color: #ff4b5c;
+}
 
 
+
+.scroll-container {
+  width: 100%;
+  max-height: 60vh; /* Adjust height as needed */
+  overflow-y: auto; /* Make inner content scrollable */
+  padding-right: 10px; /* Add padding to prevent overlap with scrollbar */
+  margin-top: 1rem; /* Add some space below title */
+}
 
 .quote-icon-start {
   width: 40px; /* Adjust size as needed */
@@ -776,15 +939,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
   font-size: 1.2rem;
   font-weight: 600;
   color: #333;
   background-color: #f8f9fa;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  margin-bottom: 72px;
 }
 
 .login-message {
@@ -817,7 +979,6 @@ export default {
   font-weight: 700;
   color: #2c3e50;
   margin-bottom: 1rem;
-  text-transform: uppercase;
   letter-spacing: 1px;
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -1141,4 +1302,3 @@ input[type="file"] {
 }
 
 </style>
-

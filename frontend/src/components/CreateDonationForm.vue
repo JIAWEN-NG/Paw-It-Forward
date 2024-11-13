@@ -15,11 +15,11 @@
                     <!-- Donation Form -->
                         <form @submit.prevent="submitForm">
                             <div class="form-group mb-3">
-                                <label for="itemsDonated" class="form-label">Short Description of Items Donated</label>
+                                <label for="itemsDonated" class="form-label">Share a Quick Description of the Items You’re Donating</label>
                                 <textarea v-model="donation.itemsDonated" id="itemsDonated" required class="form-control"></textarea>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="condition" class="form-label">Condition</label>
+                                <label for="condition" class="form-label">What’s the Condition of the Item?</label>
                                 <select v-model="donation.condition" id="condition" required class="form-select">
                                     <option value="" disabled>Select Condition</option>
                                     <option value="Brand New">Brand New</option>
@@ -28,7 +28,7 @@
                                 </select>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="itemCategory" class="form-label">Item Category</label>
+                                <label for="itemCategory" class="form-label">Select an Item Category</label>
                                 <select v-model="donation.itemCategory" id="itemCategory" required class="form-select">
                                     <option value="" disabled>Select Category</option>
                                     <option value="Food & Feeding Supplies">Food & Feeding Supplies</option>
@@ -41,7 +41,7 @@
                                 </select>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="petType" class="form-label">Pet Type</label>
+                                <label for="petType" class="form-label">Pet Type – Who Will This Help?</label>
                                 <select v-model="donation.petType" id="petType" required class="form-select">
                                     <option value="" disabled>Select Pet Type</option>
                                     <option value="Cat">Cat</option>
@@ -49,7 +49,7 @@
                                 </select>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="location" class="form-label">Location</label>
+                                <label for="location" class="form-label">Where Are You Located?</label>
                                 <select v-model="donation.location" id="location" required class="form-select">
                                     <option value="" disabled>Select Location</option>
                                     <option value="West">West</option>
@@ -60,7 +60,7 @@
                                 </select>
                             </div>
                             <div class="form-group mb-3">
-                                <label for="imageUpload" class="form-label">Upload Picture of Items Donated</label>
+                                <label for="imageUpload" class="form-label">Upload a Picture of Your Generous Donation!</label>
                                 <div class="image-upload-box" @click="triggerFileInput">
                                     <img v-if="donation.image" :src="imagePreview" class="image-preview" />
                                     <span v-else class="text-muted">No Image Uploaded</span>
@@ -309,6 +309,7 @@ export default {
   color: #2c3e50;
   display: block; /* Ensures label alignment */
   text-align: left;
+  font-weight: bold;
 }
 
 .form-control {

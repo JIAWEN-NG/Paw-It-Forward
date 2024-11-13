@@ -10,22 +10,22 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <span class="close" @click="closeForm">&times;</span>
-          <h5 class="modal-title">Start a Fundraising Post!</h5>
+          <h5 class="modal-title">Start a Fundraising Post to Help a Pet in Need!</h5>
           <div class="modal-body">
             <!-- Donation Form -->
             <form @submit.prevent="submitForm">
               <div class="form-group mb-3">
-                <label for="campaignName" class="form-label">Title</label>
+                <label for="campaignName" class="form-label">Give Your Post a Title</label>
                 <input type="text" id="campaignName" v-model="fundraising.campaignName" required class="form-control" />
               </div>
 
               <div class="form-group mb-3">
-                <label for="description" class="form-label">Description</label>
+                <label for="description" class="form-label">Share the Story – Tell Us More About the Situation</label>
                 <textarea id="description" v-model="fundraising.description" required class="form-control" rows="3"></textarea>
               </div>
 
               <div class="form-group mb-3">
-                <label for="petType" class="form-label">Pet Type</label>
+                <label for="petType" class="form-label">Pet Type – Who Will This Help?</label>
                 <select id="petType" v-model="fundraising.petType" required class="form-control">
                   <option value="">Select Pet Type</option>
                   <option value="Cat">Cat</option>
@@ -34,12 +34,12 @@
               </div>
 
               <div class="form-group mb-3">
-                <label for="targetAmount" class="form-label">Target Amount ($)</label>
+                <label for="targetAmount" class="form-label">Set a Fundraising Goal ($)</label>
                 <input type="number" id="targetAmount" v-model="fundraising.targetAmount" required min="1" class="form-control" />
               </div>
 
               <div class="form-group mb-3">
-                <label for="imageUpload" class="form-label">Upload Fundraising Post Image</label>
+                <label for="imageUpload" class="form-label">Upload an Image to Bring Your Story to Life!</label>
                 <div class="image-upload-box" @click="triggerFileInput">
                   <img v-if="imagePreview" :src="imagePreview" class="image-preview" />
                   <span v-else class="text-muted">No Image Uploaded</span>
@@ -253,6 +253,7 @@ export default {
   color: #2c3e50;
   display: block; /* Ensures label alignment */
   text-align: left;
+  font-weight: bold;
 }
 
 .form-control {
