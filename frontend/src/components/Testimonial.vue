@@ -38,18 +38,22 @@
               <span class="emoji paw-emoji">🐾</span>
             </div>
             </div>
-            <div class="name-banner">
+            <!-- <div class="name-banner"> -->
               <p class="author">{{ testimonial.animalName }}</p>
-            </div>
+            <!-- </div> -->
             <p class="testimonial-text">{{ testimonial.background }}</p>
             <p class="client-signature">{{ testimonial.userName }}</p>
           </div>
-          <div class="card-back">
-            <div class="back-content">
-              <div class="back-photo-container">
-                <img :src="getImageUrl(testimonial.imageBase64)" alt="Enlarged Animal Photo" v-if="testimonial.imageBase64" />
-              </div>
-              <p class="donation-journey">"{{ testimonial.donationJourney }}"</p>
+          <div 
+            class="card-back" 
+            :style="{ backgroundImage: `url('data:image/jpeg;base64,${testimonial.imageBase64}')` }"
+          >
+            <div class="overlay">
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-start" />
+              <p class="donation-journey">
+                {{ testimonial.donationJourney }}
+              </p>
+              <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-end flip-quote" />
             </div>
           </div>
         </div>
@@ -318,6 +322,25 @@ export default {
 
 <style scoped>
 
+
+
+.quote-icon-start {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  margin-right: 10px; /* Align left with margin to the right */
+  align-self: flex-start; /* Align to the left */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+  
+}
+.quote-icon-end {
+  width: 40px; /* Adjust size as needed */
+  height: auto;
+  margin-left: 10px; /* Align right with margin to the left */
+  align-self: flex-end; /* Align to the right */
+  transform: scaleX(-1); /* Flips the quote image horizontally */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+}
+
 * {
   font-family: 'Montserrat', sans-serif;
 }
@@ -329,7 +352,6 @@ export default {
   text-align: center;
   font-size: 2rem;
   font-weight: bold;
-  
 }
 .subtitle {
   text-align: center;
@@ -407,6 +429,7 @@ export default {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  font-family: 'Montserrat', sans-serif;
 }
 .card-back {
   transform: rotateY(180deg);
@@ -414,8 +437,33 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  border-radius: 15px;
+  border-radius: 20px;
   background: rgba(248, 249, 250, 0.9);
+  background-size: cover; /* Fills the entire card */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+  border: 3px solid rgb(255, 255, 255);
+}
+.quote-icon-start,
+.quote-icon-end {
+  width: 30px; /* Smaller icon size */
+  height: auto;
+  margin: 0; /* Remove additional margin */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for better text readability */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  padding: 10px; /* Reduced padding */
+  gap: 4px; /* Minimal gap between elements */
 }
 
 .back-photo-container {
@@ -521,22 +569,26 @@ export default {
 }
 .name-banner {
   position: relative;
-  top: -60px; /* Adjust to align closely with the profile image */
-  background: #002A48;
+  top: -50px; /* Adjust position relative to profile image */
+  background: linear-gradient(135deg, #9d8d70, #e4cba9); /* Earth-tone gradient with brown and beige */
   border-radius: 30px;
-  padding: 10px 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  z-index: 3; /* Ensure the banner appears in front */
+  padding: 8px 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  width: 150px; /* Fixed width for consistency */
+  margin: 0 auto; /* Centers the banner */
+  z-index: 3; /* Ensures it’s above other elements */
+  display: flex; /* Flexbox for easy centering */
+  justify-content: center; /* Centers text within the fixed width */
 }
 .author {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
+  font-size: 20px; /* Slightly larger for emphasis */
+  font-weight: 800; /* Stronger weight for bold effect */
+  color: #5E3A1A; /* Deep, earthy brown tone */
   text-align: center;
+  text-transform: uppercase; /* Adds a distinct style */
+  letter-spacing: 1px; /* Adds slight spacing for readability */
+  font-family: 'Montserrat', sans-serif; /* Consistent with preferred font */
+  padding: 5px 10px; /* Adds subtle padding */
 }
 .testimonial-text {
   font-size: 14px;
@@ -551,15 +603,21 @@ export default {
   margin-top: 20px;
 }
 .donation-journey {
-  font-size: 14px;
-  color: #333;
+  font-size: 0.80rem;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6); /* Adds shadow for better visibility */
+  position: relative;
+
 }
+
 .pagination-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin: 20px 0;
+  margin: 40px;
 }
 
 .pagination-button {
