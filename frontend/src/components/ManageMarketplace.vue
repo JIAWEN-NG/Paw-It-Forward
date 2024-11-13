@@ -200,7 +200,7 @@ export default {
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.listings.length / this.itemsPerPage);
+      return this.listings.length === 0 ? 1 : Math.ceil(this.listings.length / this.itemsPerPage);
     },
     paginatedListings() {
       const start = (this.currentPage - 1) * this.itemsPerPage;

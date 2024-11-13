@@ -195,7 +195,7 @@ export default {
 
   computed: {
     totalPages() {
-      return Math.ceil(this.fundraisings.length / this.itemsPerPage);
+      return this.fundraisings.length === 0 ? 1 : Math.ceil(this.fundraisings.length / this.itemsPerPage);
     },
     paginatedFundraisings() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
