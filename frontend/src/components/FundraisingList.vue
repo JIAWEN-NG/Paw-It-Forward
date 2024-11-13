@@ -1,6 +1,12 @@
 <template>
   <div class="fundraising-list">
-    <div class="cards-container">
+      <!-- Loading Spinner -->
+      <div v-if="isLoading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div v-else class="cards-container">
       <div class="row gx-2">
         <div
           v-for="fundraiser in fundraisings"
@@ -52,6 +58,18 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      isLoading: true,
+    };
+  },
+  created() {
+     // Simulate data loading
+     setTimeout(() => {
+      // Set `isLoading` to false once data is available
+      this.isLoading = false;
+    }, 1000); // Set a timeout to simulate data fetching
+  },
   methods: {
     progressPercentage(fundraiser) {
       const percentage = (fundraiser.amountRaised / fundraiser.targetAmount) * 100;
@@ -79,6 +97,18 @@ export default {
 </script>
 
 <style scoped>
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
 .fundraising-list {
   font-family: 'Montserrat', sans-serif;
   position: relative;

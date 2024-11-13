@@ -1,8 +1,15 @@
 <!-- DonationList.vue -->
 <template>
   <div class="donation-list">
+     <!-- Loading Spinner -->
+     <div v-if="isLoading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
     <!-- Scrollable Cards Container -->
-    <div class="cards-container">
+    <div v-else class="cards-container">
       <div class="row gx-2">
         <div
           v-for="donation in donations"
@@ -108,12 +115,17 @@ export default {
       currentUserId: null,
       notificationMessage: '',      // For displaying notifications
       notificationType: '',         // "success" or "error"
+      isLoading: true,
       
     };
   },
   created() {
     this.currentUserId = authState.userId;
-    console.log('currentUserId', this.currentUserId);
+     // Simulate data loading
+     setTimeout(() => {
+      // Set `isLoading` to false once donations data is available
+      this.isLoading = false;
+    }, 2000); // Set a timeout to simulate data fetching
   },
   methods: {
     formattedDate(date) {
@@ -145,8 +157,6 @@ export default {
         this.$emit('notification', { type: 'error', message: this.notificationMessage }); // Emit event
         return;
       }
-      console.log('receiver id sending from frontend', this.currentUserId);
-
       const requestPayload = {
         donorId: this.selectedDonation.donorId,
         itemImage: this.selectedDonation.itemImage,
@@ -155,8 +165,6 @@ export default {
         requestMessage: this.requestMessage,
         status: "pending"
       };
-
-      console.log('Request Payload:', requestPayload);
 
       if (Object.values(requestPayload).includes(null)) {
         this.notificationMessage = "Missing required fields.";
@@ -196,6 +204,17 @@ export default {
 </script>
 
 <style scoped>
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
 /* Notification Modal Styling */
 .notification-modal {
   position: fixed;

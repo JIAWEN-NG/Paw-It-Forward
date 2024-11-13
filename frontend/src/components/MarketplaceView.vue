@@ -16,6 +16,8 @@
           @update:isLocationFilterOpen="isLocationFilterOpen = $event" @filter="applyFilters" />
       </div>
 
+      
+
       <!-- Donation List in the Center with Pagination -->
       <div class="col-md-9">
         <div v-if="notificationMessage" :class="`alert alert-${notificationType} alert-dismissible fade show`"
