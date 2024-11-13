@@ -1,25 +1,33 @@
 <template>
   <div class="container testimonial-container">
-    <h2 class="title">Stories of Hope</h2>
-    <p class="subtitle">Share your story of how donations brought hope and healing to your pet in need.</p>
+    <div class="testimonial-header">
+      <div class="text-container">
+        <h2 class="title">Stories of Hope</h2>
+        <p class="subtitle">Share your story of how donations brought hope and healing to your pet in need.</p>
+      </div>
+        
 
-    <!-- Only show the button if the user is logged in -->
-    <button 
-      v-if="isUserLoggedIn" 
-      class="add-testimonial wave-button" 
-      style="align-self: center;" 
-      @click="openModal"
-    >
-      Add Your Story
-    </button>
+        <!-- Only show the button if the user is logged in -->
+        <div class="button-container">
+          <button 
+            v-if="isUserLoggedIn" 
+            class="add-testimonial wave-button" 
+            style="align-self: center;" 
+            @click="openModal"
+          >
+            Add Your Story
+          </button>
 
-    <!-- If the user is not logged in, display a message or redirect to login -->
-    <div v-else class="login-message-container">
-      <p class="login-message">
-        <span class="login-icon">🔒</span>
-        Please <router-link to="/login" class="login-link">login</router-link> to add your story.
-      </p>
-    </div>
+        <!-- If the user is not logged in, display a message or redirect to login -->
+          <div v-else class="login-message-container">
+            <p class="login-message">
+              <span class="login-icon">🔒</span>
+              Please <router-link to="/login" class="login-link">login</router-link> to add your story.
+            </p>
+          </div>
+        </div>
+      </div>
+      
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
       <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
@@ -356,7 +364,25 @@ export default {
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
-  margin-bottom: 50px;
+  margin-bottom: 5px;
+}
+.testimonial-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.text-container {
+  margin: 0 auto; /* Allows the text to take available space */
+  text-align: center; /* Restricts the width to prevent stretching */
+}
+
+.button-container {
+  position: absolute;
+  right: 0;
+  margin-top: 5px; /* Space between button and subtitle */
+  margin-bottom: 5px;
 }
 
 .testimonial-card {
@@ -390,6 +416,7 @@ export default {
   justify-content: center; /* Centers the items horizontally */
   flex-wrap: wrap; /* Ensures the items wrap when needed */
   gap: 20px; /* Add spacing between items */
+  margin-top: 5px;
 }
 
 .col {
@@ -403,6 +430,40 @@ export default {
     max-width: 100%; /* Ensures it doesn't stretch too much */
     margin: 0 auto;
   }
+  .add-testimonial {
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+    margin-top: 10px;
+  }
+  .button-container {
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+  }
+  .testimonial-header {
+    flex-direction: column;
+    align-items: center;
+  }
+  .text-container {
+    max-width: 100%; /* Full width on smaller screens */
+    text-align: center; /* Center text for smaller screens */
+  }
+
+  .button-container {
+    position: static;/* Stacks the elements */
+    text-align: center; /* Center-aligns the button */
+    margin-top: 5px;
+  }
+
+  .title {
+    font-size: 1.8rem; /* Adjust title size for smaller screens */
+  }
+
+  .subtitle {
+    font-size: 1rem; /* Adjust subtitle size */
+    margin-bottom: 20px;
+  }
+
   .row {
     flex-direction: column; /* Makes it stack vertically on small screens */
     align-items: center; /* Centers the items horizontally */
@@ -691,10 +752,7 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   animation: wave-smooth 4s ease-in-out infinite;
   transition: transform 0.3s ease;
-  z-index: 2000; /* Higher than other elements */
-  position: absolute;
-  right: 110px; /* Positioning it towards the right */
-  top: 100px; /* Optional: Adjust to position vertically as desired */
+ 
 }
 
 .add-testimonial:hover {
