@@ -777,6 +777,9 @@ export default {
   width: 400px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin-top: 40px;
 }
 
 .form-backdrop {
