@@ -1,174 +1,187 @@
-  <template>
-      <nav class="navbar navbar-expand-lg fixed-top">
-          <div class="container">
-              <a class="navbar-brand me-auto" href="#">
-                <router-link to="/about" class="nav-link mx-lg-2">
-                  <img :src="pawlogoImageUrl" alt="pawlogo" class="paw-logo" v-if="pawlogoImageUrl" />
-                </router-link>
-              </a>
+<template>
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand me-auto" href="#">
+        <router-link to="/about" class="nav-link mx-lg-2">
+          <img :src="pawlogoImageUrl" alt="pawlogo" class="paw-logo" v-if="pawlogoImageUrl" />
+        </router-link>
+      </a>
 
-              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
-                  aria-labelledby="offcanvasNavbarLabel">
-                  <div class="offcanvas-header">
-                      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Paw-It-Forward</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                  </div>
-                  <div class="offcanvas-body">
-                      <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
-                          <li class="nav-item">
-                              <router-link to="/about" active-class="active-link" class="nav-link mx-lg-2">About Us</router-link>
-                          </li>
-                          <li class="nav-item">
-                              <router-link to="/fundraising" active-class="active-link" class="nav-link mx-lg-2" @click="close_navbar()">Donate</router-link>
-
-                          </li>
-                          <li class="nav-item">
-                              <router-link to="/marketplace" active-class="active-link" class="nav-link mx-lg-2">Marketplace</router-link>
-                          </li>
-                          <li class="nav-item">
-                              <router-link to="/testimonials" active-class="active-link" class="nav-link mx-lg-2">Testimonials</router-link>
-                          </li>
-                          <li v-if="isUserLoggedIn && !isAdmin" class="nav-item">
-                              <router-link to="/managepost" active-class="active-link" class="nav-link mx-lg-2">Manage Posts</router-link>
-                          </li>
-                          <li v-if="isAdmin" class="nav-item">
-                              <router-link to="/admin" active-class="active-link" class="nav-link mx-lg-2">Manage Users</router-link>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-              <router-link to="/chats" class="chat-button">
-                  <img
-                      :src="isHovered ? chatInvertImageUrl : chat3ImageUrl"
-                      alt="chat"
-                      class="chat-logo"
-                      @mouseover="isHovered = true"
-                      @mouseleave="isHovered = false"
-                      style="margin: 10px"
-                      />
+      <!-- Offcanvas Menu Controlled by Vue -->
+      <div :class="['offcanvas', 'offcanvas-end', { 'show': showOffcanvas }]" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Paw-It-Forward</h5>
+          <button type="button" class="btn-close" @click="toggleOffcanvas(false)" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+            <li class="nav-item">
+              <router-link to="/about" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/about')">
+                About Us
               </router-link>
-              <!-- Profile or Sign In Button -->
-              <li v-if="isUserLoggedIn" class="profile-container nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <img :src="userProfilePicUrl" alt="profilepic" class="profile-pic" />
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                      <li>
-                      <router-link to="/manage-account" class="dropdown-item">Edit Profile</router-link>
-                      </li>
-                      <li>
-                      <button @click="handleSignOut" class="dropdown-item">Sign Out</button>
-                      </li>
-                  </ul>
-              </li>
-              <router-link v-else to="/login" class="btn btn-outline-warning">Sign In</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/fundraising" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/fundraising')">
+                Donate
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/marketplace" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/marketplace')">
+                Marketplace
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/testimonials" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/testimonials')">
+                Testimonials
+              </router-link>
+            </li>
+            <li v-if="isUserLoggedIn && !isAdmin" class="nav-item">
+              <router-link to="/managepost" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/managepost')">
+                Manage Posts
+              </router-link>
+            </li>
+            <li v-if="isAdmin" class="nav-item">
+              <router-link to="/admin" active-class="active-link" class="nav-link mx-lg-2" @click="navigateAndClose('/admin')">
+                Manage Users
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-              <button class="navbar-toggler " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                  aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-              </button>
-          </div>
-      </nav>
-  </template>
+      <!-- Offcanvas Backdrop Controlled by Vue -->
+      <div v-if="showOffcanvas" class="offcanvas-backdrop fade show" @click="toggleOffcanvas(false)"></div>
 
-  <script>
+      <router-link to="/chats" class="chat-button">
+        <img
+          :src="isHovered ? chatInvertImageUrl : chat3ImageUrl"
+          alt="chat"
+          class="chat-logo"
+          @mouseover="isHovered = true"
+          @mouseleave="isHovered = false"
+          style="margin: 10px"
+        />
+      </router-link>
 
+      <!-- Profile or Sign In Button -->
+      <li v-if="isUserLoggedIn" class="profile-container nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img :src="userProfilePicUrl" alt="profilepic" class="profile-pic" />
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <router-link to="/manage-account" class="dropdown-item">Edit Profile</router-link>
+          </li>
+          <li>
+            <button @click="handleSignOut" class="dropdown-item">Sign Out</button>
+          </li>
+        </ul>
+      </li>
+      <router-link v-else to="/login" class="btn btn-outline-warning">Sign In</router-link>
 
-  import { signOut } from 'firebase/auth';
-  import { auth, db } from '../main';
-  import { authState } from '../store/auth.js';
-  import { doc, getDoc } from 'firebase/firestore';
+      <!-- Toggle button with @click handler -->
+      <button class="navbar-toggler" type="button" @click="toggleOffcanvas(true)" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+</template>
 
-  export default {
-    name: "navBar",
-    data() {
-      return {
-          isHovered: false,
-          pawlogoImageUrl: null,
-          chatInvertImageUrl: null, 
-          chat3ImageUrl: null,
-          userRole: null,
-      };
+<script>
+import { signOut } from 'firebase/auth';
+import { auth, db } from '../main';
+import { authState } from '../store/auth.js';
+import { doc, getDoc } from 'firebase/firestore';
+
+export default {
+  name: "navBar",
+  data() {
+    return {
+      isHovered: false,
+      pawlogoImageUrl: null,
+      chatInvertImageUrl: null,
+      chat3ImageUrl: null,
+      userRole: null,
+      showOffcanvas: false, // Reactive state for off-canvas visibility
+    };
+  },
+  methods: {
+    async fetchImage(fileName) {
+      try {
+        const response = await fetch(`${this.$api_url}/images?fileName=${fileName}`);
+        const data = await response.json();
+        return data.url;
+      } catch (error) {
+        console.error(`Failed to fetch image ${fileName}:`, error);
+        return null;
+      }
     },
-    methods: {
-      close_navbar(){
-      document.getElementById('offcanvasNavbar').class = 'offcanvas offcanvas-end';
-      console.log("closing")
-    },
-      async fetchImage(fileName) {
-        try {
-          const response = await fetch(`${this.$api_url}/images?fileName=${fileName}`);
-          const data = await response.json();
-          return data.url; // Return the URL from the API response
-        } catch (error) {
-          console.error(`Failed to fetch image ${fileName}:`, error);
-          return null;
-        }
-      },
     async handleSignOut() {
       try {
-        await signOut(auth); // This will trigger the onAuthStateChanged listener in auth.js
+        await signOut(auth);
       } catch (error) {
         console.error('Error signing out:', error.message);
       }
     },
-
     async loadUserProfilePic() {
-    const currentUser = this.$auth.currentUser;
-    if (currentUser) {
-      try {
-        const userDocRef = doc(db, "Users", currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
+      const currentUser = this.$auth.currentUser;
+      if (currentUser) {
+        try {
+          const userDocRef = doc(db, "Users", currentUser.uid);
+          const userDoc = await getDoc(userDocRef);
 
-        if (userDoc.exists()) {
-          authState.userProfilePicUrl = userDoc.data().profileImage;
-          this.userRole = userDoc.data().role;
-        } else {
-          console.log("No user document found for UID:", currentUser.uid);
+          if (userDoc.exists()) {
+            authState.userProfilePicUrl = userDoc.data().profileImage;
+            this.userRole = userDoc.data().role;
+          } else {
+            console.log("No user document found for UID:", currentUser.uid);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile image:", error);
         }
-      } catch (error) {
-        console.error("Error fetching user profile image:", error);
+      } else {
+        console.log("No authenticated user found");
       }
-    } else {
-      console.log("No authenticated user found");
-    }
-  }
-
-
     },
-    async mounted() {
-      console.log("Navbar component mounted");
+    toggleOffcanvas(state) {
+      this.showOffcanvas = state;
+    },
+    async navigateAndClose(route) {
+      await this.$router.push(route);
+      this.showOffcanvas = false; // Close off-canvas after navigation
+    },
+  },
+  async mounted() {
+    console.log("Navbar component mounted");
 
-      this.pawlogoImageUrl = await this.fetchImage('about/paw-logo.png');
-      this.chat3ImageUrl = await this.fetchImage('about/chat3.png');
-      this.chatInvertImageUrl = await this.fetchImage('about/chatinvert.png');
+    this.pawlogoImageUrl = await this.fetchImage('about/paw-logo.png');
+    this.chat3ImageUrl = await this.fetchImage('about/chat3.png');
+    this.chatInvertImageUrl = await this.fetchImage('about/chatinvert.png');
 
-      if (this.isUserLoggedIn) {
+    if (this.isUserLoggedIn) {
       await this.loadUserProfilePic();
     }
-
+  },
+  computed: {
+    isUserLoggedIn() {
+      return authState.isUserLoggedIn;
     },
-    computed: {
-      isUserLoggedIn() {
-        return authState.isUserLoggedIn;
-      },
-      userProfilePicUrl() {
-        return authState.userProfilePicUrl;
-      },
-      isAdmin() {
-        return this.userRole === "admin";
-      },
+    userProfilePicUrl() {
+      return authState.userProfilePicUrl;
     },
-    watch: {
-      isUserLoggedIn(newVal) {
-        if (newVal) {
-          this.loadUserProfilePic();
-        }
-      },
-    }
-
-  };
-  </script>
+    isAdmin() {
+      return this.userRole === "admin";
+    },
+  },
+  watch: {
+    isUserLoggedIn(newVal) {
+      if (newVal) {
+        this.loadUserProfilePic();
+      }
+    },
+  }
+};
+</script>
 
 
   <style scoped>
