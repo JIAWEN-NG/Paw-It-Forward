@@ -370,6 +370,14 @@ export default {
 
 
 <style scoped>
+
+.form-label {
+  font-weight: 500;
+  color: #2c3e50;
+  display: block;
+  text-align: left;
+  font-weight: bold;
+}
 .spinner-container {
   display: flex;
   justify-content: center;

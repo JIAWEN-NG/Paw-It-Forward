@@ -557,6 +557,7 @@ button.btn-danger:hover {
   color: #2c3e50;
   display: block;
   text-align: left;
+  font-weight: bold;
 }
 
 .form-control {
