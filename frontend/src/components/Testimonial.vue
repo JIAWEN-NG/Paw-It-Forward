@@ -1,5 +1,5 @@
 <template>
-  <div class="container testimonial-container">
+  <div class="testimonial-container">
     <div class="testimonial-header">
       <div class="text-container">
         <h2 class="title">Stories of Hope</h2>
@@ -114,6 +114,40 @@
     </div>
   </div>
 
+  <div class="animal-runner">
+  <div class="animal-strip">
+    <!-- Original set of images -->
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <!-- Repeat as needed -->
+
+    <!-- Duplicate set of images for seamless scrolling -->
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <!-- Repeat as needed -->
+  </div>
+</div>
+
 
   <!-- Floating Donate Now Button -->
   <div class="donate-popup-container">
@@ -128,9 +162,6 @@
     </router-link>
   </div>
 
-  <div class="animal-runner">
-    <div class="animal-strip" v-html="animalBanner"></div>
-  </div>
   <!-- Pagination Controls -->
   <div class="pagination-container">
     <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
@@ -144,7 +175,9 @@
       class="btn btn-outline-primary pagination-button">
       Next
     </button>
-  </div>
+ 
+</div>
+  
 </template>
 
 <script>
@@ -175,6 +208,8 @@ export default {
       isFading: false,
       wordCount: 0,  // Track word count
       isLoading: true,
+      pixcat,  // Assigning the imported image to pixcat
+      pixdog,  // Assigning the imported image to pixdog
     };
   },
 
@@ -595,12 +630,12 @@ input[type="file"] {
 }
 
 .testimonial-card:hover {
-  transform: scale(1.50) rotateY(180deg);
+  transform: scale(1.05) rotateY(180deg);
   /* Scale up and flip the card at the same time */
 }
 
 .testimonial-card.is-flipped {
-  transform: rotateY(180deg) scale(1.50);
+  transform: rotateY(180deg) scale(1.05);
   /* Keep scaling even after flip */
   z-index: 9999;
 }
@@ -980,32 +1015,6 @@ input[type="file"] {
   color: #fff;
 }
 
-/* animal gif */
-
-.animal-runner {
-  overflow: hidden;
-  /* background-color: #1e3a5f; */
-  background-color: transparent;
-  padding: 10px 0;
-  width: 100%;
-}
-
-.animal-strip {
-  display: flex;
-  animation: scroll 20s linear infinite;
-  gap: 10px;
-  /* Add space between images if needed */
-}
-
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(50%);
-  }
-}
 
 /* add testimonial */
 
@@ -1471,4 +1480,40 @@ input[type="file"] {
     opacity: 1;
   }
 }
+
+/* The container that holds the animal runner */
+.animal-runner {
+  width: 100%;
+  height: 60px; /* Adjust based on the height of the images */
+  overflow: hidden;
+  position: relative;
+  margin-top: 20px;
+}
+
+/* The strip where the animal images will be placed */
+.animal-strip {
+  display: flex;
+  animation: scrollRight 25s linear infinite; /* Speed up the animation */
+  position: absolute;
+  left: 0;
+}
+
+/* Keyframes to scroll the images continuously from left to right */
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%); /* Start off-screen to the left */
+  }
+  100% {
+    transform: translateX(0); /* Move to the right */
+  }
+}
+
+.animal-image {
+  width: 80px; /* Set a fixed width */
+  height: 60px; /* Set a fixed height based on the GIF’s aspect ratio */
+  object-fit: contain; /* Ensure the full image is visible within the container */
+  margin-right: 5px; /* Adjust spacing as needed */
+}
+
+
 </style>
