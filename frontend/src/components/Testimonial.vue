@@ -5,57 +5,52 @@
         <h2 class="title">Stories of Hope</h2>
         <p class="subtitle">Share your story of how donations brought hope and healing to your pet in need.</p>
       </div>
-        
 
-        <!-- Only show the button if the user is logged in -->
-        <div class="button-container">
-          <button 
-            v-if="isUserLoggedIn" 
-            class="add-testimonial wave-button" 
-            style="align-self: center;" 
-            @click="openModal"
-          >
-            Add Your Story
-          </button>
+
+      <!-- Only show the button if the user is logged in -->
+      <div class="button-container">
+        <button v-if="isUserLoggedIn" class="add-testimonial wave-button" style="align-self: center;"
+          @click="openModal">
+          Add Your Story
+        </button>
 
         <!-- If the user is not logged in, display a message or redirect to login -->
-          <div v-else class="login-message-container">
-            <p class="login-message">
-              <span class="login-icon">🔒</span>
-              Please <router-link to="/login" class="login-link">login</router-link> to add your story.
-            </p>
-          </div>
+        <div v-else class="login-message-container">
+          <p class="login-message">
+            <span class="login-icon">🔒</span>
+            Please <router-link to="/login" class="login-link">login</router-link> to add your story.
+          </p>
         </div>
       </div>
-      
+    </div>
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div v-else class="row row-cols-1 row-cols-md-3 g-4">
       <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
-        <div 
-          class="card testimonial-card" 
-          @mouseenter="flipCard(testimonial.id)" 
-          @mouseleave="resetFlip"
-          :class="{ 'is-flipped': flippedCardId === testimonial.id }"
-        >
+        <div class="card testimonial-card" @mouseenter="flipCard(testimonial.id)" @mouseleave="resetFlip"
+          :class="{ 'is-flipped': flippedCardId === testimonial.id }">
           <div class="card-front">
             <div class="profile-photo-container top-center">
               <img :src="getImageUrl(testimonial.imageBase64)" alt="Animal Photo" v-if="testimonial.imageBase64" />
               <div class="no-image" v-else>No Image</div>
               <div class="icon-overlay">
-              <span class="emoji toy-emoji">🦴</span>
-              <span class="emoji paw-emoji">🐾</span>
-            </div>
+                <span class="emoji toy-emoji">🦴</span>
+                <span class="emoji paw-emoji">🐾</span>
+              </div>
             </div>
             <!-- <div class="name-banner"> -->
-              <p class="author">{{ testimonial.animalName }}</p>
+            <p class="author">{{ testimonial.animalName }}</p>
             <!-- </div> -->
             <p class="testimonial-text">{{ testimonial.background }}</p>
             <p class="client-signature">{{ testimonial.userName }}</p>
           </div>
-          <div 
-            class="card-back" 
-            :style="{ backgroundImage: `url('data:image/jpeg;base64,${testimonial.imageBase64}')` }"
-          >
+          <div class="card-back"
+            :style="{ backgroundImage: `url('data:image/jpeg;base64,${testimonial.imageBase64}')` }">
             <div class="overlay">
               <img src="@/assets/quotes.png" alt="Quote" class="quote-icon-start" />
               <p class="donation-journey">
@@ -98,28 +93,17 @@
             </div>
             <div class="form-group">
               <label for="donationJourney">Describe how this donation made a difference!</label>
-              <textarea 
-                id="donationJourney" 
-                v-model="newTestimonial.donationJourney" 
-                required
-                maxlength="300" 
-                @input="updateWordCount"
-                :class="{'word-limit-reached': wordCount >= 50}"
-              ></textarea>
+              <textarea id="donationJourney" v-model="newTestimonial.donationJourney" required maxlength="300"
+                @input="updateWordCount" :class="{ 'word-limit-reached': wordCount >= 50 }"></textarea>
               <p class="word-count">Words used: {{ wordCount }} / 50</p>
             </div>
-            <button
-              type="button"
-              @click="submitForm"
-              :disabled="isSubmitting"
-              :class="{ 'success': uploadSuccess, 'loading': isSubmitting }"
-              class="submit-button"
-            >
+            <button type="button" @click="submitForm" :disabled="isSubmitting"
+              :class="{ 'success': uploadSuccess, 'loading': isSubmitting }" class="submit-button">
               <span v-if="isSubmitting" class="loading-icon"></span>
               <span v-else-if="uploadSuccess" class="checkmark-icon">
                 <svg viewBox="0 0 52 52">
-                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-                  <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                  <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16" />
                 </svg>
               </span>
               <span v-else>Share Your Story!</span>
@@ -131,41 +115,36 @@
   </div>
 
 
-      <!-- Floating Donate Now Button -->
-      <div class="donate-popup-container">
-        <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
-              <p class="heartfelt-message">
-                "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
-              </p>
-            </div>
-            <router-link to="/fundraising" class="donate-popup animated-donate-button">
-              Donate Now <i class="fas fa-heart heart-icon"></i>
-            </router-link>
-          </div>
+  <!-- Floating Donate Now Button -->
+  <div class="donate-popup-container">
+    <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
+      <p class="heartfelt-message">
+        "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a
+        second chance at happiness."
+      </p>
+    </div>
+    <router-link to="/fundraising" class="donate-popup animated-donate-button">
+      Donate Now <i class="fas fa-heart heart-icon"></i>
+    </router-link>
+  </div>
 
-        <div class="animal-runner">
-        <div class="animal-strip" v-html="animalBanner"></div>
-      </div>
-      <!-- Pagination Controls -->
-      <div class="pagination-container">
-        <button 
-          @click="changePage(currentPage - 1)" 
-          :disabled="currentPage === 1" 
-          class="btn btn-outline-primary pagination-button"
-        >
-          Previous
-        </button>
-        
-        <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-        
-        <button 
-          @click="changePage(currentPage + 1)" 
-          :disabled="currentPage === totalPages" 
-          class="btn btn-outline-primary pagination-button"
-        >
-          Next
-        </button>
-      </div>
+  <div class="animal-runner">
+    <div class="animal-strip" v-html="animalBanner"></div>
+  </div>
+  <!-- Pagination Controls -->
+  <div class="pagination-container">
+    <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+      class="btn btn-outline-primary pagination-button">
+      Previous
+    </button>
+
+    <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+
+    <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
+      class="btn btn-outline-primary pagination-button">
+      Next
+    </button>
+  </div>
 </template>
 
 <script>
@@ -195,8 +174,10 @@ export default {
       showHeartfeltMessage: false,
       isFading: false,
       wordCount: 0,  // Track word count
+      isLoading: true,
     };
   },
+
   computed: {
     totalPages() {
       return Math.ceil(this.testimonials.length / this.itemsPerPage);
@@ -209,16 +190,20 @@ export default {
   },
   methods: {
     async fetchTestimonials() {
+      this.isLoading = true; // Start loading
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_API_BASE_URL}/testimonials`);
         this.testimonials = response.data; // Set testimonials to the response data
       } catch (error) {
         console.error('Error fetching testimonials:', error);
       }
+      finally {
+        this.isLoading = false; // Stop loading
+      }
     },
 
     getImageUrl(imageBase64) {
-  return `data:image/jpeg;base64,${imageBase64}`;
+      return `data:image/jpeg;base64,${imageBase64}`;
     },
     flipCard(id) {
       this.flippedCardId = id; // Set the flipped card when mouse enters
@@ -321,18 +306,29 @@ export default {
       }, 1000);
     }, 3000);
     getAuth().onAuthStateChanged(user => {
-    if (user) {
-      this.isUserLoggedIn = true;  // Set the login state to true
-    } else {
-      this.isUserLoggedIn = false; // Set it to false if no user
-    }
-  });
+      if (user) {
+        this.isUserLoggedIn = true;  // Set the login state to true
+      } else {
+        this.isUserLoggedIn = false; // Set it to false if no user
+      }
+    });
   }
 };
 </script>
 
 
 <style scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
 /* Form Title */
 .form-title {
   text-align: center;
@@ -372,7 +368,7 @@ textarea {
   color: #333;
   width: 100%;
   box-sizing: border-box;
-  background-color: #fff7e6;
+  /* background-color: #cdcccb; */
   transition: border-color 0.3s ease;
 }
 
@@ -380,18 +376,20 @@ input[type="text"]:focus,
 textarea:focus {
   border-color: #ff8a00;
 }
+
 .dotted-area {
   border: 2px dashed #999;
   border-radius: 8px;
   padding: 20px;
   text-align: center;
   width: 100%;
-  height: 150px; /* Adjust height as needed */
+  height: 150px;
+  /* Adjust height as needed */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background-color: #fff7e6;
+ 
 }
 
 .placeholder-text {
@@ -407,10 +405,13 @@ textarea:focus {
 }
 
 .file-upload {
-  margin-top: 10px; /* Space between the button and dotted area */
+  margin-top: 10px;
+  /* Space between the button and dotted area */
   align-items: center;
-  justify-content: flex-start; /* Aligns the button to the left */
-  margin-top: 10px; /* Space between the button and dotted area */
+  justify-content: flex-start;
+  /* Aligns the button to the left */
+  margin-top: 10px;
+  /* Space between the button and dotted area */
 }
 
 .upload-button {
@@ -429,7 +430,8 @@ textarea:focus {
 }
 
 input[type="file"] {
-  display: none; /* Hide the default file input */
+  display: none;
+  /* Hide the default file input */
 }
 
 /* Submit Button */
@@ -451,7 +453,8 @@ input[type="file"] {
 
 /* Success Animation */
 .submit-button.success {
-  background-color: #28a745; /* Green color for success */
+  background-color: #28a745;
+  /* Green color for success */
   color: white;
   transform: scale(1.1);
 }
@@ -489,46 +492,64 @@ input[type="file"] {
 
 .scroll-container {
   width: 100%;
-  max-height: 60vh; /* Adjust height as needed */
-  overflow-y: auto; /* Make inner content scrollable */
-  padding-right: 10px; /* Add padding to prevent overlap with scrollbar */
-  margin-top: 1rem; /* Add some space below title */
+  max-height: 60vh;
+  /* Adjust height as needed */
+  overflow-y: auto;
+  /* Make inner content scrollable */
+  padding-right: 10px;
+  /* Add padding to prevent overlap with scrollbar */
+  margin-top: 1rem;
+  /* Add some space below title */
 }
 
 .quote-icon-start {
-  width: 40px; /* Adjust size as needed */
+  width: 40px;
+  /* Adjust size as needed */
   height: auto;
-  margin-right: 10px; /* Align left with margin to the right */
-  align-self: flex-start; /* Align to the left */
-  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
-  
+  margin-right: 10px;
+  /* Align left with margin to the right */
+  align-self: flex-start;
+  /* Align to the left */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%);
+  /* Applies a beige tint */
+
 }
+
 .quote-icon-end {
-  width: 40px; /* Adjust size as needed */
+  width: 40px;
+  /* Adjust size as needed */
   height: auto;
-  margin-left: 10px; /* Align right with margin to the left */
-  align-self: flex-end; /* Align to the right */
-  transform: scaleX(-1); /* Flips the quote image horizontally */
-  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%); /* Applies a beige tint */
+  margin-left: 10px;
+  /* Align right with margin to the left */
+  align-self: flex-end;
+  /* Align to the right */
+  transform: scaleX(-1);
+  /* Flips the quote image horizontally */
+  filter: invert(80%) sepia(30%) saturate(90%) hue-rotate(20deg) brightness(95%) contrast(90%);
+  /* Applies a beige tint */
 }
 
 * {
   font-family: 'Montserrat', sans-serif;
 }
+
 .testimonial-container {
   padding: 40px 20px 20px;
   background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
 }
+
 .title {
   text-align: center;
   font-size: 2rem;
   font-weight: bold;
 }
+
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 5px;
 }
+
 .testimonial-header {
   display: flex;
   justify-content: center;
@@ -536,109 +557,141 @@ input[type="file"] {
   margin-bottom: 20px;
   position: relative;
 }
+
 .text-container {
-  margin: 0 auto; /* Allows the text to take available space */
-  text-align: center; /* Restricts the width to prevent stretching */
+  margin: 0 auto;
+  /* Allows the text to take available space */
+  text-align: center;
+  /* Restricts the width to prevent stretching */
 }
 
 .button-container {
   position: absolute;
   right: 0;
-  margin-top: 5px; /* Space between button and subtitle */
+  margin-top: 5px;
+  /* Space between button and subtitle */
   margin-bottom: 5px;
 }
 
 .testimonial-card {
-  width: 95%; /* Make the card width smaller */
+  width: 95%;
+  /* Make the card width smaller */
   border: none;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s ease-in-out; /* Smooth transition for scaling and flipping */
+  transition: transform 0.6s ease-in-out;
+  /* Smooth transition for scaling and flipping */
   cursor: pointer;
-  height: 400px; /* Set consistent card height */
-  background-image: url('@/assets/animals.jpg'); /* Adjust the path as needed */
+  height: 400px;
+  /* Set consistent card height */
+  background-image: url('@/assets/animals.jpg');
+  /* Adjust the path as needed */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 .testimonial-card:hover {
-  transform: scale(1.50) rotateY(180deg); /* Scale up and flip the card at the same time */
+  transform: scale(1.50) rotateY(180deg);
+  /* Scale up and flip the card at the same time */
 }
 
 .testimonial-card.is-flipped {
-  transform: rotateY(180deg) scale(1.50); /* Keep scaling even after flip */
+  transform: rotateY(180deg) scale(1.50);
+  /* Keep scaling even after flip */
   z-index: 9999;
 }
 
 .row {
   display: flex;
-  justify-content: center; /* Centers the items horizontally */
-  flex-wrap: wrap; /* Ensures the items wrap when needed */
-  gap: 20px; /* Add spacing between items */
+  justify-content: center;
+  /* Centers the items horizontally */
+  flex-wrap: wrap;
+  /* Ensures the items wrap when needed */
+  gap: 20px;
+  /* Add spacing between items */
   margin-top: 5px;
 }
 
 .col {
-  flex: 0 0 calc(33.33% - 20px); /* Ensure 3 items per row on medium and larger screens */
-  max-width: calc(33.33% - 20px); /* Adjust the max width for 3 items */
+  flex: 0 0 calc(33.33% - 20px);
+  /* Ensure 3 items per row on medium and larger screens */
+  max-width: calc(33.33% - 20px);
+  /* Adjust the max width for 3 items */
 }
 
 @media (max-width: 768px) {
   .testimonial-card {
-    width: 80%;  /* Makes the card fill the entire width */
-    max-width: 100%; /* Ensures it doesn't stretch too much */
+    width: 80%;
+    /* Makes the card fill the entire width */
+    max-width: 100%;
+    /* Ensures it doesn't stretch too much */
     margin: 0 auto;
   }
+
   .add-testimonial {
     font-size: 1rem;
     padding: 0.5rem 1.5rem;
     margin-top: 10px;
   }
+
   .button-container {
     margin-top: 10px;
     width: 100%;
     text-align: center;
   }
+
   .testimonial-header {
     flex-direction: column;
     align-items: center;
   }
+
   .text-container {
-    max-width: 100%; /* Full width on smaller screens */
-    text-align: center; /* Center text for smaller screens */
+    max-width: 100%;
+    /* Full width on smaller screens */
+    text-align: center;
+    /* Center text for smaller screens */
   }
 
   .button-container {
-    position: static;/* Stacks the elements */
-    text-align: center; /* Center-aligns the button */
+    position: static;
+    /* Stacks the elements */
+    text-align: center;
+    /* Center-aligns the button */
     margin-top: 5px;
   }
 
   .title {
-    font-size: 1.8rem; /* Adjust title size for smaller screens */
+    font-size: 1.8rem;
+    /* Adjust title size for smaller screens */
   }
 
   .subtitle {
-    font-size: 1rem; /* Adjust subtitle size */
+    font-size: 1rem;
+    /* Adjust subtitle size */
     margin-bottom: 20px;
   }
 
   .row {
-    flex-direction: column; /* Makes it stack vertically on small screens */
-    align-items: center; /* Centers the items horizontally */
+    flex-direction: column;
+    /* Makes it stack vertically on small screens */
+    align-items: center;
+    /* Centers the items horizontally */
   }
 
   .col {
-    flex: 0 0 100%; /* Full width on smaller screens (mobile) */
-    max-width: 100%; /* Ensure full width on small screens */
+    flex: 0 0 100%;
+    /* Full width on smaller screens (mobile) */
+    max-width: 100%;
+    /* Ensure full width on small screens */
   }
 
   .testimonial-card:hover {
-    transform: scale(1.1) rotateY(180deg); /* Smaller scaling to prevent overflow */
+    transform: scale(1.1) rotateY(180deg);
+    /* Smaller scaling to prevent overflow */
   }
 }
 
@@ -648,13 +701,15 @@ input[type="file"] {
   color: #fff;
 }
 
-.card-front, .card-back {
+.card-front,
+.card-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   font-family: 'Montserrat', sans-serif;
 }
+
 .card-back {
   transform: rotateY(180deg);
   flex-direction: column;
@@ -663,16 +718,21 @@ input[type="file"] {
   padding: 20px;
   border-radius: 20px;
   background: rgba(248, 249, 250, 0.9);
-  background-size: cover; /* Fills the entire card */
-  background-position: center; /* Centers the image */
+  background-size: cover;
+  /* Fills the entire card */
+  background-position: center;
+  /* Centers the image */
   background-repeat: no-repeat;
   border: 3px solid rgb(255, 255, 255);
 }
+
 .quote-icon-start,
 .quote-icon-end {
-  width: 30px; /* Smaller icon size */
+  width: 30px;
+  /* Smaller icon size */
   height: auto;
-  margin: 0; /* Remove additional margin */
+  margin: 0;
+  /* Remove additional margin */
 }
 
 .overlay {
@@ -681,17 +741,20 @@ input[type="file"] {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for better text readability */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Dark overlay for better text readability */
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 15px;
-  padding: 10px; /* Reduced padding */
-  gap: 4px; /* Minimal gap between elements */
+  padding: 10px;
+  /* Reduced padding */
+  gap: 4px;
+  /* Minimal gap between elements */
 }
 
 .back-photo-container {
-  width: 200px; 
+  width: 200px;
   height: 200px;
   display: block;
   margin-left: auto;
@@ -700,6 +763,7 @@ input[type="file"] {
   border-radius: 10px;
   overflow: hidden;
 }
+
 .back-photo-container img {
   width: 100%;
   height: 100%;
@@ -707,6 +771,7 @@ input[type="file"] {
   border: 2px solid #ddd;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
+
 .back-content {
   margin: auto;
   text-align: center;
@@ -714,6 +779,7 @@ input[type="file"] {
   flex-direction: column;
   align-items: center;
 }
+
 .profile-photo-container {
   position: relative;
   margin: 0 auto;
@@ -724,8 +790,9 @@ input[type="file"] {
   overflow: hidden;
   border: 3px solid #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  z-index: 2; 
-  text-align: center; /* Ensure text inside is also centered */
+  z-index: 2;
+  text-align: center;
+  /* Ensure text inside is also centered */
 }
 
 .profile-photo-container img {
@@ -736,17 +803,25 @@ input[type="file"] {
 
 
 .icon-overlay {
-  position: absolute; /* Position relative to the card */
-  top: 62px; /* Position slightly above the profile photo */
-  left: 50%; /* Center it horizontally */
-  transform: translateX(-50%); /* Adjust to center */
-  display: flex; /* Use flexbox for alignment */
-  gap: 10px; /* Space between the emojis */
-  z-index: 3; /* Ensure it's above the card background */
+  position: absolute;
+  /* Position relative to the card */
+  top: 62px;
+  /* Position slightly above the profile photo */
+  left: 50%;
+  /* Center it horizontally */
+  transform: translateX(-50%);
+  /* Adjust to center */
+  display: flex;
+  /* Use flexbox for alignment */
+  gap: 10px;
+  /* Space between the emojis */
+  z-index: 3;
+  /* Ensure it's above the card background */
 }
 
 .emoji {
-  font-size: 1.5em; /* Adjust the size as needed */
+  font-size: 1.5em;
+  /* Adjust the size as needed */
   transition: transform 0.2s ease-in-out;
 }
 
@@ -764,9 +839,12 @@ input[type="file"] {
 
 /* Bounce Animation */
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }
@@ -774,9 +852,12 @@ input[type="file"] {
 
 /* Pulse Animation */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
@@ -791,47 +872,68 @@ input[type="file"] {
   justify-content: center;
   font-size: 12px;
 }
+
 .name-banner {
   position: relative;
-  top: -50px; /* Adjust position relative to profile image */
-  background: linear-gradient(135deg, #9d8d70, #e4cba9); /* Earth-tone gradient with brown and beige */
+  top: -50px;
+  /* Adjust position relative to profile image */
+  background: linear-gradient(135deg, #9d8d70, #e4cba9);
+  /* Earth-tone gradient with brown and beige */
   border-radius: 30px;
   padding: 8px 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-  width: 150px; /* Fixed width for consistency */
-  margin: 0 auto; /* Centers the banner */
-  z-index: 3; /* Ensures it’s above other elements */
-  display: flex; /* Flexbox for easy centering */
-  justify-content: center; /* Centers text within the fixed width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Subtle shadow for depth */
+  width: 150px;
+  /* Fixed width for consistency */
+  margin: 0 auto;
+  /* Centers the banner */
+  z-index: 3;
+  /* Ensures it’s above other elements */
+  display: flex;
+  /* Flexbox for easy centering */
+  justify-content: center;
+  /* Centers text within the fixed width */
 }
+
 .author {
-  font-size: 20px; /* Slightly larger for emphasis */
-  font-weight: 800; /* Stronger weight for bold effect */
-  color: #5E3A1A; /* Deep, earthy brown tone */
+  font-size: 20px;
+  /* Slightly larger for emphasis */
+  font-weight: 800;
+  /* Stronger weight for bold effect */
+  color: #5E3A1A;
+  /* Deep, earthy brown tone */
   text-align: center;
-  text-transform: uppercase; /* Adds a distinct style */
-  letter-spacing: 1px; /* Adds slight spacing for readability */
-  font-family: 'Montserrat', sans-serif; /* Consistent with preferred font */
-  padding: 5px 10px; /* Adds subtle padding */
+  text-transform: uppercase;
+  /* Adds a distinct style */
+  letter-spacing: 1px;
+  /* Adds slight spacing for readability */
+  font-family: 'Montserrat', sans-serif;
+  /* Consistent with preferred font */
+  padding: 5px 10px;
+  /* Adds subtle padding */
 }
+
 .testimonial-text {
   font-size: 14px;
   color: #5d5d5d;
   margin-top: 20px;
   margin-bottom: 10px;
 }
+
 .client-signature {
   font-size: 16px;
   font-style: italic;
   color: #333;
   margin-top: 20px;
 }
+
 .donation-journey {
   font-size: 0.80rem;
   color: #fff;
   padding: 20px;
   text-align: center;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6); /* Adds shadow for better visibility */
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  /* Adds shadow for better visibility */
   position: relative;
 
 }
@@ -867,10 +969,12 @@ input[type="file"] {
   font-size: 1.2rem;
   color: #2c3e50;
 }
+
 .btn-outline-primary {
   color: #2c3e50;
   border-color: #2c3e50;
 }
+
 .btn-outline-primary:hover {
   background-color: #2c3e50;
   color: #fff;
@@ -889,13 +993,15 @@ input[type="file"] {
 .animal-strip {
   display: flex;
   animation: scroll 20s linear infinite;
-  gap: 10px; /* Add space between images if needed */
+  gap: 10px;
+  /* Add space between images if needed */
 }
 
 @keyframes scroll {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(50%);
   }
@@ -904,7 +1010,8 @@ input[type="file"] {
 /* add testimonial */
 
 .add-testimonial {
-  background: linear-gradient(90deg, #191e3b, #e0e3f6); /* Gradient in lighter blues */
+  background: linear-gradient(90deg, #191e3b, #e0e3f6);
+  /* Gradient in lighter blues */
   color: #ffffff;
   background-size: 200% 100%;
   border: none;
@@ -915,7 +1022,7 @@ input[type="file"] {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   animation: wave-smooth 4s ease-in-out infinite;
   transition: transform 0.3s ease;
- 
+
 }
 
 .add-testimonial:hover {
@@ -926,9 +1033,11 @@ input[type="file"] {
   0% {
     background-position: 0% 0;
   }
+
   50% {
     background-position: 100% 0;
   }
+
   100% {
     background-position: 0% 0;
   }
@@ -956,8 +1065,10 @@ input[type="file"] {
 }
 
 .login-icon {
-  font-size: 1.5rem; /* Larger icon size */
-  color: #ff4b5c; /* Red color for the lock */
+  font-size: 1.5rem;
+  /* Larger icon size */
+  color: #ff4b5c;
+  /* Red color for the lock */
 }
 
 .login-link {
@@ -968,7 +1079,8 @@ input[type="file"] {
 }
 
 .login-link:hover {
-  color: #0056b3; /* Darker blue when hovered */
+  color: #0056b3;
+  /* Darker blue when hovered */
 }
 
 /* form */
@@ -984,7 +1096,8 @@ input[type="file"] {
 }
 
 .form-content {
-  position: relative; /* Ensure the close button is positioned correctly */
+  position: relative;
+  /* Ensure the close button is positioned correctly */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1007,11 +1120,13 @@ input[type="file"] {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(220, 220, 220, 0.7); /* Slightly darkened backdrop */
+  background-color: rgba(220, 220, 220, 0.7);
+  /* Slightly darkened backdrop */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* Ensure the backdrop is above other content */
+  z-index: 1000;
+  /* Ensure the backdrop is above other content */
 }
 
 .styled-form {
@@ -1047,7 +1162,7 @@ textarea {
 
 input[type="text"]:focus,
 textarea:focus {
-  border-color:#2c3e50;
+  border-color: #2c3e50;
 }
 
 
@@ -1063,8 +1178,10 @@ textarea {
 }
 
 .word-limit-reached {
-  border-color: red; /* Change border color when word limit is reached */
+  border-color: red;
+  /* Change border color when word limit is reached */
 }
+
 .file-upload {
   display: flex;
   align-items: center;
@@ -1072,7 +1189,8 @@ textarea {
 }
 
 .upload-button {
-  background-color:#2c3e50; /* Soft blue */
+  background-color: #2c3e50;
+  /* Soft blue */
   color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 5px;
@@ -1090,7 +1208,8 @@ input[type="file"] {
 }
 
 .submit-button {
-  background-color: #2c3e50; /* Blue */
+  background-color: #2c3e50;
+  /* Blue */
   color: #ffffff;
   padding: 0.75rem;
   border: none;
@@ -1101,13 +1220,17 @@ input[type="file"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative; /* Ensure it has a positioning context */
-  min-width: 120px; /* Ensure button is wide enough */
-  height: 50px; /* Adjust button height for spinner visibility */
+  position: relative;
+  /* Ensure it has a positioning context */
+  min-width: 120px;
+  /* Ensure button is wide enough */
+  height: 50px;
+  /* Adjust button height for spinner visibility */
 }
 
 .submit-button.success {
-  background-color: #4CAF50; /* Green color for success */
+  background-color: #4CAF50;
+  /* Green color for success */
   color: white;
   transform: scale(1.1);
 }
@@ -1115,28 +1238,40 @@ input[type="file"] {
 .submit-button.loading {
   background-color: #676672;
   color: transparent;
-  min-width: 120px; /* Ensure button is wide enough */
-  height: 50px; /* Adjust button height */
+  min-width: 120px;
+  /* Ensure button is wide enough */
+  height: 50px;
+  /* Adjust button height */
 }
 
 .loading-icon {
-  position: absolute; /* Ensure it's positioned within the button */
+  position: absolute;
+  /* Ensure it's positioned within the button */
   font-size: 1.5rem;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Center the icon */
-  display: none; /* Hide the spinner by default */
+  transform: translate(-50%, -50%);
+  /* Center the icon */
+  display: none;
+  /* Hide the spinner by default */
 }
 
 .submit-button.loading .loading-icon {
-  display: inline-block; /* Show the spinner in loading state */
-  animation: spin 1s linear infinite; /* Apply spinning animation */
+  display: inline-block;
+  /* Show the spinner in loading state */
+  animation: spin 1s linear infinite;
+  /* Apply spinning animation */
 }
 
 /* Spinner animation */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* SVG checkmark styles */
@@ -1162,31 +1297,44 @@ input[type="file"] {
 }
 
 @keyframes circleDraw {
-  0% { stroke-dasharray: 0, 150; }
-  100% { stroke-dasharray: 150, 150; }
+  0% {
+    stroke-dasharray: 0, 150;
+  }
+
+  100% {
+    stroke-dasharray: 150, 150;
+  }
 }
 
 @keyframes checkDraw {
-  0% { stroke-dasharray: 0, 36; }
-  100% { stroke-dasharray: 36, 36; }
+  0% {
+    stroke-dasharray: 0, 36;
+  }
+
+  100% {
+    stroke-dasharray: 36, 36;
+  }
 }
 
 .close-button {
   position: absolute;
   top: 10px;
   right: 15px;
-  font-size: 2rem; /* Increase size for better visibility */
+  font-size: 2rem;
+  /* Increase size for better visibility */
   background: none;
   border: none;
   color: #333;
   cursor: pointer;
   font-weight: bold;
-  z-index: 9999; /* Ensure it's above other content */
+  z-index: 9999;
+  /* Ensure it's above other content */
   transition: color 0.3s ease;
 }
 
 .close-button:hover {
-  color: #ff4b5c; /* Red color for hover effect */
+  color: #ff4b5c;
+  /* Red color for hover effect */
 }
 
 
@@ -1211,11 +1359,14 @@ input[type="file"] {
 
 .donate-popup-container {
   position: fixed;
-  bottom: 50px; /* Adjust for vertical positioning */
-  right: 30px; /* Align to the right side of the screen */
+  bottom: 50px;
+  /* Adjust for vertical positioning */
+  right: 30px;
+  /* Align to the right side of the screen */
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center-aligns the button below the message */
+  align-items: center;
+  /* Center-aligns the button below the message */
   gap: 0.5rem;
   z-index: 1000;
 }
@@ -1226,6 +1377,7 @@ input[type="file"] {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1235,13 +1387,17 @@ input[type="file"] {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
 }
+
 .heartfelt-message-container {
-  background-color: #5a73a1; /* Soft blue background */
-  color: #e0efff; /* Light text color */
+  background-color: #5a73a1;
+  /* Soft blue background */
+  color: #e0efff;
+  /* Light text color */
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -1251,22 +1407,28 @@ input[type="file"] {
   line-height: 1.5;
   max-width: 250px;
   margin-bottom: 0.5rem;
-  opacity: 1; /* Fully visible by default */
-  animation: fadeIn 1s forwards; /* Fade in animation */
+  opacity: 1;
+  /* Fully visible by default */
+  animation: fadeIn 1s forwards;
+  /* Fade in animation */
 }
 
 .fade-out {
-  animation: fadeOut 1s forwards; /* Fade out animation */
+  animation: fadeOut 1s forwards;
+  /* Fade out animation */
 }
 
 /* Donate Now Button Styling */
 .animated-donate-button {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #3e67a8, #77a0f7); /* Gradient for button */
-  color: #ffffff; /* White text color */
+  background: linear-gradient(135deg, #3e67a8, #77a0f7);
+  /* Gradient for button */
+  color: #ffffff;
+  /* White text color */
   font-size: 1.2rem;
   font-weight: 600;
-  border: 2px solid #bcbcbb; /* Yellow border for contrast */
+  border: 2px solid #bcbcbb;
+  /* Yellow border for contrast */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -1279,26 +1441,34 @@ input[type="file"] {
 
 /* Hover Effects for Button */
 .animated-donate-button:hover {
-  background: linear-gradient(135deg, #5679c7, #6a8ed9); /* Lighten gradient on hover */
+  background: linear-gradient(135deg, #5679c7, #6a8ed9);
+  /* Lighten gradient on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px); /* Slight lift on hover */
+  transform: translateY(-2px);
+  /* Slight lift on hover */
 }
 
 /* Heart Icon Styling */
 .heart-icon {
-  color: #ff4b5c; /* Red heart icon */
+  color: #ff4b5c;
+  /* Red heart icon */
   font-size: 1.2rem;
   transition: transform 0.2s ease-in-out;
 }
 
 .animated-donate-button:hover .heart-icon {
-  transform: scale(1.1); /* Slight scaling of the heart on hover */
+  transform: scale(1.1);
+  /* Slight scaling of the heart on hover */
 }
 
 /* Fade-in Animation */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+  from {
+    opacity: 0;
+  }
 
+  to {
+    opacity: 1;
+  }
+}
 </style>
