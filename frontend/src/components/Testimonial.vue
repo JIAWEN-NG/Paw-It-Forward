@@ -47,7 +47,6 @@
             <p class="author">{{ testimonial.animalName }}</p>
             <!-- </div> -->
             <p class="testimonial-text">{{ testimonial.background }}</p>
-            <p class="client-signature">{{ testimonial.userName }}</p>
           </div>
           <div class="card-back"
             :style="{ backgroundImage: `url('data:image/jpeg;base64,${testimonial.imageBase64}')` }">
