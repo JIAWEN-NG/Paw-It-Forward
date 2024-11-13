@@ -5,7 +5,6 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
     <!-- Status Filter -->
     <div class="mb-3">
@@ -49,7 +48,7 @@
     </div>
 
     <div v-if="!loading && filteredWithdrawals.length === 0" class="alert alert-warning text-center">
-      Currently, you have no withdrawals requested
+      Currently, you have no withdrawals requested.
     </div>
 
     <!-- Pagination Controls -->

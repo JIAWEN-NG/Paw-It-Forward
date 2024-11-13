@@ -49,7 +49,7 @@
         </table>
       </div>
       <div v-if="!loading && listings.length === 0" class="alert alert-warning text-center">
-        Currently, you have no Makrteplace listings created
+        Currently, you have no Marketplace listings created.
       </div>
 
       <!-- Pagination Controls -->

@@ -54,7 +54,7 @@
     </div> 
 
     <div v-if="!loading && paginatedFundraisings.length === 0" class="alert alert-warning text-center">
-      Currently, you have no fundraising posts created
+      Currently, you have no Fundraising posts created.
     </div>
 
     <!-- Pagination Controls -->
@@ -223,7 +223,6 @@ export default {
           .map(fundraising => ({ ...fundraising, createdAt: new Date(fundraising.createdAt) }))
           .sort((a, b) => b.createdAt - a.createdAt);
       } catch (error) {
-        this.error = 'Failed to fetch fundraising posts. Please try again later.';
         console.error("Error fetching fundraisings:", error);
       } finally {
         this.loading = false;
