@@ -386,7 +386,7 @@ export default {
 }
 
 .testimonial-card {
-  width: 90%; /* Make the card width smaller */
+  width: 95%; /* Make the card width smaller */
   border: none;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
