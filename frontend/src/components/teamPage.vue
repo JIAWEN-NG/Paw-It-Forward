@@ -35,13 +35,14 @@ import sanaPhoto from '@/assets/sana.png';
 import joviPhoto from '@/assets/jovi.png';
 import thahPhoto from '@/assets/thah.jpg';
 import wenzPhoto from '@/assets/wenz.jpg';
+import DariusPhoto from '@/assets/darius.png';
 
 export default {
   data() {
     return {
       teamMembers: [
         { name: "Afsana", role: "Chief Meow-nager", photo: sanaPhoto },
-        { name: "Darius", role: "Treat Procurement Specialist", photo: "" },
+        { name: "Darius", role: "Treat Procurement Specialist", photo: DariusPhoto },
         { name: "Dessy", role: "Head of Purr-sonnel", photo: dessyPhoto },
         { name: "Jia Wen", role: "Head of Purr-duct Development", photo: wenzPhoto },
         { name: "Jovi", role: "Chief Barketing Officer", photo: joviPhoto },
