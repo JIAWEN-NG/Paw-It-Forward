@@ -32,6 +32,13 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
+    </div>
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
 
     <div v-else class="row row-cols-1 row-cols-md-3 g-4">
       <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
@@ -799,6 +806,7 @@ input[type="file"] {
   text-align: center;
   /* Ensure text inside is also centered */
 }
+
 
 .profile-photo-container img {
   width: 100%;
