@@ -749,7 +749,6 @@ input[type="file"] {
   backface-visibility: hidden;
   font-family: 'Montserrat', sans-serif;
 }
-
 .card-back {
   position: absolute;
   width: 100%;
