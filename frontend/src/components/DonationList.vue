@@ -121,9 +121,7 @@ export default {
   },
   methods: {
     isCurrentUserDonor(donation) {
-      console.log("Checking donor:", donation.donorId, "against current user:", this.currentUserId);
       const isDonor = donation && String(donation.donorId) === String(this.currentUserId);
-      console.log("Is current user donor:", isDonor);
       return isDonor;
     },
     formattedDate(date) {

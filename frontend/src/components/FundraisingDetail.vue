@@ -138,9 +138,7 @@ export default {
 
   methods: {
     isCurrentUserDonor(fundraising) {
-      console.log("Checking donor:", fundraising.userId, "against current user:", this.currentUserId);
       const isDonor = fundraising && String(fundraising.userId) === String(this.currentUserId);
-      console.log("Is current user donor:", isDonor);
       return isDonor;
     },
   },
