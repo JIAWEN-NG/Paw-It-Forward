@@ -47,7 +47,6 @@
             <p class="author">{{ testimonial.animalName }}</p>
             <!-- </div> -->
             <p class="testimonial-text">{{ testimonial.background }}</p>
-            <p class="client-signature">{{ testimonial.userName }}</p>
           </div>
           <div class="card-back"
             :style="{ backgroundImage: `url('data:image/jpeg;base64,${testimonial.imageBase64}')` }">
@@ -353,7 +352,8 @@ export default {
 
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -1377,7 +1377,7 @@ input[type="file"] {
   align-items: center;
   /* Center-aligns the button below the message */
   gap: 0.5rem;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 /* Heartfelt message styling */
