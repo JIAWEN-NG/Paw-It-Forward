@@ -54,16 +54,16 @@
             </div>
 
             <!-- Styled Donate Button -->
-
-            <button v-if="isCurrentUserDonor(fundraising)" class="donate-button"
+            <div v-if="!loading">  <button v-if="fundraising && isCurrentUserDonor(fundraising)" class="donate-button"
               @click.prevent="$router.push({ path: '/managepost', query: { postId: fundraising.id } })">
               <i class="fas fa-pencil-alt"></i>
               Manage Post
             </button>
 
-            <button v-else class="donate-button" @click.prevent="handleDonateClick">
+            <button v-else-if="fundraising" class="donate-button" @click.prevent="handleDonateClick">
               <i class="fas fa-heart"></i> Donate Now
-            </button>
+            </button></div>
+          
             
             <button class="share-button" @click="showShareModal = true">
               <i class="fas fa-share"></i> Share This Post
@@ -138,7 +138,8 @@ export default {
 
   methods: {
     isCurrentUserDonor(fundraising) {
-      const isDonor = fundraising && String(fundraising.userId) === String(this.currentUserId);
+      
+      const isDonor = String(fundraising.userId) === String(this.currentUserId);
       return isDonor;
     },
   },
@@ -157,7 +158,7 @@ export default {
     const { proxy } = getCurrentInstance();
 
 
-
+    
 
     const fetchFundraisingDetail = async () => {
       try {
