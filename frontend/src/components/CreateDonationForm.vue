@@ -9,7 +9,7 @@
         <div v-if="showForm" class="modal-overlay">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <span class="close" @click="showForm = false">&times;</span>
+                    <span class="close" @click="closeForm">&times;</span>
                     <h5 class="modal-title">Donate to Change a Pet's Life!</h5>
                     <div class="modal-body">
                     <!-- Donation Form -->
@@ -69,8 +69,8 @@
                                 <button type="button" @click="triggerFileInput" class="btn btn-secondary upload-button">{{ donation.image ? 'Reupload' : 'Choose File' }}</button>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="showForm = false">Cancel</button>
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
+                                <button type="submit" class="btn btn-success">Create a listing!</button>
                             </div>
                         </form>
                     </div>
@@ -122,7 +122,7 @@ export default {
       };
    },
    methods: {
-       closeForm() {
+    closeForm() {
             this.showForm = false;
             this.resetForm();
         },
@@ -284,7 +284,7 @@ export default {
     background-color: white;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 95%;
     position: relative;
 }
 
@@ -300,7 +300,9 @@ export default {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-top: 25px;
+  margin-bottom: 10px;
+
 }
 
 
@@ -328,13 +330,15 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
+  margin: 10px;
   font-size: 1.5rem;
   color: #000;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .close:hover {
-    color: black;
+    color: red;
 }
 
 .modal-footer {

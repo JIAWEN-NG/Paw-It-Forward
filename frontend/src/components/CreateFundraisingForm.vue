@@ -50,7 +50,7 @@
 
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @click="closeForm">Cancel</button>
-                <button type="submit" class="btn btn-success" :disabled="submitting">Submit</button>
+                <button type="submit" class="btn btn-success" :disabled="submitting">Create a Post!</button>
               </div>
             </form>
           </div>
@@ -245,7 +245,9 @@ export default {
   font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-top: 25px;
+  margin-bottom: 10px;
+
 }
 
 .form-label {
@@ -271,13 +273,15 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
+  margin: 10px;
   font-size: 1.5rem;
   color: #000;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .close:hover {
-    color: black;
+    color: red;
 }
 
 .modal-footer {
