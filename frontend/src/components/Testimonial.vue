@@ -7,9 +7,8 @@
       </div>
 
 
-      <!-- Only show the button if the user is logged in -->
+      <!-- Only show the button if the user is logged in and loading is complete -->
       <div class="button-container">
-        <div class="button-container">
         <button v-if="!isLoading && isUserLoggedIn" class="add-testimonial wave-button" style="align-self: center;"
           @click="openModal">
           Add Your Story
@@ -24,19 +23,14 @@
         </div>
       </div>
     </div>
+
     <!-- Loading Spinner -->
     <div v-if="isLoading" class="spinner-container">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    </div>
-    <!-- Loading Spinner -->
-    <div v-if="isLoading" class="spinner-container">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+      
 
     <div v-else class="row row-cols-1 row-cols-md-3 g-4">
       <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
