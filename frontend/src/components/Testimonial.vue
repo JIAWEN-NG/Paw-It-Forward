@@ -830,6 +830,7 @@ input[type="file"] {
   /* Ensure text inside is also centered */
 }
 
+
 .profile-photo-container img {
   width: 100%;
   height: 100%;
