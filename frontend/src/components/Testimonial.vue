@@ -751,20 +751,24 @@ input[type="file"] {
 }
 
 .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
   transform: rotateY(180deg);
-  flex-direction: column;
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  border-radius: 20px;
-  background: rgba(248, 249, 250, 0.9);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+  border-radius: 15px; 
+  overflow: hidden; 
+  margin: 0; 
+  padding: 0; 
   border: 3px solid rgb(255, 255, 255);
-  z-index: 1; /* Adjust z-index for the expanded card */
-  margin-top: 20px; /* Optional: Add margin to avoid directly touching the navbar */
 }
+
 
 .quote-icon-start,
 .quote-icon-end {
