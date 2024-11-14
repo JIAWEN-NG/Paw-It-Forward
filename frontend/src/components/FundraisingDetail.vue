@@ -62,12 +62,14 @@
 
             <button v-else-if="fundraising" class="donate-button" @click.prevent="handleDonateClick">
               <i class="fas fa-heart"></i> Donate Now
-            </button></div>
-          
-            
+            </button>
             <button class="share-button" @click="showShareModal = true">
               <i class="fas fa-share"></i> Share This Post
             </button>
+          </div>
+          
+            
+   
           </div>
         </div>
       </div>
