@@ -11,17 +11,14 @@
     <div class="row align-items-start mt-4">
       <!-- Image and Description Column (Wider) -->
       <div class="col-md-8 mb-4">
-        <img
-          class="img-fluid rounded fundraising-image"
-          :src="fundraising.fundraisingImg"
-          alt="Fundraising Campaign Image"
-        />
-        
+        <img class="img-fluid rounded fundraising-image" :src="fundraising.fundraisingImg"
+          alt="Fundraising Campaign Image" />
+
         <!-- Posted Date and Description -->
         <p class="card-posted-date mt-3">
           Posted: {{ formattedDate(fundraising.createdAt) }}
         </p>
-        
+
         <p class="description">{{ fundraising.description }}</p>
       </div>
 
@@ -35,14 +32,8 @@
         </p>
 
         <div class="progress my-3">
-          <div
-            class="progress-bar"
-            role="progressbar"
-            :style="{ width: progressPercentage + '%' }"
-            aria-valuenow="25"
-            aria-valuemin="0"
-            aria-valuemax="100"
-          ></div>
+          <div class="progress-bar" role="progressbar" :style="{ width: progressPercentage + '%' }" aria-valuenow="25"
+            aria-valuemin="0" aria-valuemax="100"></div>
         </div>
 
         <!-- Donation Card -->
@@ -52,37 +43,28 @@
           </div>
           <div class="donation-card-body">
             <!-- Donation Amount Input -->
-            <input
-              type="number"
-              v-model="donationAmount"
-              placeholder="Enter custom amount"
-              class="input"
-              min="1"
-            />
+            <input type="number" v-model="donationAmount" placeholder="Enter custom amount" class="input" min="1" />
 
-            <!-- Preset Donation Amounts in 3x2 Grid -->
             <div class="preset-amounts">
-              <button
-                v-for="amount in presetAmounts"
-                :key="amount"
-                @click="setDonationAmount(amount)"
-                :class="{ selected: donationAmount === amount }"
-                class="button-28"
-              >
+              <button v-for="amount in presetAmounts" :key="amount" @click="setDonationAmount(amount)"
+                :class="{ selected: donationAmount === amount }" class="button-28">
                 ${{ amount }}
               </button>
               <button @click="enableCustomAmount" :class="{ selected: isCustomAmount }" class="button-28">Other</button>
             </div>
 
             <!-- Styled Donate Button -->
-            <button
-              class="donate-button"
-              @click="handleDonateClick"
-            >
-              <i class="fas fa-heart"></i> Donate Now
+
+            <button v-if="isCurrentUserDonor(fundraising)" class="donate-button"
+              @click.prevent="$router.push({ path: '/managepost', query: { postId: fundraising.id } })">
+              <i class="fas fa-pencil-alt"></i>
+              Manage Post
             </button>
 
-            <!-- Share This Post Button (styled like Donate button) -->
+            <button v-else class="donate-button" @click.prevent="handleDonateClick">
+              <i class="fas fa-heart"></i> Donate Now
+            </button>
+            
             <button class="share-button" @click="showShareModal = true">
               <i class="fas fa-share"></i> Share This Post
             </button>
@@ -133,7 +115,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed , getCurrentInstance} from 'vue';
+import { ref, onMounted, computed, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import { authState } from '../store/auth.js';
@@ -146,6 +128,20 @@ export default {
     id: {
       type: String,
       required: true,
+    },
+  },
+  computed: {
+    currentUserId() {
+      return authState.userId;
+    }
+  },
+
+  methods: {
+    isCurrentUserDonor(fundraising) {
+      console.log("Checking donor:", fundraising.userId, "against current user:", this.currentUserId);
+      const isDonor = fundraising && String(fundraising.userId) === String(this.currentUserId);
+      console.log("Is current user donor:", isDonor);
+      return isDonor;
     },
   },
   setup(props) {
@@ -161,7 +157,10 @@ export default {
     const showAmountModal = ref(false);
     const shareLink = ref(window.location.href);
     const { proxy } = getCurrentInstance();
-  
+
+
+
+
     const fetchFundraisingDetail = async () => {
       try {
         const response = await proxy.$axios.get(`/Fundraising/${props.id}`);
@@ -216,7 +215,7 @@ export default {
 
     const startCheckout = async () => {
       const amountInCents = donationAmount.value * 100;
-      
+
       try {
         const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
         const response = await axios.post(`${BASE_URL}/create-checkout-session`, {
@@ -331,16 +330,18 @@ body {
 
 .img-fluid {
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
 }
 
 .fundraising-image {
   width: 100%;
-  height: 400px; /* Set a fixed height for consistent display */
-  object-fit: cover; /* Crops to maintain aspect ratio */
+  height: 400px;
+  /* Set a fixed height for consistent display */
+  object-fit: cover;
+  /* Crops to maintain aspect ratio */
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Styled Goal Text */
@@ -364,7 +365,7 @@ body {
 }
 
 .target-amount {
- 
+
   font-size: 1em;
 }
 
@@ -379,7 +380,8 @@ body {
   border-radius: 10px;
 }
 
-.goal-text, .card-posted-date {
+.goal-text,
+.card-posted-date {
   color: #666;
   text-align: left;
 }
@@ -396,11 +398,11 @@ body {
   border-radius: 10px;
   overflow: hidden;
   margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .donation-card-header {
-  background-color:#003366 ;
+  background-color: #003366;
   color: white;
   padding: 10px;
   font-size: 1.2em;
@@ -532,11 +534,25 @@ body {
   justify-content: center;
 }
 
-.share-icon.whatsapp { color: #25D366; }
-.share-icon.facebook { color: #1877F2; }
-.share-icon.telegram { color: #0088cc; }
-.share-icon.twitter { color: #1DA1F2; }
-.share-icon.email { color: #888; }
+.share-icon.whatsapp {
+  color: #25D366;
+}
+
+.share-icon.facebook {
+  color: #1877F2;
+}
+
+.share-icon.telegram {
+  color: #0088cc;
+}
+
+.share-icon.twitter {
+  color: #1DA1F2;
+}
+
+.share-icon.email {
+  color: #888;
+}
 
 .share-icon:hover {
   background: #e0e0e0;
