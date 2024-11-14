@@ -119,7 +119,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <div class="animal-runner">
     <div class="animal-strip">
@@ -158,7 +157,7 @@
     </button>
  
 </div>
-</div>
+
 </template>
 
 <script>
