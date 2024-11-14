@@ -747,7 +747,6 @@ input[type="file"] {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden; /* For Safari */
   font-family: 'Montserrat', sans-serif;
 }
 .card-back {
@@ -973,7 +972,7 @@ input[type="file"] {
 }
 
 .donation-journey {
-  font-size: 0.95rem;
+  font-size: 0.80rem;
   color: #fff;
   padding: 20px;
   text-align: center;
