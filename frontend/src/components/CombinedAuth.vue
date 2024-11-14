@@ -14,10 +14,22 @@
                         <input type="checkbox" id="rememberMeXs" class="form-check-input" v-model="rememberMe">
                         <label class="form-check-label mx-1" for="rememberMeXs">Remember Me</label>
                     </div>
+ 
                     <button type="submit" class="btn mb-3">Sign In</button>
                     <div class="d-flex justify-content-between align-items-center">
-                        <a href="#" @click.prevent="toggleForgotPassword" class="forgot-password-link" style="text-decoration: none;">Forgot your password?</a>
-                    </div>  
+                        <a href="#" @click.prevent="toggleForgotPassword" class="forgot-password-link" style="text-decoration: underline; font-size:13px;">Forgot your password?</a>
+                    </div> 
+                    <div class="my-3 text-center d-flex justify-content-center">
+                        <hr style="width:50%;">
+                        <div class="divider">or</div>
+                        <hr style="width:50%">
+                    </div>
+                    <div class="social-icons d-flex justify-content-center mt-3">
+                        <a href="#" class="d-flex align-items-center" @click.prevent="signInWithGoogle">
+                            <img :src="googleImageUrl" alt="google" class="me-2"/> Sign In with Google
+                        </a>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <a href="#" @click.prevent="toggleAuth" class="" style="text-decoration: underline;">Don't have an account yet?</a>
                     </div>  
@@ -48,6 +60,16 @@
                         <input type="password" class="form-control details" placeholder="Password" v-model="password" required>
                     </div>
                     <button type="submit" class="btn">Sign Up</button>
+                    <div class="my-3 text-center d-flex justify-content-center">
+                        <hr style="width:50%;">
+                        <div class="divider">or</div>
+                        <hr style="width:50%">
+                    </div>
+                    <div class="social-icons d-flex justify-content-center mt-3">
+                        <a href="#" class="d-flex align-items-center" @click.prevent="signInWithGoogle">
+                            <img :src="googleImageUrl" alt="google" class="me-2"/> Sign Up with Google
+                        </a>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <a href="#" @click.prevent="toggleAuth" class="" style="text-decoration: underline;">Already have an account?</a>
                     </div>  
@@ -80,11 +102,11 @@
                     <div class="divider">or</div>
                     <hr style="width:50%">
                 </div>
-                <div class="social-icons d-flex justify-content-center mt-3">
-                    <a href="#" class="d-flex align-items-center" @click.prevent="signInWithGoogle">
-                        <img :src="googleImageUrl" alt="google" class="me-2"/> Sign In with Google
-                    </a>
-                </div>
+                    <div class="social-icons d-flex justify-content-center mt-3">
+                        <a href="#" class="d-flex align-items-center" @click.prevent="signInWithGoogle">
+                            <img :src="googleImageUrl" alt="google" class="me-2"/> Sign In with Google
+                        </a>
+                    </div>
             </form>
         </div>
 
@@ -164,7 +186,7 @@
   <script>
   import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
   import { auth, db } from '../main';  // Firebase initialization
-  import { doc, setDoc } from 'firebase/firestore'; // Firestore methods
+  import { doc, setDoc, getDoc } from 'firebase/firestore'; // Firestore methods
   import AuthModal from './AuthModal.vue';
   import PhotoSubmissionModal from './PhotoSubmissionModal.vue';
 
@@ -291,18 +313,50 @@
         this.showForgotPassword = !this.showForgotPassword; // Toggle visibility
         this.resetEmail = '';
         },
-        signInWithGoogle() {
+        async signInWithGoogle() {
             const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log('Google Sign-In Success:', result);
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                // Check if the user document already exists in Firestore
+                const userDocRef = doc(db, 'Users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (!userDoc.exists()) {
+                // If the user document doesn't exist, create one
+                await setDoc(userDocRef, {
+                    name: user.displayName,
+                    email: user.email,
+                    isVerified: true, // Google sign-in users are considered verified
+                    isPhotoVerified: false,
+                    petDescription: '', // Initialize with empty fields as required
+                    role: 'user',
+                    profileImage: this.defaultProfileImageUrl,
+                    rejectionReason: "",
+                });
+                console.log('User document created in Firestore');
+                // Show photo submission prompt
+                this.showPhotoSubmission = true;
+                } else {
+                this.$router.push('/about');
+                console.log('User already exists in Firestore');
+                }
+
+                // If "Remember Me" is checked, save Google email to sessionStorage
                 if (this.rememberMe) {
-                sessionStorage.setItem('email', result.user.email); // Save Google email to sessionStorage
-            }           
-            })
-            .catch((error) => {
+                sessionStorage.setItem('email', user.email);
+                }
+
+
+
+
+            } catch (error) {
                 console.error('Google Sign-In Error:', error.message);
-             });
+                this.modalTitle = 'Error';
+                this.modalMessage = `Google sign-in did not process. Please retry.`;
+                this.showModal = true;
+            }
         },
         async fetchImage(fileName) {
         try {

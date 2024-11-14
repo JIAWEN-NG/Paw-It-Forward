@@ -1,8 +1,8 @@
 <!-- DonationList.vue -->
 <template>
   <div class="donation-list">
-     <!-- Loading Spinner -->
-     <div v-if="isLoading" class="spinner-container">
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="spinner-container">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -11,32 +11,19 @@
     <!-- Scrollable Cards Container -->
     <div v-else class="cards-container">
       <div class="row gx-2">
-        <div
-          v-for="donation in donations"
-          :key="donation.id"
-          class="col-sm-6 col-lg-4 mb-2"
-        >
+        <div v-for="donation in donations" :key="donation.id" class="col-sm-6 col-lg-4 mb-2">
           <div class="card compact-card">
             <div class="card-header d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
-                <img
-                  v-if="donation.donorProfileImage"
-                  :src="donation.donorProfileImage"
-                  alt="Profile Image"
-                  class="donor-profile-img"
-                />
+                <img v-if="donation.donorProfileImage" :src="donation.donorProfileImage" alt="Profile Image"
+                  class="donor-profile-img" />
                 <h6 class="card-subtitle mb-0 ms-2">
                   {{ donation.donorName || 'Anonymous' }}
                 </h6>
               </div>
             </div>
 
-            <img
-              id="card_img"
-              class="card-img-top compact-img"
-              :src="donation.itemImage"
-              alt=""
-            />
+            <img id="card_img" class="card-img-top compact-img" :src="donation.itemImage" alt="" />
 
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center">
@@ -54,13 +41,16 @@
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <span class="posted-on">Posted {{ formattedDate(donation.createdAt) }}</span>
-                <a
-                  href="#"
-                  class="btn btn-outline-primary btn-sm"
-                  @click.prevent="openRequestModal(donation)"
-                >
+                <!-- Conditionally render buttons based on isCurrentUserDonor -->
+                <button v-if="isCurrentUserDonor(donation)" class="btn btn-outline-primary btn-sm"
+                   @click.prevent="$router.push({ path: '/managepost', query: { postId: donation.id } })">
+                  Manage Post
+                </button>
+
+                <button v-else class="btn btn-outline-primary btn-sm" @click.prevent="openRequestModal(donation)">
                   Request Item
-                </a>
+                </button>
+
               </div>
             </div>
           </div>
@@ -72,16 +62,13 @@
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <h5>Tell the giver why your pet needs this item..</h5>
-        <textarea
-          v-model="requestMessage"
-          placeholder="Hi, I would like to get this item because..."
-          rows="4"
-        ></textarea>
+        <textarea v-model="requestMessage" placeholder="Hi, I would like to get this item because..."
+          rows="4"></textarea>
         <div class="modal-buttons">
           <button @click="closeRequestModal" class="btn btn-secondary">
             Cancel
           </button>
-          <button @click="sendRequest" class="btn btn-outline-primary">
+          <button @click="sendRequest" class="btn btn-outline-primary" :disabled="isCurrentUserDonor(selectedDonation)">
             Send Request
           </button>
         </div>
@@ -93,7 +80,7 @@
       <p>{{ notificationMessage }}</p>
     </div>
 
-    
+
   </div>
 </template>
 
@@ -112,22 +99,33 @@ export default {
       showModal: false,
       selectedDonation: null,
       requestMessage: '',
-      currentUserId: null,
+
       notificationMessage: '',      // For displaying notifications
       notificationType: '',         // "success" or "error"
       isLoading: true,
-      
+
     };
   },
   created() {
-    this.currentUserId = authState.userId;
-     // Simulate data loading
-     setTimeout(() => {
+
+    // Simulate data loading
+    setTimeout(() => {
       // Set `isLoading` to false once donations data is available
       this.isLoading = false;
     }, 2000); // Set a timeout to simulate data fetching
   },
+  computed: {
+    currentUserId() {
+      return authState.userId;
+    }
+  },
   methods: {
+    isCurrentUserDonor(donation) {
+      console.log("Checking donor:", donation.donorId, "against current user:", this.currentUserId);
+      const isDonor = donation && String(donation.donorId) === String(this.currentUserId);
+      console.log("Is current user donor:", isDonor);
+      return isDonor;
+    },
     formattedDate(date) {
       if (!date) return '';
       const d = new Date(date);
@@ -215,6 +213,7 @@ export default {
   width: 3rem;
   height: 3rem;
 }
+
 /* Notification Modal Styling */
 .notification-modal {
   position: fixed;
@@ -246,7 +245,8 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: 100%; /* Ensures the container takes full height */
+  max-height: 100%;
+  /* Ensures the container takes full height */
 }
 
 /* Cards Container without Scrolling */
@@ -255,7 +255,8 @@ export default {
   background-color: #F8F9FB;
   border-radius: 20px;
   display: flex;
-  justify-content: center; /* Center the cards container */
+  justify-content: center;
+  /* Center the cards container */
 }
 
 
@@ -280,13 +281,15 @@ export default {
 .row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: start; /* Align items to the left */
+  justify-content: start;
+  /* Align items to the left */
 }
 
 .col-sm-6,
 .col-lg-4 {
   display: flex;
-  justify-content: center; /* Center each column item */
+  justify-content: center;
+  /* Center each column item */
 }
 
 
@@ -314,7 +317,7 @@ export default {
   font-size: 0.9rem;
   margin-bottom: 4px;
   text-align: left;
-  font-weight:600;
+  font-weight: 600;
 }
 
 .card-header {
@@ -331,14 +334,16 @@ export default {
 .location-container {
   display: flex;
   align-items: center;
-  font-size: 0.75rem; /* Match font size */
+  font-size: 0.75rem;
+  /* Match font size */
   color: #555;
 }
 
 .location-icon {
   width: 14px;
   height: 14px;
-  margin-right: 5px; /* Spacing between icon and text */
+  margin-right: 5px;
+  /* Spacing between icon and text */
 }
 
 .card-location {
@@ -421,7 +426,8 @@ export default {
 .modal-content textarea {
   width: 100%;
   margin-bottom: 15px;
-  padding: 10px; /* Add padding to the left */
+  padding: 10px;
+  /* Add padding to the left */
 }
 
 .modal-buttons {
@@ -433,5 +439,4 @@ export default {
   font-size: 0.75rem;
   color: #555;
 }
-
 </style>

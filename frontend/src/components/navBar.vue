@@ -119,6 +119,7 @@ export default {
     async handleSignOut() {
       try {
         await signOut(auth);
+        this.$router.push('/about');
       } catch (error) {
         console.error('Error signing out:', error.message);
       }
