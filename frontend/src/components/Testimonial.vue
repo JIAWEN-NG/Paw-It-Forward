@@ -30,13 +30,7 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    </div>
-    <!-- Loading Spinner -->
-    <div v-if="isLoading" class="spinner-container">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
+      
 
     <div v-else class="row row-cols-1 row-cols-md-3 g-4">
       <div v-for="testimonial in paginatedTestimonials" :key="testimonial.id" class="col mb-4">
@@ -119,15 +113,63 @@
         </div>
       </div>
     </div>
+  </div>
 
   <div class="animal-runner">
-    <div class="animal-strip">
-      <!-- Animal images remain unchanged -->
-      <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
-      <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
-      <!-- Repeat the images as in your original code -->
-    </div>
+
+  <div class="animal-strip">
+    <!-- Original set of images -->
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <!-- Repeat as needed -->
+
+
+    <!-- Duplicate set of images for seamless scrolling -->
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
+    <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
+    <!-- Repeat as needed -->
+
   </div>
+  </div>
+
+  <!-- Pagination Controls -->
+<div class="pagination-container">
+  <button 
+    @click="changePage(currentPage - 1)" 
+    :disabled="currentPage === 1" 
+    class="btn btn-outline-primary pagination-button">
+    Previous
+  </button>
+
+  <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
+
+  <button 
+    @click="changePage(currentPage + 1)" 
+    :disabled="currentPage === totalPages" 
+    class="btn btn-outline-primary pagination-button">
+    Next
+  </button>
+</div>
 
   <!-- Floating Donate Now Button -->
   <div class="donate-popup-container">
@@ -141,23 +183,6 @@
       Donate Now <i class="fas fa-heart heart-icon"></i>
     </router-link>
   </div>
-
-  <!-- Pagination Controls -->
-  <div class="pagination-container">
-    <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-      class="btn btn-outline-primary pagination-button">
-      Previous
-    </button>
-
-    <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-
-    <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-      class="btn btn-outline-primary pagination-button">
-      Next
-    </button>
- 
-</div>
-
 </template>
 
 <script>
@@ -547,8 +572,10 @@ input[type="file"] {
 }
 
 .testimonial-container {
-  padding: 40px 20px 20px;
+  padding: 60px 20px 20px; /* Adjust padding-top to push content below the navbar */
   background: linear-gradient(103deg, rgba(252, 238, 213, 0.6) 6.43%, rgba(252, 238, 213, 0.6) 78.33%, rgba(255, 231, 186, 0.6) 104.24%);
+  position: relative;
+  z-index: 1; /* Ensures the container is below the navbar */
 }
 
 .title {
@@ -732,11 +759,11 @@ input[type="file"] {
   border-radius: 20px;
   background: rgba(248, 249, 250, 0.9);
   background-size: cover;
-  /* Fills the entire card */
   background-position: center;
-  /* Centers the image */
   background-repeat: no-repeat;
   border: 3px solid rgb(255, 255, 255);
+  z-index: 1; /* Adjust z-index for the expanded card */
+  margin-top: 20px; /* Optional: Add margin to avoid directly touching the navbar */
 }
 
 .quote-icon-start,
@@ -954,10 +981,14 @@ input[type="file"] {
 
 .pagination-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 20px;
-  margin: 40px;
+  padding: 20px;
+  margin: 20px 0; /* Space it from the animal runner */
+  background-color: rgba(255, 255, 255, 0.9); /* Solid background for visibility */
+  border-radius: 10px;
+  z-index: 100;
 }
 
 .pagination-button {
@@ -973,7 +1004,7 @@ input[type="file"] {
   cursor: not-allowed;
 }
 
-.pagination-button:hover {
+.pagination-button:hover:not(:disabled) {
   background-color: #2c3e50;
   color: #fff;
   transform: scale(1.05);
@@ -983,6 +1014,7 @@ input[type="file"] {
   font-size: 1.2rem;
   color: #2c3e50;
 }
+
 
 .btn-outline-primary {
   color: #2c3e50;
