@@ -178,6 +178,25 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .detail-item {
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align to the left */
+    padding: 10px; /* Adjust padding for small screens */
+  }
+
+  .detail-title {
+    width: 100%; /* Make the title occupy the full width */
+    margin-bottom: 5px; /* Add spacing below the title */
+    text-align: left; /* Keep the alignment consistent */
+  }
+
+  .detail-value {
+    width: 100%; /* Ensure the value starts on a new line */
+    text-align: left; /* Align the text to the left */
+  }
+
+}
 .page-title {
   font-size: 2rem;
   font-weight: bold;
@@ -266,6 +285,7 @@ export default {
 .details-section {
   border-top: 1px solid #ccc;
   padding-top: 0px;
+
 }
 
 .detail-item {
@@ -274,13 +294,14 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 30px;
-  margin: 30px;
+  margin: 10px;
   border-bottom: 1px solid #eee;
 }
 
 .detail-title {
   font-weight: bold;
   color: #333;
+  text-align: left;
 }
 
 .detail-value {

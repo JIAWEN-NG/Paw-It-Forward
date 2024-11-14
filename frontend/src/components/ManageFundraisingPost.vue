@@ -370,6 +370,10 @@ export default {
 
 <style scoped>
 
+.title{
+  font-weight: bold;
+}
+
 .form-label {
   font-weight: 500;
   color: #2c3e50;
