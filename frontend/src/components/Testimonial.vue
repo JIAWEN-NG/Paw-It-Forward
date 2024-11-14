@@ -600,6 +600,7 @@ input[type="file"] {
 
 .text-container {
   margin: 0 auto;
+  margin-bottom: 20px;
   /* Allows the text to take available space */
   text-align: center;
   /* Restricts the width to prevent stretching */
@@ -826,12 +827,12 @@ input[type="file"] {
 .profile-photo-container {
   position: relative;
   margin: 0 auto;
-  top: -40px;
+  top: -70px;
   width: 100px;
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid #fff;
+  border: 5px solid #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   z-index: 2;
   text-align: center;
