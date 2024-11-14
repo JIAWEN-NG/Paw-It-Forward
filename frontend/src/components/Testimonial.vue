@@ -9,19 +9,27 @@
 
       <!-- Only show the button if the user is logged in -->
       <div class="button-container">
-        <button v-if="isUserLoggedIn" class="add-testimonial wave-button" style="align-self: center;"
+        <div class="button-container">
+        <button v-if="!isLoading && isUserLoggedIn" class="add-testimonial wave-button" style="align-self: center;"
           @click="openModal">
           Add Your Story
         </button>
 
-        <!-- If the user is not logged in, display a message or redirect to login -->
-        <div v-else class="login-message-container">
+        <!-- If the user is not logged in and loading is complete, display a message or redirect to login -->
+        <div v-else-if="!isLoading && !isUserLoggedIn" class="login-message-container">
           <p class="login-message">
             <span class="login-icon">🔒</span>
             Please <router-link to="/login" class="login-link">login</router-link> to add your story.
           </p>
         </div>
       </div>
+    </div>
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="spinner-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     </div>
     <!-- Loading Spinner -->
     <div v-if="isLoading" class="spinner-container">
