@@ -664,13 +664,6 @@ input[type="file"] {
 }
 
 @media (max-width: 768px) {
-  .donation-journey {
-    font-size: 0.8rem !important; /* Use !important if other rules are conflicting */
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
-  }
   .testimonial-card {
     width: 80%;
     /* Makes the card fill the entire width */
@@ -979,8 +972,7 @@ input[type="file"] {
 }
 
 .donation-journey {
-  /* margin-top: 50px; */
-  font-size: 0.95rem;
+  font-size: 0.80rem;
   color: #fff;
   padding: 20px;
   text-align: center;
