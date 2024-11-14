@@ -371,7 +371,7 @@ export default {
 <style scoped>
 
 .title{
-  font-weight: boldp;
+  font-weight: bold;
 }
 
 .form-label {
