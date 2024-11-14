@@ -14,7 +14,7 @@
         </div>
         
         <div class="form-group">
-          <label for="petDescription">Pet Description</label>
+          <label for="petDescription">My Pet Description</label>
           <textarea
             id="petDescription"
             v-model="editableUser.petDescription"
@@ -141,6 +141,7 @@ label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  text-align: left;
 }
 
 input,
@@ -191,4 +192,7 @@ textarea {
   color: #999;
   cursor: not-allowed;
 }
+
+
+
 </style>
