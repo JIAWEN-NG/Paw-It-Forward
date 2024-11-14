@@ -8,41 +8,47 @@
         <p>{{ successMessage }}</p>
       </div>
 
-      <div class="profile-section" v-if="currentUserData">
-        <div class="profile-photo-container">
-          <img 
-            :src="currentUserData.profileImage || defaultProfileImage" 
-            alt="Profile Picture" 
-            class="profile-image" 
-          />
-          <div class="change-photo-overlay">
-            <button 
-              @click="showPhotoUploadModal = true" 
-              class="change-photo-button"
-            >
-              Change Photo
-            </button>
+      <div v-if="isLoading" class="loading-spinner">
+        <span class="sr-only">Loading...</span>
+      </div>
+
+      <template v-else-if="currentUserData">
+        <div class="profile-section">
+          <div class="profile-photo-container">
+            <img 
+              :src="currentUserData.profileImage || defaultProfileImage" 
+              alt="Profile Picture" 
+              class="profile-image" 
+            />
+            <div class="change-photo-overlay">
+              <button 
+                @click="showPhotoUploadModal = true" 
+                class="change-photo-button"
+              >
+                Change Photo
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="details-section" v-if="currentUserData">
-        <div class="detail-item">
-          <span class="detail-title">Name</span>
-          <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
+        <div class="details-section">
+          <div class="detail-item">
+            <span class="detail-title">Name</span>
+            <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-title">Email</span>
+            <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-title">My Pet Description</span>
+            <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
+          </div>
+          <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
         </div>
-        <div class="detail-item">
-          <span class="detail-title">Email</span>
-          <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-title">My Pet Description</span>
-          <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
-        </div>
-        <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
-      </div>
+      </template>
 
-      <p v-else>Loading user data...</p>
+      <p v-else>No user data available. Please sign in.</p>
 
       <!-- Edit Profile Modal -->
       <EditProfileModal 
@@ -59,7 +65,7 @@
         v-if="showPhotoUploadModal" 
         :showModal="showPhotoUploadModal" 
         :userId="userId"
-        :userProfilePicUrl="userProfilePicUrl"
+        :userProfilePicUrl="currentUserData?.profileImage"
         @close="showPhotoUploadModal = false" 
         @uploadSuccess="handlePhotoUploadSuccess"
         @showSuccess="setSuccessMessage"
@@ -68,14 +74,13 @@
   </div>
 </template>
 
-
 <script>
-import { auth, db } from '../main'; // Ensure this is your Firebase Auth config
+import { auth, db } from '../main';
 import { doc, getDoc } from 'firebase/firestore';
-import { authState } from '../store/auth.js'; // Your global store for user data
-import defaultProfileImage from '@/assets/noprofilepic.png'; // Import the default image at the top
-import EditProfileModal from './EditProfileModal.vue'; // Import the EditProfileModal component
-import PhotoUploadModal from './PhotoUploadModal.vue'; // Import the PhotoUploadModal component
+import { authState } from '../store/auth.js';
+import defaultProfileImage from '@/assets/noprofilepic.png';
+import EditProfileModal from './EditProfileModal.vue';
+import PhotoUploadModal from './PhotoUploadModal.vue';
 
 export default {
   name: 'ManageAccount',
@@ -85,16 +90,16 @@ export default {
   },
   data() {
     return {
-      userId: authState.userId || null, // Initialize with authState or null
-      userRole: authState.userRole || null,
-      userProfilePicUrl: authState.userProfilePicUrl || null,
-      currentUserData: authState.currentUserData || null,
-      defaultProfileImage, // Reference the imported image
+      userId: null,
+      userRole: null,
+      userProfilePicUrl: null,
+      currentUserData: null,
+      defaultProfileImage,
       showSuccessAlert: false,
       successMessage: '',
-      showEditProfileModal: false, // Control the modal visibility
-      showPhotoUploadModal: false, // Control the photo upload modal visibility
-      hoveringPhoto: false // Track hover state for profile photo
+      showEditProfileModal: false,
+      showPhotoUploadModal: false,
+      isLoading: true
     };
   },
   computed: {
@@ -104,42 +109,54 @@ export default {
         : 'N/A';
     },
   },
-  async mounted() {
-    // Check if the userId is already set in authState; otherwise, get it from auth.currentUser
-    console.log('Current user id: ', this.userId);
-    if (!this.userId) {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        this.userId = currentUser.uid;
-        console.log("User ID set from auth.currentUser:", this.userId);
-      } else {
-        console.log("No authenticated user found");
-        return;
-      }
-    }
-
-    // Fetch the user data from Firestore
-    try {
-      const userDocRef = doc(db, "Users", this.userId);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        this.currentUserData = userDoc.data();
-        console.log("Fetched user data:", this.currentUserData);
-
-        // Update authState to reflect the current data
-        authState.currentUserData = this.currentUserData;
-        authState.userId = this.userId;
-        authState.userRole = this.currentUserData.role;
-        authState.userProfilePicUrl = this.currentUserData.profileImage;
-      } else {
-        console.error("No such document!");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error.message);
-    }
+  created() {
+    this.initializeUserData();
   },
   methods: {
+    async initializeUserData() {
+      this.isLoading = true;
+      
+      // Check if user is authenticated
+      if (!auth.currentUser) {
+        await new Promise(resolve => {
+          const unsubscribe = auth.onAuthStateChanged(user => {
+            unsubscribe();
+            resolve(user);
+          });
+        });
+      }
+
+      if (auth.currentUser) {
+        this.userId = auth.currentUser.uid;
+        await this.fetchUserData();
+      } else {
+        console.error("No authenticated user found");
+        this.isLoading = false;
+      }
+    },
+    async fetchUserData() {
+      try {
+        const userDocRef = doc(db, "Users", this.userId);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          this.currentUserData = userDoc.data();
+          console.log("Fetched user data:", this.currentUserData);
+
+          // Update authState to reflect the current data
+          authState.currentUserData = this.currentUserData;
+          authState.userId = this.userId;
+          authState.userRole = this.currentUserData.role;
+          authState.userProfilePicUrl = this.currentUserData.profileImage;
+        } else {
+          console.error("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error.message);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     handleProfileUpdate(updatedInfo) {
       this.currentUserData = { ...this.currentUserData, ...updatedInfo };
     },
@@ -316,5 +333,31 @@ export default {
 h1 {
   font-weight: bold;
   
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid #676672;
+  border-radius: 50%;
+  border-top-color: #1f2e3d;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 </style>

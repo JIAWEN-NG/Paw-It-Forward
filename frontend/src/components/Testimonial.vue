@@ -45,9 +45,7 @@
                 <span class="emoji paw-emoji">🐾</span>
               </div>
             </div>
-            <!-- <div class="name-banner"> -->
             <p class="author">{{ testimonial.animalName }}</p>
-            <!-- </div> -->
             <p class="testimonial-text">{{ testimonial.background }}</p>
           </div>
           <div class="card-back"
@@ -63,6 +61,7 @@
         </div>
       </div>
     </div>
+
     <!-- Modal for adding testimonials -->
     <div v-if="showModal" class="form-backdrop" @click.self="closeModal">
       <div class="form-content animated-modal">
@@ -73,6 +72,7 @@
         <!-- Scrollable content container -->
         <div class="scroll-container">
           <form @submit.prevent="submitForm" class="styled-form">
+            <!-- Form fields remain unchanged -->
             <div class="form-group">
               <label for="animalName">What's your pet's name?</label>
               <input type="text" id="animalName" v-model="newTestimonial.animalName" required />
@@ -116,6 +116,7 @@
   </div>
 
   <div class="animal-runner">
+
   <div class="animal-strip">
     <!-- Original set of images -->
     <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
@@ -132,7 +133,7 @@
     <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
     <!-- Repeat as needed -->
 
-<<<<<<< Updated upstream
+
     <!-- Duplicate set of images for seamless scrolling -->
     <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
     <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
@@ -147,9 +148,8 @@
     <img src="@/assets/pixcat.png" alt="Running Cat" class="animal-image" />
     <img src="@/assets/pixdog.png" alt="Running Dog" class="animal-image" />
     <!-- Repeat as needed -->
-  </div>
-</div>
 
+  </div>
 
   <!-- Floating Donate Now Button -->
   <div class="donate-popup-container">
@@ -179,122 +179,7 @@
     </button>
  
 </div>
-  
-=======
-      <!-- Floating Donate Now Button -->
-
-      <div class="donate-popup-container">
-      <div v-if="showHeartfeltMessage" :class="['heartfelt-message-container', { 'fade-out': isFading }]">
-        <p class="heartfelt-message">
-          "Your kindness can be the difference between a wagging tail and a life of struggle. Help us give these pets a second chance at happiness."
-        </p>
-      </div>
-      <router-link to="/fundraising" class="donate-popup animated-donate-button">
-        Donate Now <i class="fas fa-heart heart-icon"></i>
-        <div class="star-1">
-      <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-        style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-        version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-        <defs></defs>
-        <g id="Layer_x0020_1">
-          <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-          <path
-            d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-            class="fil0"></path>
-        </g>
-      </svg>
-    </div>
-    <div class="star-2">
-      <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-        style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-        version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-        <defs></defs>
-        <g id="Layer_x0020_1">
-          <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-          <path
-            d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-            class="fil0"></path>
-        </g>
-      </svg>
-    </div>
-    <div class="star-3">
-      <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-        style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-        version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-        <defs></defs>
-        <g id="Layer_x0020_1">
-          <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-          <path
-            d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-            class="fil0"></path>
-        </g>
-      </svg>
-    </div>
-    <div class="star-4">
-      <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-        style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-        version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-        <defs></defs>
-        <g id="Layer_x0020_1">
-          <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-          <path
-            d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-            class="fil0"></path>
-        </g>
-      </svg>
-    </div>
-              <div class="star-5">
-                <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-                  style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-                  version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                  <defs></defs>
-                  <g id="Layer_x0020_1">
-                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-                    <path
-                      d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-                      class="fil0"></path>
-                  </g>
-                </svg>
-              </div>
-              <div class="star-6">
-                <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 784.11 815.53"
-                  style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-                  version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                  <defs></defs>
-                  <g id="Layer_x0020_1">
-                    <metadata id="CorelCorpID_0Corel-Layer"></metadata>
-                    <path
-                      d="M392.05 0c-20.9,210.08 -184.06,378.41 -392.05,407.78 207.96,29.37 371.12,197.68 392.05,407.74 20.93,-210.06 184.09,-378.37 392.05,-407.74 -207.98,-29.38 -371.16,-197.69 -392.06,-407.78z"
-                      class="fil0"></path>
-                  </g>
-                </svg>
-              </div>
-              </router-link>
-          </div>
-      
-        <div class="animal-runner">
-        <div class="animal-strip" v-html="animalBanner"></div>
-      </div>
-      <!-- Pagination Controls -->
-      <div class="pagination-container">
-        <button 
-          @click="changePage(currentPage - 1)" 
-          :disabled="currentPage === 1" 
-          class="btn btn-outline-primary pagination-button"
-        >
-          Previous
-        </button>        
-        <span class="pagination-text">Page {{ currentPage }} of {{ totalPages }}</span>
-        
-        <button 
-          @click="changePage(currentPage + 1)" 
-          :disabled="currentPage === totalPages" 
-          class="btn btn-outline-primary pagination-button"
-        >
-          Next
-        </button>
-      </div>
->>>>>>> Stashed changes
+</div>
 </template>
 
 <script>
@@ -323,13 +208,13 @@ export default {
       uploadSuccess: false,
       showHeartfeltMessage: false,
       isFading: false,
-      wordCount: 0,  // Track word count
+      wordCount: 0,
       isLoading: true,
-      pixcat,  // Assigning the imported image to pixcat
-      pixdog,  // Assigning the imported image to pixdog
+      isUserLoggedIn: null, // Changed to null initially
+      pixcat,
+      pixdog,
     };
   },
-
   computed: {
     totalPages() {
       return Math.ceil(this.testimonials.length / this.itemsPerPage);
@@ -342,26 +227,24 @@ export default {
   },
   methods: {
     async fetchTestimonials() {
-      this.isLoading = true; // Start loading
+      this.isLoading = true;
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_API_BASE_URL}/testimonials`);
-        this.testimonials = response.data; // Set testimonials to the response data
+        this.testimonials = response.data;
       } catch (error) {
         console.error('Error fetching testimonials:', error);
-      }
-      finally {
-        this.isLoading = false; // Stop loading
+      } finally {
+        this.isLoading = false;
       }
     },
-
     getImageUrl(imageBase64) {
       return `data:image/jpeg;base64,${imageBase64}`;
     },
     flipCard(id) {
-      this.flippedCardId = id; // Set the flipped card when mouse enters
+      this.flippedCardId = id;
     },
     resetFlip() {
-      this.flippedCardId = null; // Reset the flipped card when mouse leaves
+      this.flippedCardId = null;
     },
     openModal() {
       this.showModal = true;
@@ -382,7 +265,6 @@ export default {
       this.imagePreview = '';
     },
     updateWordCount() {
-      // Trim the input to remove leading/trailing spaces and split by any whitespace
       const wordCount = this.newTestimonial.donationJourney.trim().split(/\s+/).filter(Boolean).length;
       this.wordCount = wordCount;
     },
@@ -396,17 +278,16 @@ export default {
       formData.append('background', this.newTestimonial.background || '');
 
       if (this.newTestimonial.image) {
-        formData.append('image', this.newTestimonial.image);  // This sends the image
+        formData.append('image', this.newTestimonial.image);
       }
 
-      // Get the Firebase Authentication token
       const user = getAuth().currentUser;
-      const idToken = await user.getIdToken();  // Fetch the Firebase ID token
+      const idToken = await user.getIdToken();
 
       try {
         const response = await axios.post(`${import.meta.env.VITE_APP_API_BASE_URL}/upload-testimonial`, formData, {
           headers: {
-            'Authorization': `Bearer ${idToken}`  // Attach token to the Authorization header
+            'Authorization': `Bearer ${idToken}`
           }
         });
 
@@ -429,29 +310,36 @@ export default {
     },
     changePage(page) {
       if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page; // Update current page
+        this.currentPage = page;
       }
     },
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        // Create an image preview
         const reader = new FileReader();
         reader.onload = () => {
-          this.imagePreview = reader.result;  // Set image preview
+          this.imagePreview = reader.result;
         };
         reader.readAsDataURL(file);
-
-        // Save the file for uploading
-        this.newTestimonial.image = file;  // Store file for submission
+        this.newTestimonial.image = file;
       }
     },
-
+    initializeAuthState() {
+      const auth = getAuth();
+      return new Promise((resolve) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+          this.isUserLoggedIn = !!user;
+          unsubscribe();
+          resolve();
+        });
+      });
+    }
+  },
+  async created() {
+    await this.initializeAuthState();
+    this.fetchTestimonials();
   },
   mounted() {
-    this.fetchTestimonials();
-
-    // Heartfelt message behavior
     this.showHeartfeltMessage = true;
     setTimeout(() => {
       this.isFading = true;
@@ -459,17 +347,9 @@ export default {
         this.showHeartfeltMessage = false;
       }, 1000);
     }, 3000);
-    getAuth().onAuthStateChanged(user => {
-      if (user) {
-        this.isUserLoggedIn = true;  // Set the login state to true
-      } else {
-        this.isUserLoggedIn = false; // Set it to false if no user
-      }
-    });
   }
 };
 </script>
-
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
@@ -702,7 +582,6 @@ input[type="file"] {
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
-<<<<<<< Updated upstream
   margin-bottom: 5px;
 }
 
@@ -727,9 +606,6 @@ input[type="file"] {
   margin-top: 5px;
   /* Space between button and subtitle */
   margin-bottom: 5px;
-=======
-  margin-bottom: 20px;
->>>>>>> Stashed changes
 }
 
 .testimonial-card {
@@ -954,6 +830,7 @@ input[type="file"] {
   /* Ensure text inside is also centered */
 }
 
+
 .profile-photo-container img {
   width: 100%;
   height: 100%;
@@ -1155,19 +1032,6 @@ input[type="file"] {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   animation: wave-smooth 4s ease-in-out infinite;
   transition: transform 0.3s ease;
-<<<<<<< Updated upstream
-
-=======
-  z-index: 2000; /* Higher than other elements */
-  position: relative; /* Change to relative */
-  margin-top: 10px; /* Default margin for positioning */
-  margin-bottom: 20px;
-}
-
-/* Hide the button when the modal is open */
-.modal-open .add-testimonial {
-  display: none;
->>>>>>> Stashed changes
 }
 
 .add-testimonial:hover {
@@ -1587,7 +1451,6 @@ input[type="file"] {
   position: relative;
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #3e67a8, #77a0f7);
-<<<<<<< Updated upstream
   /* Gradient for button */
   color: #ffffff;
   /* White text color */
@@ -1595,12 +1458,6 @@ input[type="file"] {
   font-weight: 600;
   border: 2px solid #bcbcbb;
   /* Yellow border for contrast */
-=======
-  color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border: 2px solid #bcbcbb;
->>>>>>> Stashed changes
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -1648,7 +1505,6 @@ input[type="file"] {
   }
 }
 
-<<<<<<< Updated upstream
 /* The container that holds the animal runner */
 .animal-runner {
   width: 100%;
@@ -1683,124 +1539,5 @@ input[type="file"] {
   margin-right: 5px; /* Adjust spacing as needed */
 }
 
-=======
-:root {
-  --color: #00fffc;
-}
-
-.star-1 {
-  position: absolute;
-  top: -20%;
-  left: -20%;
-  width: 25px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
-}
-
-.star-2 {
-  position: absolute;
-  top: -25%;
-  left: 85%;
-  width: 15px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
-}
-
-.star-3 {
-  position: absolute;
-  top: 50%;
-  left: -15%;
-  width: 5px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
-}
-
-.star-4 {
-  position: absolute;
-  top: -10%;
-  left: 50%;
-  width: 8px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all .8s cubic-bezier(0, 0.4, 0, 1.01);
-}
-
-.star-5 {
-  position: absolute;
-  top: 45%;
-  left: 100%;
-  width: 15px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all .6s cubic-bezier(0, 0.4, 0, 1.01);
-}
-
-.star-6 {
-  position: absolute;
-  top: -20%;
-  left: 40%;
-  width: 5px;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all .8s ease;
-}
-
-button:hover {
-  background: transparent;
-  color: var(--color);
-  box-shadow: 0 0 25px #fec1958c;
-}
-
-button:hover .star-1 {
-  top: -30%;
-  left: -35%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
-
-button:hover .star-2 {
-  top: -35%;
-  left: 90%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
-
-button:hover .star-3 {
-  top: 60%;
-  left: -20%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
-
-button:hover .star-4 {
-  top: -15%;
-  left: 50%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
-
-button:hover .star-5 {
-  top: 55%;
-  left: 105%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
-
-button:hover .star-6 {
-  top: -30%;
-  left: 45%;
-  filter: drop-shadow(0 0 10px #fffdef);
-  z-index: 2;
-}
->>>>>>> Stashed changes
 
 </style>
