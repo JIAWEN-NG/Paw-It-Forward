@@ -1,7 +1,7 @@
 <template>
   <div class="account-page">
     <div class="card-container">
-      <h1 class="page-title">Edit My Profile</h1>
+      <h1 class="page-title">Edit Profile</h1>
       
       <!-- Inline Success Alert -->
       <div v-if="showSuccessAlert" class="success-alert">
@@ -28,15 +28,15 @@
 
       <div class="details-section" v-if="currentUserData">
         <div class="detail-item">
-          <span class="detail-title">Name:</span>
+          <span class="detail-title">Name</span>
           <span class="detail-value">{{ currentUserData.name || 'N/A' }}</span>
         </div>
         <div class="detail-item">
-          <span class="detail-title">Email:</span>
+          <span class="detail-title">Email</span>
           <span class="detail-value">{{ currentUserData.email || 'N/A' }}</span>
         </div>
         <div class="detail-item">
-          <span class="detail-title">Pet Description:</span>
+          <span class="detail-title">My Pet Description</span>
           <span class="detail-value">{{ currentUserData.petDescription || 'N/A' }}</span>
         </div>
         <button @click="showEditProfileModal = true" class="edit-profile-button">Edit Profile</button>
@@ -252,9 +252,12 @@ export default {
 }
 
 .detail-item {
+  background-color: white;
+  border-radius: 20px;
   display: flex;
   justify-content: space-between;
-  padding: 50px 0;
+  padding: 30px;
+  margin: 30px;
   border-bottom: 1px solid #eee;
 }
 
@@ -308,5 +311,10 @@ export default {
   padding: 20px;
   width: 100%;
   max-width: 600px;
+}
+
+h1 {
+  font-weight: bold;
+  
 }
 </style>
