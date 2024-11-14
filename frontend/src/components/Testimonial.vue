@@ -1464,6 +1464,9 @@ input[type="file"] {
   font-size: 1.2rem;
   transition: transform 0.2s ease-in-out;
 }
+.fas {
+  font-family: "Font Awesome 5 Free";
+}
 
 .animated-donate-button:hover .heart-icon {
   transform: scale(1.1);

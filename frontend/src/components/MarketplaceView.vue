@@ -167,7 +167,6 @@ export default {
 .filter-container {
   background-color: #ffffff;
   padding: 20px;
-  min-height: 100vh;
 }
 
 /* .divider-line {
