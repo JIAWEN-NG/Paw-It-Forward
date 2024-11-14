@@ -37,7 +37,7 @@
         <div class="card testimonial-card" @mouseenter="flipCard(testimonial.id)" @mouseleave="resetFlip"
           :class="{ 'is-flipped': flippedCardId === testimonial.id }">
           <div class="card-front">
-            <div class="profile-photo-container top-center">
+            <div class="profile-photo-container top-center" v-if="flippedCardId !== testimonial.id">
               <img :src="getImageUrl(testimonial.imageBase64)" alt="Animal Photo" v-if="testimonial.imageBase64" />
               <div class="no-image" v-else>No Image</div>
               <div class="icon-overlay">
@@ -526,7 +526,11 @@ input[type="file"] {
   color: #ff4b5c;
 }
 
-
+.testimonial-card.is-flipped .profile-photo-container {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
 .scroll-container {
   width: 100%;
@@ -672,6 +676,9 @@ input[type="file"] {
     /* Ensures it doesn't stretch too much */
     margin: 0 auto;
   }
+  .profile-photo-container {
+    border: 3px solid #fff;
+}
 
   .add-testimonial {
     font-size: 1rem;
