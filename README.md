@@ -55,9 +55,9 @@ Use the following credentials to test for stripe payments in the application:
 2. Add project folder into VScode or any IDE 
 or 
 1. Git clone:[GITHUB REPO](https://github.com/JIAWEN-NG/Paw-It-Forward.git)
-2. Navigate to submitted file and go to frontend and backend folder
-3. Extrac the `.env` files from frontend and backend respecticitly 
-4. Add the `.env` files to backend and frontend folders resppectivlty in VScode at root
+2. Navigate to the submitted file and go to frontend and backend folder
+3. Extract the `.env` files from frontend and backend respectively 
+4. Add the `.env` files to the backend and frontend folders respectively in VScode at root
 
 
 ### 2. Backend Setup
