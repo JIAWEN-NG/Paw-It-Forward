@@ -1,6 +1,7 @@
 
 import { reactive } from 'vue';
 import { onAuthStateChanged } from 'firebase/auth';
+import defaultProfilePic from '../assets/default-profile.png';
 
 export const authState = reactive({
   isUserLoggedIn: false,
@@ -12,7 +13,7 @@ export function setupAuthState(auth) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       authState.isUserLoggedIn = true;
-      authState.userProfilePicUrl = user.photoURL || null;
+      authState.userProfilePicUrl = user.photoURL || defaultProfilePic;
       authState.userId = user.uid; // Capture user ID
       console.log("User is logged in:", authState.isUserLoggedIn);
       console.log("User ID:", authState.userId);
